@@ -1,0 +1,15 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    background-color: #F9F9F9;
+}
+
+main {
+    max-width: 300px;
+}
+
+footer {
+    background-color: #FFFFFF;
+}

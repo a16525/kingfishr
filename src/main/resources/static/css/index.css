@@ -1,0 +1,150 @@
+.nav-link {
+
+    cursor: pointer;
+    text-decoration: none;
+
+}
+
+.nav-link:hover {
+    background-color: #343A40;
+}
+
+nav.navbar > a.nav-link {
+
+    text-align: center;
+    flex-grow: 1;
+
+}
+
+nav.navbar > a.nav-link.active {
+    background-color: #0D6EFD;
+}
+
+@media only screen and (max-width: 1200px) {
+
+    body {
+        flex-direction: column;
+    }
+
+    #views {        
+        height: calc( 100vh - 40px ) !important;
+    }
+
+}
+
+#directory_navigator {
+
+    display: inline-block;
+
+    flex-grow: 1;
+    flex-shrink: 2;
+    min-width: 0;
+
+}
+
+#directory_navigator_list {
+
+    background-color: #EEEFF0;
+
+    letter-spacing: normal;
+
+    white-space: nowrap;
+    flex-wrap: nowrap;
+
+    overflow-x: scroll;
+
+}
+
+#directory_navigator_list > li.breadcrumb-item {
+    display: contents;
+}
+
+.breadcrumb-item + .breadcrumb-item::before { 
+    padding-left: var(--bs-breadcrumb-item-padding-x);
+}
+
+#directory_navigator_list > li.breadcrumb-item > a {
+    text-decoration: none;
+}
+
+#directory_navigator_list > li.breadcrumb-item > a:hover {
+    text-decoration: underline;
+}
+
+.__rounded_button {
+
+    width: 42px;
+    height: 42px;
+
+}
+
+.__rounded_button:hover {
+    background-color: #DEE2E6;
+}
+
+.__rounded_button:active {
+
+    border-color: #CACED2 !important;
+    background-color: #CACED2 !important;
+    
+}
+
+button.__nav_refresh > i.bi-arrow-clockwise {
+
+    position: relative;
+    top: 1px;
+
+}
+
+.tab-pane {
+    height: 100vh;
+}
+
+div.__fileview_list {
+    overflow-y: scroll;
+}
+
+table.__fileview_table {
+
+    table-layout: fixed;
+    height: fit-content;
+
+    border-collapse: separate;
+    border-spacing: 0;
+
+}
+
+table.__fileview_table thead {
+
+    position: sticky;
+    top: 0;
+    
+}
+
+th.__filetable_icon {
+
+    width: 32px;
+    text-align: center;
+
+}
+
+tr.data_entry > td {
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+
+tbody.__fileview_table_content > tr.data_entry {
+    cursor: pointer;
+}
+
+.__toast_fileupload_label_value {
+
+    overflow-x: scroll;
+    overflow-y: hidden;
+
+    white-space: nowrap;
+    max-width: 60%;
+
+}

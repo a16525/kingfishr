@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+    
+    <head>
+        
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" th:href="@{ ${ '/webjars/bootstrap/' + bootstrap_version + '/css/bootstrap.css' } }" type="text/css">
+        <link rel="stylesheet" th:href="@{ ${ '/webjars/bootstrap-icons/' + bootstrap_icons_version + '/font/bootstrap-icons.css' } }" type="text/css">
+
+        <link rel="stylesheet" href="/css/login.css" type="text/css">
+
+        <title th:inline="text">Login[[ ${ " @" + hostname } ]]</title>
+
+    </head>
+
+    <body class="d-flex flex-column justify-content-center align-items-center">
+
+        <main class="form-signin w-100 col-12 m-auto">
+
+            <div class="alert alert-danger alert-dismissible" role="alert" th:if="${param.error}">
+                <strong>Invalid login credentials.</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+            <div class="alert alert-warning alert-dismissible" role="alert" th:if="${param.logout}">
+                <strong>You have been logged out.</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+            <div class="alert alert-warning alert-dismissible" role="alert" th:if="${param.expired}">
+                <strong>Your session has expired.</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <form class="text-center" th:action="@{/login}" method="POST">
+
+                <h3 class="mb-3 fw-normal">Login</h3>
+
+                <div class="form-floating mb-1">
+
+                    <input class="form-control" id="username" name="username" placeholder="Username" type="text">
+                    <label for="username">Username</label>
+
+                </div>
+
+                <div class="form-floating mb-4">
+
+                    <input class="form-control" id="password" name="password" placeholder="Password" type="password">
+                    <label for="password">Password</label>
+
+                </div>
+
+                <button class="w-100 btn btn-lg btn-primary rounded-1" type="submit">Submit</button>
+
+                <p class="text-muted pt-3 pb-0" th:if="${hostname}" th:inline="text">
+                    <small>Hosted on <i>[[ ${hostname} ]]</i></small>
+                </p>
+
+            </form>
+
+        </main>
+
+        <footer class="container-fluid d-flex justify-content-between align-items-center border-top">
+
+            <div>
+
+                <img src="/favicon.ico" width="24" height="24" alt="Kingfishr">
+                <span class="ms-1 align-middle">2023</span>
+
+            </div>
+
+            <ul class="d-flex nav col-md4-4 justify-content-end list-unstyled">
+
+                <li class="nav-item ms-3">
+
+                    <a class="h-100 d-inline-block" href="https://github.com/valenthyne-ut/kingfishr" target="_blank">
+                        <i class="bi bi-github align-middle" aria-hidden="true"></i>
+                    </a>
+
+                </li>
+                
+            </ul>
+
+        </footer>
+
+        <!-- Scripts -->
+        <script th:src="@{ ${ '/webjars/bootstrap/' + bootstrap_version + '/js/bootstrap.bundle.min.js' } }"></script>
+
+    </body>
+
+</html>

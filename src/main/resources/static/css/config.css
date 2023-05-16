@@ -1,21 +1,28 @@
-.nav-link {
-
-    cursor: pointer;
-    text-decoration: none;
-
-}
-
-.nav-link:hover {
-    background-color: #343A40;
-}
-
-nav.navbar > a.nav-link {
-
-    text-align: center;
-    flex-grow: 1;
-
-}
-
 nav.nav-pills > div > a.nav-link.active {
     background-color: #198754;
+}
+
+
+table.__userview_table {
+
+    table-layout: fixed;
+    height: fit-content;
+
+    border-collapse: separate;
+    border-spacing: 0;
+
+}
+
+table.__userview_table thead {
+
+    position: sticky;
+    top: 0;
+
+}
+
+.__userview_table_selector_column {
+
+    width: 32px;
+    text-align: center;
+
 }

@@ -28,6 +28,7 @@ export class DataEntry {
         [ "avi",        [ "file-earmark-play",          "Video" ] ],
         [ "mpeg",       [ "file-earmark-play",          "Video" ] ],
         [ "webm",       [ "file-earmark-play",          "Video" ] ],
+        [ "mov",        [ "file-earmark-play" ,         "Video" ] ],
 
             // Images
         [ "png",        [ "file-earmark-image",         "Image" ] ],

@@ -1,0 +1,53 @@
+    /* Navpills and navbar */
+.nav-link {
+
+    cursor: pointer;
+    text-decoration: none;
+
+}
+
+.nav-link:hover {
+    background-color: #343A40;
+}
+
+nav.navbar > a.nav-link {
+
+    text-align: center;
+    flex-grow: 1;
+    
+}
+
+@media only screen and (max-width: 1200px) {
+    
+    body {
+        flex-direction: column;
+    }
+
+    #views {
+        height: calc( 100vh - 40px ) !important;
+    }
+
+}
+
+.tab-pane {
+    height: 100vh;
+}
+
+    /* Rounded button */
+.__rounded_button {
+
+    width: 42px;
+    height: 42px;
+
+}
+
+.__rounded_button:hover {
+    background-color: #DEE2E6;
+}
+
+.__rounded_button:active {
+
+    border-color: #CACED2 !important;
+    background-color: #CACED2 !important;
+
+}

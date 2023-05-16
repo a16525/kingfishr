@@ -11,6 +11,7 @@
         <link rel="stylesheet" th:href="@{ ${ '/webjars/bootstrap/' + bootstrap_version + '/css/bootstrap.css' } }" type="text/css">
         <link rel="stylesheet" th:href="@{ ${ '/webjars/bootstrap-icons/' + bootstrap_icons_version + '/font/bootstrap-icons.css' } }" type="text/css">
 
+        <link rel="stylesheet" href="/css/common.css" type="text/css">
         <link rel="stylesheet" href="/css/index.css" type="text/css">
 
         <title th:inline="text">Home[[ ${ " @" + hostname } ]]</title>
@@ -167,8 +168,6 @@
             </div>
 
             <div class="mt-auto ps-3">
-
-                <hr>
 
                 <form class="d-flex" th:action="@{/logout}" method="POST">
 
@@ -410,17 +409,17 @@
 
         </div>
 
-        <nav class="navbar d-xl-none d-flex p-0 justify-content-evenly text-bg-dark" role="tablist" aria-orientation="horizontal">
+        <nav class="navbar p-0 d-xl-none d-flex justify-content-evenly text-bg-dark" role="tablist" aria-orientation="horizontal">
 
-            <a class="nav-link py-2 active" id="navbar-dashboardtab" data-bs-toggle="pill" data-bs-target="#views-dashboard" role="tab" aria-controls="views-dashboard" aria-selected="true">
+            <a class="nav-link py-2 active" id="navbar-dashboardtab" data-bs-toggle="pill" data-bs-target="#views-dashboard" role="tab" aria-controls="views-dashboard" aria-selected="false">
                 Dashboard
             </a>
 
-            <a class="nav-link py-2 __storage_forceupdate" id="navbar-storagetab" data-bs-toggle="pill" data-bs-target="#views-storage" role="tab" aria-controls="views-storage" aria-selected="true">
+            <a class="nav-link py-2 __storage_forceupdate" id="navbar-storagetab" data-bs-toggle="pill" data-bs-target="#views-storage" role="tab" aria-controls="views-storage" aria-selected="false">
                 Storage
             </a>
 
-            <a class="nav-link py-2" id="navbar-settingstab" data-bs-toggle="pill" data-bs-target="#views-settings" role="tab" aria-controls="views-settings" aria-selected="true">
+            <a class="nav-link py-2" id="navbar-settingstab" data-bs-toggle="pill" data-bs-target="#views-settings" role="tab" aria-controls="views-settings" aria-selected="false">
                 Preferences
             </a>
 

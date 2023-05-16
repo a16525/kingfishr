@@ -1,35 +1,5 @@
-.nav-link {
-
-    cursor: pointer;
-    text-decoration: none;
-
-}
-
-.nav-link:hover {
-    background-color: #343A40;
-}
-
-nav.navbar > a.nav-link {
-
-    text-align: center;
-    flex-grow: 1;
-
-}
-
-a.nav-link.active {
+nav.nav-pills > div > a.nav-link.active {
     background-color: #0D6EFD;
-}
-
-@media only screen and (max-width: 1200px) {
-
-    body {
-        flex-direction: column;
-    }
-
-    #views {        
-        height: calc( 100vh - 40px ) !important;
-    }
-
 }
 
 #directory_navigator {
@@ -71,33 +41,11 @@ a.nav-link.active {
     text-decoration: underline;
 }
 
-.__rounded_button {
-
-    width: 42px;
-    height: 42px;
-
-}
-
-.__rounded_button:hover {
-    background-color: #DEE2E6;
-}
-
-.__rounded_button:active {
-
-    border-color: #CACED2 !important;
-    background-color: #CACED2 !important;
-    
-}
-
 button.__nav_refresh > i.bi-arrow-clockwise {
 
     position: relative;
     top: 1px;
 
-}
-
-.tab-pane {
-    height: 100vh;
 }
 
 div.__fileview_list {

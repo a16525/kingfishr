@@ -16,7 +16,7 @@ nav.navbar > a.nav-link {
 
 }
 
-nav.navbar > a.nav-link.active {
+a.nav-link.active {
     background-color: #0D6EFD;
 }
 

@@ -4,16 +4,17 @@ export class KFUploadToast extends KFToast {
 
         /**
          * @param {HTMLDivElement} toastTemplate 
-         * @param {AbortController} abortController 
+         * @param {String} filename
+         * @param {String} destination
          */
-    constructor( toastTemplate, filename, destination, abortController ) {
+    constructor( toastTemplate, filename, destination ) {
 
-        super( toastTemplate, false );
-
-        this.abortController = abortController;
+        super( toastTemplate, false );        
 
         this.filename = filename;
         this.destination = destination;
+
+        this.cancelUploadEvent = new CustomEvent( "cancel-upload" );
 
         this.filenameSpan = this.elementToast.querySelector( "span.__toast_fileupload_filename" );
         this.destinationSpan = this.elementToast.querySelector( "span.__toast_fileupload_destination" );
@@ -36,7 +37,7 @@ export class KFUploadToast extends KFToast {
         this.progressBar.classList.add( "bg-danger" );
         this.progressBar.style.width = "100%";
 
-        this.abortController.abort( "Cancelled by user." );
+        this.dispatchEvent( this.cancelUploadEvent );
         setTimeout( this.dispatchEvent( this.disposeEvent ), 5000 );
 
     }

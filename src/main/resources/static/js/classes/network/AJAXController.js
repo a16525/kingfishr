@@ -138,6 +138,10 @@ export class AJAXController {
 
         });
 
+        uploadToast.addEventListener( 'cancel-upload', () => {
+            request.abort();
+        });
+
         request.send( fileData );
 
     }

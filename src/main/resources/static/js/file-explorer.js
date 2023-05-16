@@ -76,8 +76,7 @@ function setupUploadFoldersModal() {
                                                 file.name, 
                                                 ajaxController.workingDirectory == "/" ? 
                                                     "Home" : 
-                                                    "Home/" + ajaxController.workingDirectory, 
-                                                abortController );
+                                                    "Home/" + ajaxController.workingDirectory );
                 //
 
                 const toastID = toastManager.trackToast( toast );

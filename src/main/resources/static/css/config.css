@@ -1,0 +1,21 @@
+.nav-link {
+
+    cursor: pointer;
+    text-decoration: none;
+
+}
+
+.nav-link:hover {
+    background-color: #343A40;
+}
+
+nav.navbar > a.nav-link {
+
+    text-align: center;
+    flex-grow: 1;
+
+}
+
+nav.nav-pills > div > a.nav-link.active {
+    background-color: #198754;
+}

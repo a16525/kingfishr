@@ -156,12 +156,12 @@
                     <i class="bi bi-speedometer ms-4 me-2" aria-hidden="true"></i>Dashboard
                 </a>
 
-                <a class="nav-link rounded-0 rounded-end text-white __storage_forceupdate" id="navpills-storagetab" data-bs-toggle="pill" data-bs-target="#views-storage" role="tab" aria-controls="views-storage" aria-selected="true">
-                    <i class="bi bi-device-hdd ms-4 me-2" aria-hidden="true"></i>Storage
+                <a class="nav-link rounded-0 rounded-end text-white __storage_forceupdate" id="navpills-storagetab" data-bs-toggle="pill" data-bs-target="#views-storage" role="tab" aria-controls="views-storage" aria-selected="false">
+                    <i class="bi bi-device-hdd-fill ms-4 me-2" aria-hidden="true"></i>Storage
                 </a>
 
-                <a class="nav-link rounded-0 rounded-end text-white" id="navpills-settingstab" data-bs-toggle="pill" data-bs-target="#views-settings" role="tab" aria-controls="views-settings" aria-selected="true">
-                    <i class="bi bi-gear ms-4 me-2" aria-hidden="true"></i>Settings
+                <a class="nav-link rounded-0 rounded-end text-white" id="navpills-settingstab" data-bs-toggle="pill" data-bs-target="#views-settings" role="tab" aria-controls="views-settings" aria-selected="false">
+                    <i class="bi bi-sliders ms-4 me-2" aria-hidden="true"></i>Preferences
                 </a>
 
             </div>
@@ -172,12 +172,9 @@
 
                 <form class="d-flex" th:action="@{/logout}" method="POST">
 
-                        <span class="align-self-center">
-                            <i class="bi bi-person-circle"></i>
-                            <span class="px-1">Logged in as <span class="pe-1 fw-bold" sec:authentication="name">unknown</span></span>
-                        </span>
-
-                    <input class="btn btn-danger ms-auto" type="submit" value="Log out">
+                    <button class="w-100 btn btn-danger ms-auto" type="submit">
+                        <span>Log out of <strong sec:authentication="name">unknown</strong></span>
+                    </button>
 
                 </form>
 
@@ -424,7 +421,7 @@
             </a>
 
             <a class="nav-link py-2" id="navbar-settingstab" data-bs-toggle="pill" data-bs-target="#views-settings" role="tab" aria-controls="views-settings" aria-selected="true">
-                Settings
+                Preferences
             </a>
 
         </nav>

@@ -22,16 +22,14 @@ class SecurityConfiguration {
 
     @Bean
     fun securityFilters( http : HttpSecurity ) : SecurityFilterChain {
-
-
-
+        
         http
             .authorizeHttpRequests { requests ->
                 requests
-                    .requestMatchers( "/js/**", "/css/**", "/webjars/**", "/favicon.ico" ).permitAll()  // Resources
+                    .requestMatchers( "/js/**", "/css/**", "/webjars/**", "/favicon.ico" ).permitAll()   // Resources
                     .requestMatchers( "/api/**" ).authenticated()                                        // API access
 
-                    .requestMatchers( "/login**" ).permitAll()
+                    .requestMatchers( "/login**", "/logout" ).permitAll()
 
                     .requestMatchers( "/", "index" ).hasRole( "USER" )                             // Interface
                     .requestMatchers( "/config" ).hasRole( "ADMIN" )                               // Configurator page
@@ -41,12 +39,18 @@ class SecurityConfiguration {
                     .loginPage( "/login" ).permitAll()
                     .successHandler( authSuccessHandler() )
             }
-            .logout { logout -> logout.permitAll() }
+            .logout { logout ->
+                logout
+                    .clearAuthentication( true )
+                    .deleteCookies( "JSESSIONID" )
+                    .logoutUrl( "/logout" )
+                    .logoutSuccessUrl( "/login?logout" )
+            }
             .sessionManagement { session ->
                 session
                     .invalidSessionUrl( "/login?expired" )
                     .maximumSessions( 1 )
-                    .expiredUrl( "/login?expired" )
+                    .expiredUrl( "/login?logout" )
             }
 
         http.csrf().ignoringRequestMatchers( "/api**" ).disable()

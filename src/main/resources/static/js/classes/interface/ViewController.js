@@ -1,7 +1,7 @@
 import { AJAXController } from "../network/AJAXController.js";
 import { DisplayManager } from "./DisplayManager.js";
 
-class ViewController {
+export class ViewController {
 
         /**
          * @param {DisplayManager} displayManager
@@ -207,5 +207,3 @@ class ViewController {
     }
 
 }
-
-export { ViewController as NavigationController }

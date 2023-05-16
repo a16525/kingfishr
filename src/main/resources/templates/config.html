@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       lang="en">
     
     <head>
@@ -7,17 +8,82 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="stylesheet" th:href="@{ ${ '/webjars/bootstrap/' + bootstrap_version + '/css/bootstrap' } }" type="text/css">
+        <link rel="stylesheet" th:href="@{ ${ '/webjars/bootstrap/' + bootstrap_version + '/css/bootstrap.css' } }" type="text/css">
         <link rel="stylesheet" th:href="@{ ${ '/webjars/bootstrap-icons/' + bootstrap_icons_version + '/font/bootstrap-icons.css' } }" type="text/css">
 
         <link rel="stylesheet" href="/css/config.css" type="text/css">
 
-        <title th:inline="text">Config[[ ${ " @" + hostname } ]]</title>
+        <title th:inline="text">Configuration[[ ${ " @" + hostname } ]]</title>
 
     </head>
 
     <body>
-        
+
+        <nav class="nav d-xl-flex d-none flex-column nav-pills py-3 pe-3 text-bg-dark vh-100 col-2">
+
+            <div class="ps-3" aria-hidden="true">
+
+                <h2 class="text-secondary">Configuration</h2>
+
+                <p class="text-center" th:if="${hostname}" th:inline="text">
+                    <small>Hosted on <i>[[${hostname}]]</i></small>
+                </p>
+
+                <hr>
+
+            </div>
+
+            <div>
+
+                <a class="nav-link active rounded-0 rounded-end text-white" id="navpills-accountstab" data-bs-toggle="pill" data-bs-target="#views-accounts" role="tab" aria-controls="views-accounts" aria-selected="true">
+                    <i class="bi bi-person-fill ms-4 me-2" aria-hidden="true"></i>Accounts
+                </a>
+
+                <a class="nav-link rounded-0 rounded-end text-white" id="navpills-settingstab" data-bs-toggle="pill" data-bs-target="#views-settings" role="tab" aria-controls="views-settings" aria-selected="false">
+                    <i class="bi bi-motherboard-fill ms-4 me-2" aria-hidden="true"></i>Settings
+                </a>
+
+                <a class="nav-link rounded-0 rounded-end text-white" id="navpills-logstab" data-bs-toggle="pill" data-bs-target="#views-logs" role="tab" aria-controls="views-logs" aria-selected="false">
+                    <i class="bi bi-activity ms-4 me-2" aria-hidden="true"></i>Logs
+                </a>
+
+            </div>
+
+            <div class="mt-auto ps-3">
+
+                <hr>
+
+                <form class="d-flex" th:action="@{/logout}" method="POST">
+
+                    <button class="w-100 btn btn-danger ms-auto" type="submit">
+                        <span>Log out of <strong sec:authentication="name">unknown</strong></span>
+                    </button>
+
+                </form>
+
+            </div>
+
+        </nav>
+
+        <div class="col-xl-10 col-12 p-0 vh-100 tab-content" id="views">
+
+            <div class="tab-pane fade show active p-3" id="views-accounts" role="tabpanel" aria-labelledby="navpills-accountstab" tabindex="0">
+
+            </div>
+
+            <div class="tab-pane fade" id="views-settings" role="tabpanel" aria-labelledby="navpills-settingstab" tabindex="0">
+
+            </div>
+
+            <div class="tab-pane fade p-3" id="views-logs" role="tabpanel" aria-labelledby="navpills-logstab" tabindex="0">
+
+            </div>
+
+        </div>
+
+            <!-- Scripts -->
+            <script th:src="@{ ${ '/webjars/bootstrap/' + bootstrap_version + '/js/bootstrap.bundle.min.js' } }"></script>
+
     </body>
 
 </html>

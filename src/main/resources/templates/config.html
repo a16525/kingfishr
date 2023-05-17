@@ -70,9 +70,9 @@
 
                 <div class="container-fluid">
 
-                    <div class="row row-cols-1 row-cols-md-2 vh-100">
+                    <div class="row row-cols-1 row-cols-md-2">
 
-                        <div class="col border-2 border-end">
+                        <div class="col border-2 border-end __section __section_userview_table">
 
                             <div class="row border-bottom border-1 py-2">
 
@@ -115,9 +115,11 @@
 
                                     <thead>
 
-                                        <th class="__userview_table_selector_column" scope="col">#</th>
-                                        <th scope="col">Username</th>
-                                        <th scope="col">Storage used</th>
+                                            <th class="__userview_table_selector_column" scope="col">#</th>
+                                            <th scope="col">Username</th>
+                                            <th scope="col">Storage used</th>
+
+                                        </tr>
 
                                     </thead>
 
@@ -131,20 +133,123 @@
 
                         </div>
 
-                        <div class="col">
+                        <div class="col p-3 __section __section_userview_details">
 
-                            <div class="my-3 card rounded-0">
+                            <div class="card rounded-0">
 
                                 <div class="card-body __userdata_card">
 
                                     <h5 class="card-title">
-                                        <i class="bi bi-person-fill" aria-hidden="true"></i>
-                                        <span class="ms-2 __userdata_username_entry">USERNAME</span>
+                                        <i class="bi bi-person-fill me-2" aria-hidden="true"></i>
+                                        <span class="__userdata_username_entry">USERNAME</span>
                                     </h5>
+
+                                    <div class="__userdata_information">
+
+                                        <span class="d-block w-100">
+                                            <strong>Created on:</strong>
+                                            <span class="float-end __userdata_created_timestamp">YYYY-MM-DD@HH:MM</span>
+                                        </span><br>
+
+                                        <span class="d-block w-100">
+                                            <strong>Storage space used:</strong>
+                                            <span class="float-end __userdata_space_used">X Bytes</span>
+                                        </span>
+
+                                        <span class="d-block w-100">
+                                            <strong>Max. usage allowed:</strong>
+                                            <span class="float-end __userdata_space_limit">X Bytes</span>
+                                        </span>
+
+                                    </div>
+
+                                    <br><hr>
+
+                                    <h5 class="card-title">
+                                        <i class="bi bi-pie-chart-fill me-2" aria-hidden="true"></i>
+                                        User quota
+                                    </h5>
+
+                                    <div class="p-2 mb-3 shadow-sm bg-light">
+
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" role="progressbar" aria-label="Storage available" style="width: 60%">Available</div>
+                                            <div class="progress-bar bg-warning text-dark" role="progressbar" aria-label="User partition" style="width: 20%">Limit</div>
+                                            <div class="progress-bar bg-danger" role="progressbar" aria-label="Storage used" style="width: 20%">Used</div>
+                                        </div>
+
+                                        <div class="d-flex mt-1 text-center">
+                                            <small style="width: 60%">700MB</small>
+                                            <small style="width: 20%">200MB</small>
+                                            <small style="width: 20%">200MB</small>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="d-flex w-100">
+
+                                        <strong class="align-self-center">User limit:</strong>
+
+                                        <div class="ms-auto w-50 input-group">
+
+                                            <input type="number" class="form-control">
+
+                                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">MB</button>
+                                            <ul class="dropdown-menu dropdown-menu-end __storage_unit_dropdown">
+
+                                                <li class="dropdown-item" data-unit="bytes">
+                                                    Bytes <span class="unit">B</span>
+                                                </li>
+
+                                                <li class="dropdown-item __selected_unit" data-unit="kilobytes">
+                                                    Kilobytes <span class="unit">KB</span>
+                                                </li>
+
+                                                <li class="dropdown-item" data-unit="megabytes">
+                                                    Megabytes <span class="unit">MB</span>
+                                                </li>
+
+                                                <li class="dropdown-item" data-unit="gigabytes">
+                                                    Gigabytes <span class="unit">GB</span>
+                                                </li>
+
+                                                <li class="dropdown-item" data-unit="terabytes">
+                                                    Terabytes <span class="unit">TB</span>
+                                                </li>
+
+                                            </ul>
+
+                                        </div>
+
+                                    </div><br><br>
 
                                     <hr>
 
-                                    <!-- TO-DO: User data (date created, space used, quota), actions -->
+                                    <h5 class="card-title">
+                                        <i class="bi bi-clipboard2-fill me-2" aria-hidden="true"></i>
+                                        Actions
+                                    </h5>
+
+                                    <div class="d-flex gap-5">
+
+                                        <div class="d-flex flex-column w-50 gap-2 p-2 shadow-sm bg-light">
+
+                                            <span class="text-center">Non-harmful</span>
+
+                                            <button class="btn btn-primary" type="button">Rename user</button>
+
+                                        </div>
+
+                                        <div class="d-flex flex-column w-50 gap-2 p-2 shadow-sm bg-light">
+
+                                            <strong class="text-center">Harmful</strong>
+
+                                            <button class="btn btn-danger" type="button">Delete user</button>
+                                            <button class="btn btn-danger" type="button">Change password</button>
+
+                                        </div>
+
+                                    </div>
 
                                 </div>
 
@@ -171,15 +276,15 @@
         <nav class="navbar d-xl-none d-flex p-0 justify-content-evenly text-bg-dark" role="tablist" aria-orientation="horizontal">
 
             <a class="nav-link py-2 active" id="navbar-accountstab" data-bs-toggle="pill" data-bs-target="#views-accounts" role="tab" aria-controls="views-accounts" aria-selected="true">
-                Dashboard
+                Accounts
             </a>
 
             <a class="nav-link py-2" id="navbar-settingstab" data-bs-toggle="pill" data-bs-target="#views-settings" role="tab" aria-controls="views-settings" aria-selected="false">
-                Storage
+                Settings
             </a>
 
             <a class="nav-link py-2" id="navbar-logstab" data-bs-toggle="pill" data-bs-target="#views-logs" role="tab" aria-controls="views-logs" aria-selected="false">
-                Preferences
+                Logs
             </a>
 
         </nav>

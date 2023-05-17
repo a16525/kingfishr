@@ -2,6 +2,10 @@ nav.nav-pills > div > a.nav-link.active {
     background-color: #0D6EFD;
 }
 
+nav.navbar > a.nav-link.active {
+    background-color: #0D6EFD;
+}
+
 #directory_navigator {
 
     display: inline-block;

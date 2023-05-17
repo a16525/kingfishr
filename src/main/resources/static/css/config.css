@@ -2,6 +2,24 @@ nav.nav-pills > div > a.nav-link.active {
     background-color: #198754;
 }
 
+nav.navbar > a.nav-link.active {
+    background-color: #198754;
+}
+
+.__section {
+
+    height: 100vh;
+    overflow-y: scroll;
+
+}
+
+@media only screen and (max-width: 1200px) {
+    
+    .__section {
+        height: calc( 100vh - 40px ) !important;
+    }
+
+}
 
 table.__userview_table {
 
@@ -25,4 +43,16 @@ table.__userview_table thead {
     width: 32px;
     text-align: center;
 
+}
+
+.__storage_unit_dropdown .dropdown-item {
+    cursor: pointer;
+}
+
+.__storage_unit_dropdown .dropdown-item span.unit {
+    float: right;
+}
+
+.__section.__section_userview_details {
+    max-height: 100vh;
 }

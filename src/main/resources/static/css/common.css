@@ -23,7 +23,7 @@ nav.navbar > a.nav-link {
         flex-direction: column;
     }
 
-    #views {
+    div#views, div#views div.tab-pane {
         height: calc( 100vh - 40px ) !important;
     }
 

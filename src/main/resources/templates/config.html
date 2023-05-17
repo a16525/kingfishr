@@ -115,6 +115,8 @@
 
                                     <thead>
 
+                                        <tr>
+
                                             <th class="__userview_table_selector_column" scope="col">#</th>
                                             <th scope="col">Username</th>
                                             <th scope="col">Storage used</th>
@@ -173,15 +175,15 @@
                                     <div class="p-2 mb-3 shadow-sm bg-light">
 
                                         <div class="progress">
-                                            <div class="progress-bar bg-success" role="progressbar" aria-label="Storage available" style="width: 60%">Available</div>
-                                            <div class="progress-bar bg-warning text-dark" role="progressbar" aria-label="User partition" style="width: 20%">Limit</div>
-                                            <div class="progress-bar bg-danger" role="progressbar" aria-label="Storage used" style="width: 20%">Used</div>
+                                            <div class="progress-bar bg-success __userdata_storage_available" role="progressbar" aria-label="Storage available" style="width: 60%">Available</div>
+                                            <div class="progress-bar bg-warning text-dark __userdata_storage_userquota" role="progressbar" aria-label="User partition" style="width: 20%">Limit</div>
+                                            <div class="progress-bar bg-danger __userdata_storage_used" role="progressbar" aria-label="Storage used" style="width: 20%">Used</div>
                                         </div>
 
                                         <div class="d-flex mt-1 text-center">
-                                            <small style="width: 60%">700MB</small>
-                                            <small style="width: 20%">200MB</small>
-                                            <small style="width: 20%">200MB</small>
+                                            <small class="__userdata_storage_available_size" style="width: 60%">700MB</small>
+                                            <small class="__userdata_storage_userquota_size" style="width: 20%">200MB</small>
+                                            <small class="__userdata_storage_used_size" style="width: 20%">200MB</small>
                                         </div>
 
                                     </div>
@@ -201,11 +203,11 @@
                                                     Bytes <span class="unit">B</span>
                                                 </li>
 
-                                                <li class="dropdown-item __selected_unit" data-unit="kilobytes">
+                                                <li class="dropdown-item" data-unit="kilobytes">
                                                     Kilobytes <span class="unit">KB</span>
                                                 </li>
 
-                                                <li class="dropdown-item" data-unit="megabytes">
+                                                <li class="dropdown-item __selected_unit" data-unit="megabytes">
                                                     Megabytes <span class="unit">MB</span>
                                                 </li>
 
@@ -236,7 +238,7 @@
 
                                             <span class="text-center">Non-harmful</span>
 
-                                            <button class="btn btn-primary" type="button">Rename user</button>
+                                            <button class="btn btn-primary __userdata_action_rename" type="button">Rename user</button>
 
                                         </div>
 
@@ -244,8 +246,8 @@
 
                                             <strong class="text-center">Harmful</strong>
 
-                                            <button class="btn btn-danger" type="button">Delete user</button>
-                                            <button class="btn btn-danger" type="button">Change password</button>
+                                            <button class="btn btn-danger __userdata_action_delete" type="button">Delete user</button>
+                                            <button class="btn btn-danger __userdata_action_changepassword" type="button">Change password</button>
 
                                         </div>
 

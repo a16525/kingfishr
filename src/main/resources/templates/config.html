@@ -81,11 +81,15 @@
                                     <div class="d-flex w-auto pe-0 align-items-center">
 
                                         <button class="btn rounded-circle __rounded_button" aria-label="Create user">
-                                            <i class="bi bi-person-add" aria-hidden="true"></i>
+                                            <i class="bi bi-person-fill-add" aria-hidden="true"></i>
+                                        </button>
+
+                                        <button class="btn rounded-circle __rounded_button" aria-label="Rename user">
+                                            <i class="bi bi-person-fill-gear" aria-hidden="true"></i>
                                         </button>
 
                                         <button class="btn rounded-circle __rounded_button" aria-label="Delete user">
-                                            <i class="bi bi-person-dash" aria-hidden="true"></i>
+                                            <i class="bi bi-person-fill-x" aria-hidden="true"></i>
                                         </button>
 
                                     </div>
@@ -172,7 +176,12 @@
                                         User quota
                                     </h5>
 
-                                    <div class="p-2 mb-3 shadow-sm bg-light">
+                                    <div class="form-check">
+                                        <input class="form-check-input" id="__userdata_storage_enablequota" name="__userdata_storage_enablequota" type="checkbox" value="">
+                                        <label class="form-check-label" for="__userdata_storage_enablequota">Enable</label>
+                                    </div>
+
+                                    <div class="p-2 my-2 mb-3 shadow-sm bg-light">
 
                                         <div class="progress">
                                             <div class="progress-bar bg-success __userdata_storage_available" role="progressbar" aria-label="Storage available" style="width: 60%">Available</div>
@@ -220,34 +229,7 @@
                                                 </li>
 
                                             </ul>
-
-                                        </div>
-
-                                    </div><br><br>
-
-                                    <hr>
-
-                                    <h5 class="card-title">
-                                        <i class="bi bi-clipboard2-fill me-2" aria-hidden="true"></i>
-                                        Actions
-                                    </h5>
-
-                                    <div class="d-flex gap-5">
-
-                                        <div class="d-flex flex-column w-50 gap-2 p-2 shadow-sm bg-light">
-
-                                            <span class="text-center">Non-harmful</span>
-
-                                            <button class="btn btn-primary __userdata_action_rename" type="button">Rename user</button>
-
-                                        </div>
-
-                                        <div class="d-flex flex-column w-50 gap-2 p-2 shadow-sm bg-light">
-
-                                            <strong class="text-center">Harmful</strong>
-
-                                            <button class="btn btn-danger __userdata_action_delete" type="button">Delete user</button>
-                                            <button class="btn btn-danger __userdata_action_changepassword" type="button">Change password</button>
+                                            <button class="btn btn-success" type="button">Apply</button>
 
                                         </div>
 
@@ -275,7 +257,7 @@
 
         </div>
 
-        <nav class="navbar d-xl-none d-flex p-0 justify-content-evenly text-bg-dark" role="tablist" aria-orientation="horizontal">
+        <nav class="navbar fixed-bottom d-xl-none d-flex p-0 justify-content-evenly text-bg-dark" role="tablist" aria-orientation="horizontal">
 
             <a class="nav-link py-2 active" id="navbar-accountstab" data-bs-toggle="pill" data-bs-target="#views-accounts" role="tab" aria-controls="views-accounts" aria-selected="true">
                 Accounts

@@ -1,20 +1,20 @@
-package dev.valenthyne.kingfishr.classes.crudops
+package dev.valenthyne.kingfishr.classes.models
 
 import jakarta.persistence.*
 
 @Entity
-@Table(name="users")
+@Table(name="USERS")
 
 class User (
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long,
+    val id : Long? = null,
 
     @Column(nullable = false, unique = true, length = 64)
-    var username: String,
+    val username : String,
 
     @Column(nullable = false, length = 1024)
-    var password: String
+    val password : String ) {
 
-)
+
+}

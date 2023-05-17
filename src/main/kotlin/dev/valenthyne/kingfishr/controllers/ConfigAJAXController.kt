@@ -1,8 +1,14 @@
 package dev.valenthyne.kingfishr.controllers
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import dev.valenthyne.kingfishr.classes.models.User
 import dev.valenthyne.kingfishr.classes.crudops.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -30,6 +36,16 @@ class ConfigAJAXController {
 
         lateinit var response : ResponseEntity<String>
 
+        val users = userRepository.findAll()
+
+        val jsonWriter = ObjectMapper().writer()
+        val entriesJSON = jsonWriter.writeValueAsString( users )
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+
+        response = ResponseEntity( entriesJSON, headers, HttpStatus.OK )
+
         return response
 
     }
@@ -38,6 +54,14 @@ class ConfigAJAXController {
     fun createUser( @RequestParam( name="name", required=true ) name : String, @RequestParam( name="pass", required=true ) password : String ) : ResponseEntity<String> {
 
         lateinit var response : ResponseEntity<String>
+
+        val encoder = BCryptPasswordEncoder()
+        val encodedPassword = encoder.encode( password )
+
+        val newUser = User( username=name, password=encodedPassword )
+        userRepository.save( newUser )
+
+        response = ResponseEntity( HttpStatus.OK )
 
         return response
 

@@ -1,4 +1,14 @@
-export class DataEntry {
+import { Entry } from "./Entry.js";
+
+export class DataEntry extends Entry {
+
+    /**
+     * @typedef {Object} DataEntryLike
+     * @property {String} name
+     * @property {String} type
+     * @property {Number} size
+     * @property {String} pathTo
+     */
 
     static typeTranslationMap = new Map([
 
@@ -79,9 +89,10 @@ export class DataEntry {
     ]);
 
         /**
+         * @override
          * Takes a JSON object and returns a DataEntry instance from it.
          * Must have 'name', 'type', 'size', and 'pathTo' defined.
-         * @param {any} JSON 
+         * @param {DataEntryLike} JSON 
          * @returns {DataEntry}
          */
     static fromJSON( JSON ) {

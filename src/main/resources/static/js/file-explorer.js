@@ -1,11 +1,11 @@
-import { AJAXController }       from "./classes/network/AJAXController.js";
-import { DisplayManager }       from "./classes/interface/DisplayManager.js";
-import { ModalHandler }         from "./classes/interface/ModalHandler.js";
-import { ViewController }       from "./classes/interface/ViewController.js";
-import { KFToastManager }       from "./classes/interface/KFToastManager.js";
-import { KFUploadToast }        from "./classes/types/toasts/KFUploadToast.js";
+import { FileAJAXController } from "./classes/network/FileAJAXController.js";
+import { DisplayManager } from "./classes/interface/DisplayManager.js";
+import { ModalHandler } from "./classes/interface/ModalHandler.js";
+import { ViewController } from "./classes/interface/ViewController.js";
+import { KFToastManager } from "./classes/interface/KFToastManager.js";
+import { KFUploadToast } from "./classes/types/toasts/KFUploadToast.js";
 
-let ajaxController = new AJAXController(), displayManager, viewController, toastManager;
+let fileAjaxController = new FileAJAXController(), displayManager, viewController, toastManager;
 
 function setupHeightUpdateForcers() {
 
@@ -35,12 +35,12 @@ function setupCreateDirectoryModal() {
         createDirectoryHandler.disableButtons();
 
         const formData = new FormData( createDirectoryHandler.modalForm );
-        await ajaxController.createDirectory( formData ).then( async () => {
+        await fileAjaxController.createDirectory( formData ).then( async () => {
             
             createDirectoryHandler.bootstrapModal.hide();
 
-            await ajaxController.getWorkingDirectoryContents();
-            displayManager.updateView( ajaxController.workingDirectoryContents );            
+            await fileAjaxController.getWorkingDirectoryContents();
+            displayManager.updateView( fileAjaxController.workingDirectoryContents );            
 
         }).catch( error => {
 
@@ -74,13 +74,13 @@ function setupUploadFoldersModal() {
 
                 const toast = new KFUploadToast( uploadToastTemplate, 
                                                 file.name, 
-                                                ajaxController.workingDirectory == "/" ? 
+                                                fileAjaxController.workingDirectory == "/" ? 
                                                     "Home" : 
-                                                    "Home/" + ajaxController.workingDirectory );
+                                                    "Home/" + fileAjaxController.workingDirectory );
                 //
 
                 const toastID = toastManager.trackToast( toast );
-                ajaxController.uploadFile( file, toast );
+                fileAjaxController.uploadFile( file, toast );
                 
                 toastManager.showToast( toastID );
 
@@ -103,7 +103,7 @@ document.addEventListener( "DOMContentLoaded", async () => {
     const toastContainer = document.getElementsByClassName( "toast-container" )[0];
 
     displayManager = new DisplayManager( DisplayManager.schemes.LIST, attachedElement, navToggleScheme );
-    viewController = new ViewController( displayManager, ajaxController, navBar );
+    viewController = new ViewController( displayManager, fileAjaxController, navBar );
     toastManager = new KFToastManager( toastContainer );
 
     setupHeightUpdateForcers();
@@ -113,9 +113,9 @@ document.addEventListener( "DOMContentLoaded", async () => {
     setupUploadFoldersModal();
 
         // Initial gathering
-    await ajaxController.getWorkingDirectoryContents();
+    await fileAjaxController.getWorkingDirectoryContents();
 
-    displayManager.updateView( ajaxController.workingDirectoryContents );
+    displayManager.updateView( fileAjaxController.workingDirectoryContents );
     viewController.updateBreadcrumb();
 
 });

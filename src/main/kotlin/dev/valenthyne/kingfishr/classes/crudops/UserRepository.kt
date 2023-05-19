@@ -5,12 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
-interface UserRepository : JpaRepository<User, Long> {
+interface UserRepository: JpaRepository<User, Long> {
 
     @Query("SELECT * FROM USERS WHERE username = :username", nativeQuery = true)
-    fun getUserByUsername( @Param( "username" ) username : String ) : User?
+    fun getUserByUsername( @Param( "username" ) username : String ): User?
 
-    @Query("SELECT * FROM USERS WHER id=:id", nativeQuery = true)
-    fun getUserByID( @Param( "id" ) id : Long ) : User?
+    @Query("SELECT * FROM USERS WHERE id=:id", nativeQuery = true)
+    fun getUserByID( @Param( "id" ) id : Long ): User?
 
 }

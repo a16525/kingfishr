@@ -10,7 +10,7 @@ import java.net.UnknownHostException
 @Controller
 class HTMLController {
 
-    fun addBaseAttributes( model : Model ) {
+    fun addBaseAttributes( model: Model ) {
 
         model.addAttribute( "bootstrap_version", WebjarVersions.BOOTSTRAP_VERSION )
         model.addAttribute( "bootstrap_icons_version", WebjarVersions.BOOTSTRAP_ICONS_VERSION )
@@ -27,7 +27,7 @@ class HTMLController {
     }
 
     @GetMapping( "/" )
-    fun root( model : Model ) : String {
+    fun root( model: Model ): String {
 
         addBaseAttributes( model )
         return "index"
@@ -35,12 +35,12 @@ class HTMLController {
     }
 
     @GetMapping( "/index" )
-    fun index( model : Model ) : String {
+    fun index( model: Model ): String {
         return root( model )
     }
 
     @GetMapping( "login" )
-    fun login( model : Model ) : String {
+    fun login( model: Model ): String {
 
         addBaseAttributes( model )
         return "login"
@@ -48,7 +48,7 @@ class HTMLController {
     }
 
     @GetMapping( "/config" )
-    fun config( model : Model ) : String {
+    fun config( model: Model ): String {
 
         addBaseAttributes( model )
         return "config"

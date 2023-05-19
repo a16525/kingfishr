@@ -17,22 +17,22 @@ import org.springframework.security.web.SecurityFilterChain
 class SecurityConfiguration {
 
     @Bean
-    fun authSuccessHandler() : CustomAuthenticationHandler {
+    fun authSuccessHandler(): CustomAuthenticationHandler {
         return CustomAuthenticationHandler()
     }
 
     @Bean
-    fun userDetailsService() : UserDetailsService {
+    fun userDetailsService(): UserDetailsService {
         return CustomUserDetailsService()
     }
 
     @Bean
-    fun passwordEncoder() : BCryptPasswordEncoder {
+    fun passwordEncoder(): BCryptPasswordEncoder {
         return BCryptPasswordEncoder()
     }
 
     @Bean
-    fun authenticationProvider() : AuthenticationProvider {
+    fun authenticationProvider(): AuthenticationProvider {
 
         val authProvider = DaoAuthenticationProvider()
         authProvider.setUserDetailsService( userDetailsService() )
@@ -43,7 +43,7 @@ class SecurityConfiguration {
     }
 
     @Bean
-    fun securityFilters( http : HttpSecurity ) : SecurityFilterChain {
+    fun securityFilters( http: HttpSecurity ) : SecurityFilterChain {
 
         http
             .authorizeHttpRequests { requests ->

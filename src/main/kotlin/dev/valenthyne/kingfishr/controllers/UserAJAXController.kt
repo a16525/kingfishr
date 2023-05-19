@@ -23,12 +23,12 @@ import kotlin.io.path.*
 class UserAJAXController {
 
     @GetMapping( "/api/dir/contents" )
-    fun listFiles( @RequestParam( name="dir", required=true ) dir : String ) : ResponseEntity<String> {
+    fun listFiles( @RequestParam( name = "dir", required = true ) dir: String ): ResponseEntity<String> {
 
         val auth : Authentication = SecurityContextHolder.getContext().authentication
         lateinit var response : ResponseEntity<String>
 
-        if( auth is AnonymousAuthenticationToken) {
+        if( auth is AnonymousAuthenticationToken ) {
             response = ResponseEntity( HttpStatus.FORBIDDEN )
         } else {
 
@@ -80,11 +80,11 @@ class UserAJAXController {
     }
 
     @PostMapping( "/api/dir" )
-    fun createDirectory(@RequestParam( name="dir", required=true ) dir : String,
-                        @RequestParam( name="dirname", required=true ) dirname : String ) : ResponseEntity<String> {
+    fun createDirectory( @RequestParam( name = "dir", required = true ) dir: String,
+                         @RequestParam( name = "dirname", required = true ) dirname: String ): ResponseEntity<String> {
 
         val auth : Authentication = SecurityContextHolder.getContext().authentication
-        lateinit var response : ResponseEntity<String>
+        lateinit var response: ResponseEntity<String>
 
         if( auth is AnonymousAuthenticationToken) {
             response = ResponseEntity( HttpStatus.FORBIDDEN )
@@ -101,10 +101,10 @@ class UserAJAXController {
 
                 try {
 
-                    Files.createDirectory(directoryGoal)
+                    Files.createDirectory( directoryGoal )
                     response = ResponseEntity( HttpStatus.CREATED )
 
-                } catch( exc : IOException) {
+                } catch( exc : IOException ) {
                     println( exc.message )
                     response = ResponseEntity( HttpStatus.INTERNAL_SERVER_ERROR )
                 }
@@ -118,9 +118,8 @@ class UserAJAXController {
     }
 
     @PostMapping( "/api/file" )
-    fun uploadFile(@RequestParam( name="dir", required=true ) dir : String,
-                   @RequestParam( name="file", required=true ) file : MultipartFile
-    ) : ResponseEntity<String> {
+    fun uploadFile(@RequestParam( name = "dir", required = true ) dir: String,
+                   @RequestParam( name = "file", required = true ) file: MultipartFile ): ResponseEntity<String> {
 
         val auth : Authentication = SecurityContextHolder.getContext().authentication
         lateinit var response : ResponseEntity<String>
@@ -140,10 +139,10 @@ class UserAJAXController {
 
                 try {
 
-                    file.transferTo(directoryGoal)
+                    file.transferTo( directoryGoal )
                     response = ResponseEntity( HttpStatus.CREATED )
 
-                } catch( exc : IOException) {
+                } catch( exc : IOException ) {
                     println( exc.message )
                     response = ResponseEntity( HttpStatus.INTERNAL_SERVER_ERROR )
                 }
@@ -157,12 +156,12 @@ class UserAJAXController {
     }
 
     @GetMapping( "/api/file" )
-    fun downloadFile( @RequestParam( name="pathtofile", required=true ) pathToFile : String ) : ResponseEntity<Any> {
+    fun downloadFile( @RequestParam( name = "pathtofile", required = true ) pathToFile: String ): ResponseEntity<Any> {
 
         val auth : Authentication = SecurityContextHolder.getContext().authentication
-        lateinit var response : ResponseEntity<Any>
+        lateinit var response: ResponseEntity<Any>
 
-        if( auth is AnonymousAuthenticationToken) {
+        if( auth is AnonymousAuthenticationToken ) {
             response = ResponseEntity( HttpStatus.FORBIDDEN )
         } else {
 
@@ -171,27 +170,29 @@ class UserAJAXController {
 
             if( !targetFile.exists() ) {
                 response = ResponseEntity( HttpStatus.NOT_FOUND )
-            } else
+            } else {
+
                 if( !targetFile.isFile ) {
                     response = ResponseEntity( "Path leads to directory", HttpStatus.BAD_REQUEST )
                 } else {
 
                     val resource = InputStreamResource( FileInputStream( targetFile ) )
-
                     val headers = HttpHeaders()
 
                     headers.contentType = try {
                         MediaType.parseMediaType( Tika().detect( targetFile ) )
-                    } catch( exc : InvalidMediaTypeException) {
+                    } catch( exc: InvalidMediaTypeException ) {
                         MediaType.APPLICATION_OCTET_STREAM
                     }
 
                     headers.contentLength = targetFile.length()
-                    headers.set( "Content-disposition", "attachment; filename=" + targetFile.name )
+                    headers.set("Content-disposition", "attachment; filename=" + targetFile.name)
 
                     response = ResponseEntity( resource, headers, HttpStatus.OK )
 
                 }
+
+            }
 
         }
 

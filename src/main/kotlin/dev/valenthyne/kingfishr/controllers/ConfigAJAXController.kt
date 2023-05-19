@@ -136,7 +136,7 @@ class ConfigAJAXController {
     @PatchMapping( "/api/user" )
     fun renameUser( @RequestParam( name = "id", required = false ) id: Long?,
                     @RequestParam( name = "name", required = false ) name: String?,
-                    @RequestParam( name = "newname", required = true ) newName : String ): ResponseEntity<String> {
+                    @RequestParam( name = "newname", required = true ) newName: String ): ResponseEntity<String> {
 
         val authentication = SecurityContextHolder.getContext().authentication
         lateinit var response: ResponseEntity<String>

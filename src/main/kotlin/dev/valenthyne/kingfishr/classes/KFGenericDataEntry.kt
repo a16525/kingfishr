@@ -4,12 +4,12 @@ import java.io.File
 
 class KFGenericDataEntry {
 
-    var name : String private set
-    var type : String private set
-    var size : Long   private set
-    var pathTo : String private set
+    var name: String private set
+    var type: String private set
+    var size: Long   private set
+    var pathTo: String private set
 
-    constructor( file : File, pathTo: String ) {
+    constructor( file: File, pathTo: String ) {
 
         this.name = file.name
         this.type = file.extension
@@ -18,7 +18,7 @@ class KFGenericDataEntry {
 
     }
 
-    constructor( name : String, type : String, size : Long, pathTo: String ) {
+    constructor( name: String, type: String, size: Long, pathTo: String ) {
 
         this.name = name
         this.type = type

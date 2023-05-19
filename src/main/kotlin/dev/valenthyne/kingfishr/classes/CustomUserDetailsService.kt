@@ -8,10 +8,10 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
-class CustomUserDetailsService : UserDetailsService {
+class CustomUserDetailsService: UserDetailsService {
 
     @Autowired
-    private lateinit var userRepository : UserRepository
+    private lateinit var userRepository: UserRepository
 
     override fun loadUserByUsername( username: String ): UserDetails {
 

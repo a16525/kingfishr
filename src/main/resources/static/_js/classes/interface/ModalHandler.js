@@ -1,40 +1,22 @@
 export class ModalHandler {
 
         /**
+         * 
          * @param {HTMLDivElement} modalParent 
-         * @param {HTMLButtonElement} openModalButton         
+         * @param {HTMLButtonElement} modalOpenButton         
          */
-    constructor( modalParent, openModalButton ) {
+    constructor( modalParent, modalOpenButton ) {
 
-        this.modalElement = modalParent;
-        this.bootstrapModal = new bootstrap.Modal( this.modalElement );
+        this.elementModal = modalParent;
+        this.bootstrapModal = new bootstrap.Modal( this.elementModal );
 
-        this.modalOpenButton = openModalButton;
-
-            /**
-             * @type {HTMLButtonElement}
-             */
-        this.modalCancelButton = this.modalElement.querySelector( "button.__modal_cancel" );
-
-            /**
-             * @type {HTMLButtonElement}
-             */
-        this.modalConfirmButton = this.modalElement.querySelector( "button.__modal_confirm" );
+        this.modalOpenButton = modalOpenButton;
+        this.modalCancelButton = this.elementModal.querySelector( "button.__modal_cancel" );
+        this.modalConfirmButton = this.elementModal.querySelector( "button.__modal_confirm" );
         
-            /**
-             * @type {HTMLDivElement}
-             */
-        this.modalMessageBox = this.modalElement.querySelector( "div.__modal_messagebox" );
-
-            /**
-             * @type {HTMLInputElement}
-             */
-        this.modalInput = this.modalElement.querySelector( "form.__modal_form > input" );
-
-            /**
-             * @type {HTMLDivElement}
-             */
-        this.modalForm = this.modalElement.querySelector( "form.__modal_form" );           
+        this.modalMessageBox = this.elementModal.querySelector( "div.__modal_messagebox" );
+        this.modalInput = this.elementModal.querySelector( "form.__modal_form > input" );
+        this.modalForm = this.elementModal.querySelector( "form.__modal_form" );           
         
             // Listeners
         this.modalOpenButton.addEventListener( 'click', () => this.onModalOpen() );
@@ -43,6 +25,9 @@ export class ModalHandler {
 
     }
 
+        /**
+         * Method executed when the modal opens.
+         */
     onModalOpen() {
 
         this.modalMessageBox.classList.add( "d-none" );
@@ -57,15 +42,23 @@ export class ModalHandler {
 
     }
 
+        /**
+         * Method executed when the modal cancel button is pressed.
+         */
     onModalCancel() {
         this.bootstrapModal.hide();
     }
 
         /**
-         * @abstract
+         * Method executed when the modal confirm button is pressed (must be defined manually!).
          */
-    onModalConfirm();
+    onModalConfirm() {
+        
+    }
 
+        /**
+         * Disables the modal's buttons.
+         */
     disableButtons() {
 
         this.modalCancelButton.disabled = true;
@@ -73,6 +66,9 @@ export class ModalHandler {
 
     }
 
+        /**
+         * Enables the modal's buttons.
+         */
     enableButtons() {
 
         this.modalCancelButton.disabled = false;
@@ -81,6 +77,7 @@ export class ModalHandler {
     }
 
         /**         
+         * Displays an error message in the modal.
          * @param {string} message 
          */
     showMessage( message ) {
@@ -89,7 +86,10 @@ export class ModalHandler {
         this.modalMessageBox.classList.remove( "d-none" );
 
     }
-    
+
+        /**
+         * Hides the modal's error message, and erases it's text.
+         */
     hideMessage() {
 
         this.modalMessageBox.classList.add( "d-none" );

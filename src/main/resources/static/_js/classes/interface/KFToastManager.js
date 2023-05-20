@@ -1,45 +1,40 @@
-import { KFToast } from "../types/toasts/KFToast.js";
+import { KFToast } from "../types/KFToast.js";
 
 export class KFToastManager {
 
-    /**
-     * @param {HTMLDivElement} toastContainer
-     */
+        /**
+         * 
+         * @param {HTMLDivElement} toastContainer 
+         */
     constructor( toastContainer ) {
 
+        this.trackedToasts = new Map();
         this.toastContainer = toastContainer;
 
-            /**
-             * @type {Map<String, KFToast>}
-             */
-        this.trackedToasts = new Map();
-
     }
 
         /**
-         * @param {Number} length 
-         * @returns {String}
-         */
-    randomToastID( length = 8 ) {
-        return Math.random().toString( 36 ).slice( 2, 2 + length );
-    }
-
-        /**
-         * @param {KFToast} toast
+         * @param {KFToast} toast 
          */
     trackToast( toast ) {
 
         const toastID = this.randomToastID();
 
-        this.trackedToasts.set( toastID, toast );
-        this.toastContainer.appendChild( toast.toastElement );
-
-        toast.addEventListener( "toast-dispose", () => {
+        toast.addEventListener( "dispose", () => {
             this.disposeToast( toastID );
         });
 
+        this.trackedToasts.set( toastID, toast );
+        this.toastContainer.appendChild( toast.elementToast );
+
+        return toastID;
+
     }
 
+    randomToastID() {
+        return Math.random().toString( 36 ).slice( 2, 10 );
+    }
+    
     showToast( toastID ) {
 
         const toast = this.trackedToasts.get( toastID );

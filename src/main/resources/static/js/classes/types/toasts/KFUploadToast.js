@@ -1,39 +1,51 @@
-import { KFToast } from "../KFToast.js";
+import { KFToast } from "./KFToast.js";
 
 export class KFUploadToast extends KFToast {
 
         /**
-         * @param {HTMLDivElement} toastTemplate 
-         * @param {String} filename
-         * @param {String} destination
+         * @param {HTMLDivElement} template 
+         * @param {String} fileName 
+         * @param {String} destination 
          */
-    constructor( toastTemplate, filename, destination ) {
+    constructor( template, fileName, destination ) {
 
-        super( toastTemplate, false );        
+        super( template, false );
 
-        this.filename = filename;
+        this.fileName = fileName;
         this.destination = destination;
 
-        this.cancelUploadEvent = new CustomEvent( "cancel-upload" );
+        this.cancelUploadEvent = new CustomEvent( "toast-cancel-upload" );
 
-        this.filenameSpan = this.elementToast.querySelector( "span.__toast_fileupload_filename" );
-        this.destinationSpan = this.elementToast.querySelector( "span.__toast_fileupload_destination" );
+            /**
+             * @type {HTMLSpanElement}
+             */
+        this.fileNameText = this.toastElement.querySelector( "span.__toast_fileupload_filename" );
 
-        this.progressBar = this.elementToast.querySelector( "div.progress-bar.__toast_fileupload_progress" );
+            /**
+             * @type {HTMLSpanElement}
+             */
+        this.destinationText = this.toastElement.querySelector( "span.__toast_fileupload_destination" );
+        
+            /**
+             * @type {HTMLDivElement}
+             */
+        this.progressBar = this.toastElement.querySelector( "div.progress-bar.__toast_fileupload_progress" );
 
-        this.uploadCancelButton = this.elementToast.querySelector( "button.__toast_fileupload_cancel" );
-
-        this.filenameSpan.innerText = filename;
-        this.destinationSpan.innerText = destination;
-
-        this.uploadCancelButton.addEventListener( 'click', () => this.cancelUpload() ); 
+            /**
+             * @type {HTMLButtonElement}
+             */
+        this.cancelUploadButton = this.toastElement.querySelector( "button.__toast_fileupload_cancel" );
+        this.cancelUploadButton.addEventListener( "click", () => this.cancelUpload() );
+        
+        this.fileNameText.innerText = this.fileName;
+        this.destinationText.innerText = this.destination;
 
     }
 
     cancelUpload() {
-        
-        this.uploadCancelButton.disabled = "true";
-        
+
+        this.cancelUploadButton.disabled = true;
+
         this.progressBar.classList.add( "bg-danger" );
         this.progressBar.style.width = "100%";
 
@@ -42,20 +54,14 @@ export class KFUploadToast extends KFToast {
 
     }
 
-        /**
-         * Updates the toast's progress bar.
-         * @param {Number} value The number (between 0 and 1) representing the 
-         * completion of the file upload to update the progress bar with.
-         */
-    onProgress( value ) {
+    setProgressBarValue( value ) {
 
-        const percent = Math.round( (value * 100) );
-        this.progressBar.style.width = percent + "%";
-        this.progressBar.ariaValueNow = percent;
+        this.progressBar.style.width = value + "%";
+        this.progressBar.ariaValueNow = value;
 
-        if( percent == 100 ) {
-            
-            this.uploadCancelButton.disabled = "true";
+        if( value >= 100 ) {
+
+            this.cancelUploadButton.disabled = true;
             this.progressBar.classList.add( "bg-success" );
 
             this.dispatchEvent( this.disposeEvent );
@@ -63,5 +69,5 @@ export class KFUploadToast extends KFToast {
         }
 
     }
-    
+
 }

@@ -7,7 +7,7 @@ export class ModalHandler {
     constructor( modalParent, openModalButton ) {
 
         this.modalElement = modalParent;
-        this.bootstrapModal = new bootstrap.Modal( this.modalElement );
+        this.bootstrapModal = new bootstrap.Modal( this.modalElement, {} );
 
         this.modalOpenButton = openModalButton;
         this.modalOpenButton.addEventListener( "click", () => this.onModalOpen() );

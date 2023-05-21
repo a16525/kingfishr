@@ -20,6 +20,46 @@
 
     <body class="d-flex">
 
+        <div class="__modals">
+
+            <div class="modal fade __create_folder_modal" id="createUserModal" tabindex="-1">
+
+                <div class="modal-dialog modal-dialog-centered">
+
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="bi bi-person-plus" aria-hidden="true"></i> Create user</h5>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="alert alert-warning d-none __modal_messagebox" role="alert"></div>
+
+                            <form class="__modal_form">
+                                <input type="text" name="username" class="form-control mb-1" placeholder="Username">
+                                <input type="password" name="password" class="form-control" placeholder="Password">
+                            </form>
+
+                        </div>
+
+                        <div class="modal-footer">
+
+                            <button type="button" class="btn btn-danger __modal_cancel">Cancel</button>
+                            <button type="button" class="btn btn-primary __modal_confirm">Confirm</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            </div>
+
+        </div>
+
         <nav class="nav d-xl-flex d-none flex-column nav-pills py-3 pe-3 text-bg-dark vh-100 col-2">
 
             <div class="ps-3" aria-hidden="true">
@@ -68,7 +108,7 @@
 
             <div class="tab-pane fade show active" id="views-accounts" role="tabpanel" aria-labelledby="navpills-accountstab" tabindex="0">
 
-                <div class="container-fluid">
+                <div class="container-fluid __display_manager_attachment_point">
 
                     <div class="row row-cols-1 row-cols-md-2">
 
@@ -78,18 +118,22 @@
 
                                 <div class="d-flex">
 
-                                    <div class="d-flex w-auto pe-0 align-items-center">
+                                    <div class="d-flex w-auto pe-0 align-items-center __action_bar">
 
-                                        <button class="btn rounded-circle __rounded_button" aria-label="Create user">
-                                            <i class="bi bi-person-fill-add" aria-hidden="true"></i>
+                                        <button class="btn rounded-circle __rounded_button __action_create_user" aria-label="Create user">
+                                            <i class="bi bi-plus" aria-hidden="true"></i>
                                         </button>
 
-                                        <button class="btn rounded-circle __rounded_button" aria-label="Rename user">
-                                            <i class="bi bi-person-fill-gear" aria-hidden="true"></i>
+                                        <button class="btn rounded-circle __rounded_button __action_rename_user" aria-label="Rename user">
+                                            <i class="bi bi-gear-fill" aria-hidden="true"></i>
                                         </button>
 
-                                        <button class="btn rounded-circle __rounded_button" aria-label="Delete user">
-                                            <i class="bi bi-person-fill-x" aria-hidden="true"></i>
+                                        <button class="btn rounded-circle __rounded_button __action_delete_user" aria-label="Delete user">
+                                            <i class="bi bi-x" aria-hidden="true"></i>
+                                        </button>
+
+                                        <button class="btn rounded-circle __rounded_button __action_refresh" aria-label="Refresh">
+                                            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
                                         </button>
 
                                     </div>
@@ -113,7 +157,7 @@
 
                             </div>
 
-                            <div class="row">
+                            <div class="row __display_manager_default_target_element __display_manager_scheme_list">
 
                                 <table class="table table-light table-hover p-0 __userview_table">
 
@@ -124,12 +168,13 @@
                                             <th class="__userview_table_selector_column" scope="col">#</th>
                                             <th scope="col">Username</th>
                                             <th scope="col">Storage used</th>
+                                            <th scope="col">Configurator?</th>
 
                                         </tr>
 
                                     </thead>
 
-                                    <tbody class="__userview_table_entries">
+                                    <tbody class="__display_manager_scheme_list_content">
                                         
                                     </tbody>
 
@@ -147,24 +192,24 @@
 
                                     <h5 class="card-title">
                                         <i class="bi bi-person-fill me-2" aria-hidden="true"></i>
-                                        <span class="__userdata_username_entry">USERNAME</span>
+                                        <span class="__userdata_username_entry">No user selected.</span>
                                     </h5>
 
                                     <div class="__userdata_information">
 
                                         <span class="d-block w-100">
                                             <strong>Created on:</strong>
-                                            <span class="float-end __userdata_created_timestamp">YYYY-MM-DD@HH:MM</span>
+                                            <span class="float-end __userdata_created_timestamp">-</span>
                                         </span><br>
 
                                         <span class="d-block w-100">
                                             <strong>Storage space used:</strong>
-                                            <span class="float-end __userdata_space_used">X Bytes</span>
+                                            <span class="float-end __userdata_space_used">-</span>
                                         </span>
 
                                         <span class="d-block w-100">
                                             <strong>Max. usage allowed:</strong>
-                                            <span class="float-end __userdata_space_limit">X Bytes</span>
+                                            <span class="float-end __userdata_space_limit">-</span>
                                         </span>
 
                                     </div>
@@ -277,6 +322,7 @@
         <script th:src="@{ ${ '/webjars/bootstrap/' + bootstrap_version + '/js/bootstrap.bundle.min.js' } }"></script>
 
         <script src="/js/runners/SynchronizeNavbars.js"></script>
+        <script type="module" src="/js/runners/UserManager.js"></script>
 
     </body>
 

@@ -1,25 +1,26 @@
 import { Entry } from "./Entry.js";
 
-export class UserEntry extends Entry {
+export class UserDataEntry extends Entry {
 
     /**
-     * @typedef {Object} UserEntryLike
+     * @typedef {Object} UserDataEntryLike
      * @property {Number} id
      * @property {String} username
-     * @property {Boolean} isConfigurator
+     * @property {Number} storageused
+     * @property {Boolean} configurator
      */
 
         /**
          * @override
-         * @param {UserEntryLike} JSON 
+         * @param {UserDataEntryLike} JSON 
          * @returns {UserEntry}
          */
     static fromJSON( JSON ) {
 
-        const { id, username, isConfigurator } = JSON;
+        const { id, username, storageUsed, configurator } = JSON;
 
-        if( id != undefined && username != undefined && isConfigurator != undefined ) {
-            return new UserEntry( id, username );
+        if( id != undefined && username != undefined && storageUsed != undefined && configurator != undefined ) {
+            return new UserDataEntry( id, username, storageUsed, configurator );
         } else {
             throw new Error( "Invalid JSON data passed to UserEntry constructor." );
         }
@@ -30,12 +31,16 @@ export class UserEntry extends Entry {
          * @override
          * @param {Number} id 
          * @param {String} username 
+         * @param {Number} storageUsed
          * @param {Boolean} isConfigurator
          */
-    constructor( id, username, isConfigurator ) {
+    constructor( id, username, storageUsed, isConfigurator ) {
+
+        super();
 
         this.id = id;
         this.username = username;
+        this.storageUsed = storageUsed;
         this.isConfigurator = isConfigurator;
 
     }
@@ -48,7 +53,8 @@ export class UserEntry extends Entry {
         return [
             this.id,
             this.username,
-            this.isConfigurator
+            this.storageUsed,
+            this.isConfigurator ? "Yes" : "No"
         ];
 
     }

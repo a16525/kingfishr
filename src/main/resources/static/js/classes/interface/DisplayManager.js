@@ -27,7 +27,7 @@ export class DisplayManager {
             /**
              * @type {HTMLTableSectionElement}
              */
-        const tableContent = this.viewParent.querySelector( "div.__display_manager_scheme_list_content" );
+        const tableContent = this.viewParent.querySelector( "tbody.__display_manager_scheme_list_content" );
         tableContent.innerHTML = "";
 
         data.forEach( ( entry, key ) => {

@@ -111,6 +111,7 @@ function setupUploadFilesModal() {
 
 document.addEventListener( "DOMContentLoaded", async () => {
 
+
         /**
          * @type {HTMLDivElement}
          */
@@ -136,7 +137,7 @@ document.addEventListener( "DOMContentLoaded", async () => {
     toastManager = new KFToastManager( toastContainer );
 
     setupHeightUpdateForcers();
-    
+
     setupCreateDirectoryModal();
     setupUploadFilesModal();
 

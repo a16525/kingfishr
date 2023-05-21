@@ -1,16 +1,16 @@
 import { Endpoint } from "../types/networking/Endpoint.js";
 import { UserDataEntry } from "../types/entry/UserDataEntry.js";
-import { AJAXController } from "../types/networking/AJAXController.js";
+import { AJAXController } from "../networking/AJAXController.js";
 
 export class UserManagerAJAXController extends AJAXController {
 
     static endpoints = {
         
-        GETUSER: new Endpoint( "/api/user", Endpoint.HTTPMethods.GET ),
-        GETALLUSERS: new Endpoint( "/api/users", Endpoint.HTTPMethods.GET ),
-        CREATEUSER: new Endpoint( "/api/user", Endpoint.HTTPMethods.POST ),
-        RENAMEUSER: new Endpoint( "/api/user", Endpoint.HTTPMethods.PATCH ),
-        DELETEUSER: new Endpoint( "/api/user", Endpoint.HTTPMethods.DELETE )
+        GETUSER: new Endpoint( "/api/user", Endpoint.httpMethods.GET ),
+        GETALLUSERS: new Endpoint( "/api/users", Endpoint.httpMethods.GET ),
+        CREATEUSER: new Endpoint( "/api/user", Endpoint.httpMethods.POST ),
+        RENAMEUSER: new Endpoint( "/api/user", Endpoint.httpMethods.PATCH ),
+        DELETEUSER: new Endpoint( "/api/user", Endpoint.httpMethods.DELETE )
 
     }
 
@@ -24,14 +24,14 @@ export class UserManagerAJAXController extends AJAXController {
         this.users = new Map();
 
             /**
-             * @type {UserEntry?}
+             * @type {UserDataEntry?}
              */
         this.selectedUser = null;
 
     }
 
         /**
-         * @returns {Map<Number, UserEntry}
+         * @returns {Map<Number, UserDataEntry}
          */
     async getUsers() {
 
@@ -61,7 +61,7 @@ export class UserManagerAJAXController extends AJAXController {
 
         /**
          * @param {Number} id
-         * @returns {UserEntry}
+         * @returns {UserDataEntry}
          */
     async getUser( id ) {
 
@@ -92,7 +92,7 @@ export class UserManagerAJAXController extends AJAXController {
         /**
          * @overload
          * @param {String} username
-         * @returns {UserEntry}
+         * @returns {UserDataEntry}
          */
     async getUser( username ) {
 
@@ -136,10 +136,10 @@ export class UserManagerAJAXController extends AJAXController {
         } else {
 
             const endpoint = UserManagerAJAXController.endpoints.CREATEUSER;
-            const request = endpoint.appendParameters({
+            const request = endpoint.appendParameters( new URLSearchParams({
                 name: username,
                 password: password
-            });
+            }));
 
             await fetch( request, { method: endpoint.method }).then( async response => {
 

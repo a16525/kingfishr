@@ -40,6 +40,7 @@ export class FileActionController extends ActionController {
         this.refreshButton.addEventListener( "click", () => this.refreshView() );
 
         window.addEventListener( "click", (evt) => this.getContextFromClick( evt ) );
+        
 
     }
 

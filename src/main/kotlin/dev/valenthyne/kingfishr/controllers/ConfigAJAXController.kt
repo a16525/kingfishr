@@ -199,14 +199,18 @@ class ConfigAJAXController {
                 if( id != null ) {
                     user = userRepository.getUserByID( id )
                 } else
-                    if( name != null ) {
-                        user = userRepository.getUserByUsername( name )
-                    }
+                if( name != null ) {
+                    user = userRepository.getUserByUsername( name )
+                }
 
                 if( user != null ) {
 
-                    userRepository.delete( user )
-                    response = ResponseEntity( HttpStatus.OK )
+                    if( user.isConfigurator ) {
+                        response = ResponseEntity( "Cannot delete a configurator account.", HttpStatus.BAD_REQUEST )
+                    } else {
+                        userRepository.delete(user)
+                        response = ResponseEntity( HttpStatus.OK )
+                    }
 
                 } else {
                     response = ResponseEntity( HttpStatus.NOT_FOUND )

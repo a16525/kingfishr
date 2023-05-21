@@ -80,17 +80,6 @@ th.__filetable_icon {
 
 }
 
-tr.data_entry > td {
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-}
-
-tbody.__display_manager_scheme_list_content > tr.data_entry {
-    cursor: pointer;
-}
-
 .__toast_fileupload_label_value {
 
     overflow-x: scroll;

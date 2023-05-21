@@ -51,3 +51,15 @@ nav.navbar > a.nav-link {
     background-color: #CACED2 !important;
 
 }
+
+    /* List view */
+tr.data_entry > td {
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+
+tbody.__display_manager_scheme_list_content > tr.data_entry {
+    cursor: pointer;
+}

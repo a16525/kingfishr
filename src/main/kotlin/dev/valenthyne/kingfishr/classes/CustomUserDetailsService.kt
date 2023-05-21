@@ -18,8 +18,8 @@ class CustomUserDetailsService: UserDetailsService {
         if( userRepository.findAll().size == 0 ) {
 
             val defaultConfiguratorUser = User(
-                    username="configurator",
-                    password=BCryptPasswordEncoder().encode( "password" )
+                    username = "configurator",
+                    password = BCryptPasswordEncoder().encode( "password" )
             )
 
             defaultConfiguratorUser.isConfigurator = true

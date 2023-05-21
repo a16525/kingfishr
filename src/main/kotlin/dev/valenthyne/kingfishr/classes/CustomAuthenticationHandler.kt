@@ -22,7 +22,7 @@ class CustomAuthenticationHandler: AuthenticationSuccessHandler {
 
     private fun handle( request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication ) {
 
-        val targetURL : String = determineTargetURL( authentication )
+        val targetURL: String = determineTargetURL( authentication )
 
         if( response.isCommitted ) return
         redirectStrategy.sendRedirect( request, response, targetURL )
@@ -31,7 +31,7 @@ class CustomAuthenticationHandler: AuthenticationSuccessHandler {
 
     private fun clearAuthenticationAttributes( request: HttpServletRequest ) {
 
-        val session : HttpSession = request.getSession( false )
+        val session: HttpSession = request.getSession( false )
         session.removeAttribute( WebAttributes.AUTHENTICATION_EXCEPTION )
 
     }

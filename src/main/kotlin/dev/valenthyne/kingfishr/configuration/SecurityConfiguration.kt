@@ -43,7 +43,7 @@ class SecurityConfiguration {
     }
 
     @Bean
-    fun securityFilters( http: HttpSecurity ) : SecurityFilterChain {
+    fun securityFilters( http: HttpSecurity ): SecurityFilterChain {
 
         http
             .authorizeHttpRequests { requests ->

@@ -7,16 +7,16 @@ import jakarta.persistence.*
 class User (
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id : Long? = null,
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
+    var id: Long? = null,
 
-    @Column(nullable = false, unique = true, length = 64)
-    var username : String,
+    @Column( nullable = false, unique = true, length = 64 )
+    var username: String,
 
-    @Column(nullable = false, length = 1024)
-    var password : String,
+    @Column( nullable = false, length = 1024 )
+    var password: String,
 
-    @Column(nullable = false)
-    var isConfigurator : Boolean = false
+    @Column( nullable = false )
+    var isConfigurator: Boolean = false
 
 )

@@ -7,10 +7,10 @@ import org.springframework.data.repository.query.Param
 
 interface UserRepository: JpaRepository<User, Long> {
 
-    @Query("SELECT * FROM USERS WHERE username = :username", nativeQuery = true)
-    fun getUserByUsername( @Param( "username" ) username : String ): User?
+    @Query( "SELECT * FROM USERS WHERE username = :username", nativeQuery = true )
+    fun getUserByUsername( @Param( "username" ) username: String ): User?
 
-    @Query("SELECT * FROM USERS WHERE id=:id", nativeQuery = true)
-    fun getUserByID( @Param( "id" ) id : Long ): User?
+    @Query( "SELECT * FROM USERS WHERE id=:id", nativeQuery = true )
+    fun getUserByID( @Param( "id" ) id: Long ): User?
 
 }

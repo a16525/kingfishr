@@ -112,6 +112,8 @@ export class FileDataEntry extends Entry {
          */
     constructor( name, type, size, pathTo ) {
 
+        super();
+
         this.name = name;
 
         if( FileDataEntry.typeTranslationMap.has( type ) ) {

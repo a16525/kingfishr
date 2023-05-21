@@ -1,21 +1,22 @@
 import { FileManagerAJAXController } from "../classes/networking/FileManagerAJAXController.js";
 import { ModalHandler } from "../classes/interface/ModalHandler.js";
-import { ActionController } from "../classes/interface/ActionController.js";
-import { KFUploadToast } from "../classes/types/toasts/KFUploadToast.js";
-import { SchemableDisplayManager } from "../classes/interface/SchemableDisplayManager.js";
+import { KFUploadToast } from "../classes/types/interface/toasts/KFUploadToast.js";
+import { SchemeableDisplayManager } from "../classes/interface/SchemeableDisplayManager.js";
+import { FileActionController } from "../classes/interface/FileActionController.js";
+import { KFToastManager } from "../classes/interface/KFToastManager.js";
 
 let fileManagerAjaxController = new FileManagerAJAXController();
-let schemableDisplayManager, actionController, toastManager;
+let schemeableDisplayManager, fileActionController, toastManager;
 
 function setupHeightUpdateForcers() {
 
-    window.addEventListener( "scroll", () => schemableDisplayManager.updateTableHeight() );
-    window.addEventListener( "resize", () => schemableDisplayManager.updateTableHeight() );
+    window.addEventListener( "scroll", () => schemeableDisplayManager.updateTableHeight() );
+    window.addEventListener( "resize", () => schemeableDisplayManager.updateTableHeight() );
 
     const storageForceUpdateElements = Array.from( document.getElementsByClassName( "__storage_forceupdate" ) );
 
     storageForceUpdateElements.forEach( element => {
-        element.addEventListener( "click", () => schemableDisplayManager.updateTableHeight() );
+        element.addEventListener( "click", () => schemeableDisplayManager.updateTableHeight() );
     });
 
 }
@@ -41,7 +42,7 @@ function setupCreateDirectoryModal() {
         await fileManagerAjaxController.createDirectory( formData ).then( async () => {
 
             createDirectoryHandler.bootstrapModal.hide();
-            actionController.refreshDirectoryContents();
+            await fileActionController.refreshView();
 
         }).catch( error => {
 
@@ -79,9 +80,9 @@ function setupUploadFilesModal() {
 
             files.forEach( file => {
 
-                const destination = fileManagerAjaxController.workingDirectory == "/" ?
+                const destination = fileManagerAjaxController.currentWorkingDirectory == "/" ?
                                         "Home":
-                                        "Home/" + fileManagerAjaxController.workingDirectory;
+                                        "Home/" + fileManagerAjaxController.currentWorkingDirectory;
                 //
 
                 const toast = new KFUploadToast( uploadToastTemplate, file.name, destination );
@@ -90,6 +91,15 @@ function setupUploadFilesModal() {
                 fileManagerAjaxController.uploadFile( file, toast );
 
                 toastManager.showToast( toastID );
+
+                const oldUploadDirectory = fileManagerAjaxController.currentWorkingDirectory;
+                fileManagerAjaxController.addEventListener( "ajax-upload-finish", async () => {
+
+                    if( oldUploadDirectory == fileManagerAjaxController.currentWorkingDirectory ) {
+                        await fileActionController.refreshView();
+                    }
+
+                });
 
             });
 
@@ -121,15 +131,15 @@ document.addEventListener( "DOMContentLoaded", async () => {
          */
     const toastContainer = document.querySelector( "div.toast-container" );
 
-    schemableDisplayManager = new SchemableDisplayManager( SchemableDisplayManager.schemes.LIST, attachedElement, navigationToggleSchemeButton );
-    actionController = new ActionController( schemableDisplayManager, fileManagerAjaxController, navigationBar );
+    schemeableDisplayManager = new SchemeableDisplayManager( SchemeableDisplayManager.schemes.LIST, attachedElement, navigationToggleSchemeButton );
+    fileActionController = new FileActionController( schemeableDisplayManager, fileManagerAjaxController, navigationBar );
     toastManager = new KFToastManager( toastContainer );
 
     setupHeightUpdateForcers();
-
+    
     setupCreateDirectoryModal();
     setupUploadFilesModal();
 
-    actionController.refreshDirectoryContents();
-
+    await fileActionController.refreshView();
+    
 });

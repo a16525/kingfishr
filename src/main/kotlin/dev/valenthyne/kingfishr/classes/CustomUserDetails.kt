@@ -2,18 +2,19 @@ package dev.valenthyne.kingfishr.classes
 
 import dev.valenthyne.kingfishr.classes.crudops.models.User
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 class CustomUserDetails( private var user: User ): UserDetails {
 
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
+    override fun getAuthorities(): MutableCollection<GrantedAuthority> {
 
         val authorities = mutableListOf<GrantedAuthority>()
 
         if( user.isConfigurator ) {
-            authorities.add( GrantedAuthority { "ROLE_ADMIN" } )
+            authorities.add( SimpleGrantedAuthority( "ROLE_ADMIN" ) )
         } else {
-            authorities.add( GrantedAuthority { "ROLE_USER" } )
+            authorities.add( SimpleGrantedAuthority( "ROLE_USER" ) )
         }
 
         return authorities

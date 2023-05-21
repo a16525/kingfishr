@@ -43,7 +43,7 @@ class SecurityConfiguration {
     }
 
     @Bean
-    fun securityFilters( http: HttpSecurity ): SecurityFilterChain {
+    fun securityFilterChain( http: HttpSecurity ): SecurityFilterChain {
 
         http
             .authorizeHttpRequests { requests ->
@@ -75,7 +75,7 @@ class SecurityConfiguration {
                     .expiredUrl( "/login?logout" )
             }
 
-        http.csrf().ignoringRequestMatchers( "/api**" ).disable()
+        http.csrf().ignoringRequestMatchers( "/api/**" ).disable()
         http.authenticationProvider( authenticationProvider() )
 
         return http.build()

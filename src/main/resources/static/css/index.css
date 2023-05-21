@@ -52,7 +52,7 @@ button.__nav_refresh > i.bi-arrow-clockwise {
 
 }
 
-div.__fileview_list {
+div.__display_manager_scheme_list {
     overflow-y: scroll;
 }
 
@@ -87,7 +87,7 @@ tr.data_entry > td {
 
 }
 
-tbody.__fileview_table_content > tr.data_entry {
+tbody.__display_manager_scheme_list_content > tr.data_entry {
     cursor: pointer;
 }
 

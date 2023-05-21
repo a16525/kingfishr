@@ -1,25 +1,21 @@
 import { Entry } from "../types/entry/Entry.js";
 
-    /**
-     * Display manager that only works with tables.
-     */
 export class DisplayManager {
 
         /**
-         * @param {HTMLDivElement} viewParent 
+         * @param {HTMLDivElement} viewParent
          */
     constructor( viewParent ) {
 
         this.viewParent = viewParent;
-        
+
         let _ = viewParent.querySelector( "div.__display_manager_default_target_element" );
 
             /**
              * @type {HTMLDivElement}
              */
-        this.currentTargetElement = _ != null ? 
-            _:
-            viewParent.querySelector( "div.__display_manager_theme_list" );
+        this.currentTargetElement = _ != null ?
+            _ : this.viewParent.querySelector( "div.__display_manager_scheme_list" );
 
     }
 
@@ -27,11 +23,11 @@ export class DisplayManager {
          * @param {Map<any, Entry>} data 
          */
     updateView( data ) {
-        
+
             /**
              * @type {HTMLTableSectionElement}
              */
-        const tableContent = this.viewParent.querySelector( "div.__display_manager_theme_list_content" );
+        const tableContent = this.viewParent.querySelector( "div.__display_manager_scheme_list_content" );
         tableContent.innerHTML = "";
 
         data.forEach( ( entry, key ) => {
@@ -46,7 +42,7 @@ export class DisplayManager {
             for( let i = 0; i < entryData.length; i++ ) {
 
                 const currentCell = entryRow.insertCell( i );
-                currentCell.innerText = entryData[i];
+                currentCell.innerText = entryData[ i ];
 
             }
 
@@ -59,23 +55,22 @@ export class DisplayManager {
     }
 
     updateTableHeight() {
-        
-        const parent = this.viewParent.parentElement;
-        
-        const childrenElements = Array.from( parent.children );
 
             /**
              * @type {HTMLDivElement}
              */
-        const target = viewParent.querySelector( "div.__display_manager_theme_list" );
+        const target = this.viewParent.querySelector( "div.__display_manager_scheme_list" );
+        const parent = target.parentElement;
+
+        const children = Array.from( parent.children );
 
         let height = parent.offsetHeight;
-
-        childrenElements.forEach( child => {
+        
+        children.forEach( child => {
             if( child != target ) height -= child.offsetHeight;
         });
 
-        target.style.height = height + "px";
+        target.style.maxHeight = height + "px";
         
     }
 

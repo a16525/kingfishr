@@ -1,13 +1,13 @@
 import { AJAXController } from "./AJAXController.js";
 import { Endpoint } from "../types/networking/Endpoint.js";
 import { FileDataEntry } from "../types/entry/FileDataEntry.js";
-import { KFUploadToast } from "../types/toasts/KFUploadToast.js";
+import { KFUploadToast } from "../types/interface/toasts/KFUploadToast.js";
 
 export class FileManagerAJAXController extends AJAXController {
 
         /**
          * @override
-         */
+        */
     static endpoints = {
 
         PATHEXISTS: new Endpoint( "/api/path", Endpoint.httpMethods.GET ),
@@ -28,7 +28,9 @@ export class FileManagerAJAXController extends AJAXController {
 
         super();
 
-        this.workingDirectory = "/";
+        this.uploadFinishEvent = new CustomEvent( "ajax-upload-finish" );
+
+        this.currentWorkingDirectory = "/";
 
             /**
              * @type {Map<String, FileDataEntry>}
@@ -46,16 +48,16 @@ export class FileManagerAJAXController extends AJAXController {
     }
 
         /**
-         * @param {String} directory
-         * @returns {Map<String, DataEntry}
+         * @param {String} directory 
+         * @returns {Map<String, FileDataEntry>}
          */
     async getDirectoryContents( directory ) {
 
         const contentsMap = new Map();
 
         const endpoint = FileManagerAJAXController.endpoints.DIRCONTENTS;
-        const request = endpoint.appendParams( new URLSearchParams({ 
-            dir: directory 
+        const request = endpoint.appendParameters( new URLSearchParams({
+            dir: directory
         }));
 
         await fetch( request, { method: endpoint.method } ).then( async response => {
@@ -63,8 +65,8 @@ export class FileManagerAJAXController extends AJAXController {
             if( response.ok ) {
 
                 const JSONData = await response.json();
-                const contents = Array.from( JSONData ).map( value => DataEntry.fromJSON( value ) );
-            
+                const contents = Array.from( JSONData ).map( value => FileDataEntry.fromJSON( value ) );
+
                 contents.forEach( item => contentsMap.set( this.randomEntryID(), item ) );
 
             } else {
@@ -72,13 +74,13 @@ export class FileManagerAJAXController extends AJAXController {
             }
 
         });
-
+        
         return contentsMap;
 
     }
 
     async getWorkingDirectoryContents() {
-        this.workingDirectoryContents = await this.getDirectoryContents( this.workingDirectory );
+        this.workingDirectoryContents = await this.getDirectoryContents( this.currentWorkingDirectory );
     }
 
         /**
@@ -86,19 +88,19 @@ export class FileManagerAJAXController extends AJAXController {
          */
     async createDirectory( formData ) {
 
-        const illegalCharactersExp = "[#%&{}\\<>*?/$!'\":@+`|=]+?";
+        const illegalCharacters = "[#%&{}\\<>*?/$!'\":@+`|=]+?";
         const folderName = formData.get( "name" );
 
         if( folderName.length == 0 ) {
             throw new Error( "Folder name cannot be empty." );
         } else
-        if( folderName.match( illegalCharactersExp ) != null ) {
+        if( folderName.match( illegalCharacters ) != null ) {
             throw new Error( "Invalid folder name." );
         } else {
 
-            const endpoint = FileManagerAJAXController.endpoints.DIRCREATE;
-            const request = endpoint.appendParams( new URLSearchParams({ 
-                dir: this.workingDirectory, dirname: folderName
+            const endpoint = FileManagerAJAXController.endpoints.CREATEDIR;
+            const request = endpoint.appendParameters( new URLSearchParams({
+                dir: this.currentWorkingDirectory, dirname: folderName
             }));
 
             await fetch( request, { method: endpoint.method } ).then( async response => {
@@ -122,9 +124,9 @@ export class FileManagerAJAXController extends AJAXController {
         const fileData = new FormData();
         fileData.append( "file", file );
         
-        const endpoint = FileManagerAJAXController.endpoints.FILEUPLOAD;
-        const request = endpoint.appendParams( new URLSearchParams({
-            dir: this.workingDirectory
+        const endpoint = FileManagerAJAXController.endpoints.UPLOADFILE;
+        const request = endpoint.appendParameters( new URLSearchParams({
+            dir: this.currentWorkingDirectory
         }));
 
         const xhr = new XMLHttpRequest();
@@ -132,8 +134,8 @@ export class FileManagerAJAXController extends AJAXController {
 
         xhr.upload.addEventListener( "progress", (evt) => {
 
-            const complete = evt.loaded / evt.total;
-            uploadToast.onProgress( complete );
+            const complete = ( evt.loaded / evt.total ) * 100;
+            uploadToast.setProgressBarValue( complete );
 
         });
 
@@ -145,6 +147,14 @@ export class FileManagerAJAXController extends AJAXController {
 
         });
 
+        xhr.addEventListener( "readystatechange", () => {
+
+            if( xhr.readyState == 4 ) {
+                this.dispatchEvent( this.uploadFinishEvent );
+            }
+
+        });
+
         uploadToast.addEventListener( "cancel-upload", () => {
             xhr.abort();
         });
@@ -152,22 +162,23 @@ export class FileManagerAJAXController extends AJAXController {
         xhr.send( fileData );
 
     }
-
+       
+    
     async goToHome() {
 
-        this.workingDirectory = "/";
+        this.currentWorkingDirectory = "/";
         await this.getWorkingDirectoryContents();
 
     }
 
     async goUp() {
 
-        if( this.workingDirectory != "/" ) {
+        if( this.currentWorkingDirectory != "/" ) {
 
-            let splitDirectories = this.workingDirectory.split( "/" );
+            let splitDirectories = this.currentWorkingDirectory.split( "/" );
             splitDirectories.pop();
 
-            this.workingDirectory = 
+            this.currentWorkingDirectory = 
                 splitDirectories.length == 0 ?
                     "/" :                           // if there are no directories above the current one
                     splitDirectories.join( "/" );   // if there are directories ...

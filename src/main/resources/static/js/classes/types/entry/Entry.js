@@ -3,12 +3,12 @@ export class Entry {
         /**
          * @abstract
          */
-    static fromJSON( JSON );
+    static fromJSON( JSON ) {}
 
         /**
          * @abstract
          * @returns {String[]}
          */
-    dataArray();
+    dataArray() {}
 
 }

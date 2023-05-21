@@ -1,13 +1,15 @@
 import { Endpoint } from "../types/networking/Endpoint.js";
 
-export class AJAXController {
+export class AJAXController extends EventTarget {
 
-    /**
-     * @abstract
-     * @type {Enumerator<Endpoint>}
-     */
+        /**
+         * @abstract
+         * @type {Enumerator<Endpoint>}
+         */
     static endpoints;
 
-    constructor();
+    constructor() {
+        super();
+    }
 
 }

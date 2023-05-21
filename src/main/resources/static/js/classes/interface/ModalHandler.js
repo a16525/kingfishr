@@ -1,8 +1,8 @@
 export class ModalHandler {
 
-        /**
+        /**         
          * @param {HTMLDivElement} modalParent 
-         * @param {HTMLButtonElement} openModalButton         
+         * @param {HTMLButtonElement} openModalButton 
          */
     constructor( modalParent, openModalButton ) {
 
@@ -10,36 +10,34 @@ export class ModalHandler {
         this.bootstrapModal = new bootstrap.Modal( this.modalElement );
 
         this.modalOpenButton = openModalButton;
+        this.modalOpenButton.addEventListener( "click", () => this.onModalOpen() );
 
             /**
              * @type {HTMLButtonElement}
              */
         this.modalCancelButton = this.modalElement.querySelector( "button.__modal_cancel" );
+        this.modalCancelButton.addEventListener( "click", () => this.onModalCancel() );
 
             /**
              * @type {HTMLButtonElement}
              */
         this.modalConfirmButton = this.modalElement.querySelector( "button.__modal_confirm" );
-        
+        this.modalConfirmButton.addEventListener( "click", () => this.onModalConfirm() );
+
             /**
              * @type {HTMLDivElement}
              */
         this.modalMessageBox = this.modalElement.querySelector( "div.__modal_messagebox" );
 
             /**
-             * @type {HTMLInputElement}
+             * @type {HTMLFormElement}
              */
-        this.modalInput = this.modalElement.querySelector( "form.__modal_form > input" );
+        this.modalForm = this.modalElement.querySelector( "form.__modal_form" );
 
             /**
-             * @type {HTMLDivElement}
+             * @type {HTMLInputElement}
              */
-        this.modalForm = this.modalElement.querySelector( "form.__modal_form" );           
-        
-            // Listeners
-        this.modalOpenButton.addEventListener( 'click', () => this.onModalOpen() );
-        this.modalCancelButton.addEventListener( 'click', () => this.onModalCancel() );
-        this.modalConfirmButton.addEventListener( 'click', () => this.onModalConfirm() );
+        this.modalInput = this.modalForm.querySelector( "input" );
 
     }
 
@@ -64,7 +62,7 @@ export class ModalHandler {
         /**
          * @abstract
          */
-    onModalConfirm();
+    onModalConfirm() {}
 
     disableButtons() {
 

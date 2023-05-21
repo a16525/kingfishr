@@ -10,15 +10,17 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AnonymousAuthenticationToken
-import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 
+@Controller
 class ConfigAJAXController {
 
     @Autowired
@@ -116,7 +118,7 @@ class ConfigAJAXController {
         val authentication = SecurityContextHolder.getContext().authentication
         lateinit var response: ResponseEntity<String>
 
-        if( authentication is AnonymousAuthenticationToken || !authentication.authorities.contains( GrantedAuthority { "ROLE_ADMIN" } ) ) {
+        if( authentication is AnonymousAuthenticationToken || !authentication.authorities.contains( SimpleGrantedAuthority( "ROLE_ADMIN" ) ) ) {
             response = ResponseEntity( HttpStatus.FORBIDDEN )
         } else {
 
@@ -141,7 +143,7 @@ class ConfigAJAXController {
         val authentication = SecurityContextHolder.getContext().authentication
         lateinit var response: ResponseEntity<String>
 
-        if( authentication is AnonymousAuthenticationToken || !authentication.authorities.contains( GrantedAuthority { "ROLE_ADMIN" } ) ) {
+        if( authentication is AnonymousAuthenticationToken || !authentication.authorities.contains( SimpleGrantedAuthority( "ROLE_ADMIN" ) ) ) {
             response = ResponseEntity( HttpStatus.FORBIDDEN )
         } else {
 
@@ -184,7 +186,7 @@ class ConfigAJAXController {
         val authentication = SecurityContextHolder.getContext().authentication
         lateinit var response: ResponseEntity<String>
 
-        if( authentication is AnonymousAuthenticationToken || !authentication.authorities.contains( GrantedAuthority { "ROLE_ADMIN" } ) ) {
+        if( authentication is AnonymousAuthenticationToken || !authentication.authorities.contains( SimpleGrantedAuthority( "ROLE_ADMIN" ) ) ) {
             response = ResponseEntity( HttpStatus.FORBIDDEN )
         } else {
 

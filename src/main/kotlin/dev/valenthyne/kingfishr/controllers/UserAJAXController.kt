@@ -124,7 +124,7 @@ class UserAJAXController {
         val auth : Authentication = SecurityContextHolder.getContext().authentication
         lateinit var response : ResponseEntity<String>
 
-        if( auth is AnonymousAuthenticationToken) {
+        if( auth is AnonymousAuthenticationToken ) {
             response = ResponseEntity( HttpStatus.FORBIDDEN )
         } else {
 

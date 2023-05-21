@@ -1,4 +1,4 @@
-import { KFToast } from "../types/toasts/KFToast.js";
+import { KFToast } from "../types/interface/toasts/KFToast.js";
 
 export class KFToastManager {
 
@@ -37,6 +37,8 @@ export class KFToastManager {
         toast.addEventListener( "toast-dispose", () => {
             this.disposeToast( toastID );
         });
+
+        return toastID;
 
     }
 

@@ -1,8 +1,8 @@
-import { Endpoint } from "../types/Endpoint.js";
-import { UserEntry } from "../types/UserEntry.js"
-import { AJAXController } from "./AJAXController.js";
+import { Endpoint } from "../types/networking/Endpoint.js";
+import { UserDataEntry } from "../types/entry/UserDataEntry.js";
+import { AJAXController } from "../types/networking/AJAXController.js";
 
-export class UserAJAXController extends AJAXController {
+export class UserManagerAJAXController extends AJAXController {
 
     static endpoints = {
         
@@ -19,7 +19,7 @@ export class UserAJAXController extends AJAXController {
         super();
 
             /**
-             * @type {Map<Number, UserEntry>}
+             * @type {Map<Number, UserDataEntry>}
              */
         this.users = new Map();
 
@@ -37,7 +37,7 @@ export class UserAJAXController extends AJAXController {
 
         const userMap = new Map();
 
-        const endpoint = UserAJAXController.endpoints.GETALLUSERS;
+        const endpoint = UserManagerAJAXController.endpoints.GETALLUSERS;
         const request = endpoint.path;
 
         await fetch( request, { method: endpoint.method } ).then( async response => {
@@ -45,7 +45,7 @@ export class UserAJAXController extends AJAXController {
             if( response.ok ) {
 
                 const JSONData = await response.json();
-                const users = Array.from( JSONData ).map( value => UserEntry.fromJSON( value ) );
+                const users = Array.from( JSONData ).map( value => UserDataEntry.fromJSON( value ) );
 
                 users.forEach( user => userMap.set( user.id, user ) );
 
@@ -67,8 +67,8 @@ export class UserAJAXController extends AJAXController {
 
         let user = null;
 
-        const endpoint = UserAJAXController.endpoints.GETUSER;
-        const request = endpoint.appendParams( new URLSearchParams({
+        const endpoint = UserManagerAJAXController.endpoints.GETUSER;
+        const request = endpoint.appendParameters( new URLSearchParams({
             id: id
         }));
 
@@ -77,7 +77,7 @@ export class UserAJAXController extends AJAXController {
             if( response.ok ) {
 
                 const JSONData = await response.json();
-                user = UserEntry.fromJSON( JSONData );
+                user = UserDataEntry.fromJSON( JSONData );
 
             } else {
                 throw new Error( await response.text() );
@@ -98,8 +98,8 @@ export class UserAJAXController extends AJAXController {
 
         let user = null;
 
-        const endpoint = UserAJAXController.endpoints.GETUSER;
-        const request = endpoint.appendParams( new URLSearchParams({
+        const endpoint = UserManagerAJAXController.endpoints.GETUSER;
+        const request = endpoint.appendParameters( new URLSearchParams({
             name: username
         }));
 
@@ -135,8 +135,8 @@ export class UserAJAXController extends AJAXController {
             throw new Error( "Password cannot be empty." );
         } else {
 
-            const endpoint = UserAJAXController.endpoints.CREATEUSER;
-            const request = endpoint.appendParams( {
+            const endpoint = UserManagerAJAXController.endpoints.CREATEUSER;
+            const request = endpoint.appendParameters({
                 name: username,
                 password: password
             });
@@ -160,8 +160,8 @@ export class UserAJAXController extends AJAXController {
          */
     async renameUser( id, newName ) {
 
-        const endpoint = UserAJAXController.endpoints.RENAMEUSER;
-        const request = endpoint.appendParams( new URLSearchParams({
+        const endpoint = UserManagerAJAXController.endpoints.RENAMEUSER;
+        const request = endpoint.appendParameters( new URLSearchParams({
             id: id,
             newname: newName
         }));
@@ -183,8 +183,8 @@ export class UserAJAXController extends AJAXController {
          */
     async renameUser( oldName, newName ) {
 
-        const endpoint = UserAJAXController.endpoints.RENAMEUSER;
-        const request = endpoint.appendParams( new URLSearchParams({
+        const endpoint = UserManagerAJAXController.endpoints.RENAMEUSER;
+        const request = endpoint.appendParameters( new URLSearchParams({
             name: oldName,
             newname: newName
         }));
@@ -204,8 +204,8 @@ export class UserAJAXController extends AJAXController {
          */
     async deleteUser( id ) {
 
-        const endpoint = UserAJAXController.endpoints.DELETEUSER;
-        const request = endpoint.appendParams( new URLSearchParams({
+        const endpoint = UserManagerAJAXController.endpoints.DELETEUSER;
+        const request = endpoint.appendParameters( new URLSearchParams({
             id: id
         }));
 
@@ -225,8 +225,8 @@ export class UserAJAXController extends AJAXController {
          */
     async deleteUser( name ) {
     
-        const endpoint = UserAJAXController.endpoints.DELETEUSER;
-        const request = endpoint.appendParams( new URLSearchParams({
+        const endpoint = UserManagerAJAXController.endpoints.DELETEUSER;
+        const request = endpoint.appendParameters( new URLSearchParams({
             name: name
         }));
     

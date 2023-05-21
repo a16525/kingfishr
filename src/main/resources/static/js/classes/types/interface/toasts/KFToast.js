@@ -32,7 +32,7 @@ export class KFToast extends EventTarget {
             /**
              * @type {HTMLDivElement}
              */
-        this.toastContent = this.toastContent.querySelector( "div.toast-body" );
+        this.toastContent = this.toastElement.querySelector( "div.toast-body" );
 
         this.disposeEvent = new CustomEvent( "toast-dispose" );
 

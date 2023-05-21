@@ -1,11 +1,10 @@
 import { Entry } from "../types/entry/Entry.js";
-import { FileDataEntry } from "../types/entry/FileDataEntry.js";
-import { DisplayManager } from "./DisplayManager";
+import { DisplayManager } from "./DisplayManager.js";
 
     /**
      * A more flexible display manager that can toggle between schemes.
      */
-export class SchemableDisplayManager extends DisplayManager {
+export class SchemeableDisplayManager extends DisplayManager {
 
     static schemes = {
         LIST: "list",
@@ -27,20 +26,20 @@ export class SchemableDisplayManager extends DisplayManager {
                 /**
                  * @type {HTMLDivElement}
                  */
-            LIST: this.viewParent.querySelector( "div.__display_manager_theme_list" ),
+            LIST: this.viewParent.querySelector( "div.__display_manager_scheme_list" ),
                 /**
                  * @type {HTMLDivElement}
                  */
-            GRID: this.viewParent.querySelector( "div.__display_manager_theme_grid" )
+            GRID: this.viewParent.querySelector( "div.__display_manager_scheme_grid" )
         };
 
         switch( this.scheme ) {
 
-            case SchemableDisplayManager.schemes.LIST: default:
+            case SchemeableDisplayManager.schemes.LIST: default:
                 this.currentTargetElement = this.targetElements.LIST;
             break;
 
-            case SchemableDisplayManager.schemes.GRID:
+            case SchemeableDisplayManager.schemes.GRID:
                 this.currentTargetElement = this.targetElements.GRID;
             break;
 
@@ -59,9 +58,9 @@ export class SchemableDisplayManager extends DisplayManager {
 
         switch( this.scheme ) {
 
-            case SchemableDisplayManager.schemes.LIST:
+            case SchemeableDisplayManager.schemes.LIST:
 
-                const tableContent = this.currentTargetElement.querySelector( "div.__display_manager_theme_list_content" )
+                const tableContent = this.currentTargetElement.querySelector( "tbody.__display_manager_scheme_list_content" );
                 tableContent.innerHTML = "";
 
                 data.forEach( ( entry, key ) => {
@@ -93,7 +92,7 @@ export class SchemableDisplayManager extends DisplayManager {
 
             break;
 
-            case SchemableDisplayManager.schemes.GRID:
+            case SchemeableDisplayManager.schemes.GRID:
                 // TBI
             break;
 
@@ -106,7 +105,7 @@ export class SchemableDisplayManager extends DisplayManager {
          */
     updateTableHeight() {
 
-        if( this.scheme != SchemableDisplayManager.schemes.LIST ) return;
+        if( this.scheme != SchemeableDisplayManager.schemes.LIST ) return;
         super.updateTableHeight();
 
     }
@@ -116,16 +115,16 @@ export class SchemableDisplayManager extends DisplayManager {
             /**
              * @type {HTMLElement}
              */
-        const listIcon = this.togglerButton.querySelector( "i.bi.__displayicon_theme_list" );
+        const listIcon = this.togglerButton.querySelector( "i.bi.__displayicon_scheme_list" );
 
             /**
              * @type {HTMLElement}
              */
-        const gridIcon = this.togglerButton.querySelector( "i.bi.__displayicon_theme_grid" );
+        const gridIcon = this.togglerButton.querySelector( "i.bi.__displayicon_scheme_grid" );
 
         switch( this.scheme ) {
 
-            case SchemableDisplayManager.schemes.LIST:
+            case SchemeableDisplayManager.schemes.LIST:
 
                 this.scheme = DisplayManager.schemes.GRID;
                 this.currentTargetElement = this.targetElements.GRID;
@@ -135,7 +134,7 @@ export class SchemableDisplayManager extends DisplayManager {
 
             break;
 
-            case SchemableDisplayManager.schemes.GRID:
+            case SchemeableDisplayManager.schemes.GRID:
 
                 this.scheme = DisplayManager.schemes.LIST;
                 this.currentTargetElement = this.targetElements.LIST;

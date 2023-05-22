@@ -139,21 +139,22 @@ export class FileManagerAJAXController extends AJAXController {
 
         });
 
-        xhr.addEventListener( "load", () => {
-
-            if( !( xhr.status >= 200 && xhr.status < 300 ) ) {
-                throw new Error( request.text() );
-            }
-
-        });
-
         xhr.addEventListener( "readystatechange", () => {
 
             if( xhr.readyState == 4 ) {
-                this.dispatchEvent( this.uploadFinishEvent );
+
+                if( xhr.status >= 200 && xhr.status < 300 ) {
+                    this.dispatchEvent( this.uploadFinishEvent );
+                } else {
+
+                    uploadToast.showMessage( xhr.responseText );
+                    uploadToast.cancelUpload();
+
+                }
+
             }
 
-        });
+        });        
 
         uploadToast.addEventListener( "cancel-upload", () => {
             xhr.abort();

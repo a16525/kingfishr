@@ -77,6 +77,7 @@ function setupUploadFilesModal() {
             uploadFilesHandler.bootstrapModal.hide();
 
             const uploadToastTemplate = document.getElementById( "fileUploadToast" );
+            let uploadRefresh;
 
             files.forEach( file => {
 
@@ -87,19 +88,29 @@ function setupUploadFilesModal() {
 
                 const toast = new KFUploadToast( uploadToastTemplate, file.name, destination );
 
-                const toastID = toastManager.trackToast( toast );
-                fileManagerAjaxController.uploadFile( file, toast );
+                const toastID = toastManager.trackToast( toast );                
+                fileManagerAjaxController.uploadFile( file, toast )
 
                 toastManager.showToast( toastID );
 
-                const oldUploadDirectory = fileManagerAjaxController.currentWorkingDirectory;
-                fileManagerAjaxController.addEventListener( "ajax-upload-finish", async () => {
+            });
 
-                    if( oldUploadDirectory == fileManagerAjaxController.currentWorkingDirectory ) {
-                        await fileActionController.refreshView();
+            const oldUploadDirectory = fileManagerAjaxController.currentWorkingDirectory;
+            let uploadFinishReload = null;
+
+            fileManagerAjaxController.addEventListener( "ajax-upload-finish", async () => {                    
+
+                if( oldUploadDirectory == fileManagerAjaxController.currentWorkingDirectory ) {
+                    
+                    if( uploadFinishReload != null ) {
+                        clearTimeout( uploadFinishReload );                        
                     }
 
-                });
+                    uploadFinishReload = setTimeout( async () => { 
+                        await fileActionController.refreshView();
+                    }, 500 );
+
+                }
 
             });
 

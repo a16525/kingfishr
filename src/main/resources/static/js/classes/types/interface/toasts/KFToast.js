@@ -34,6 +34,12 @@ export class KFToast extends EventTarget {
              */
         this.toastContent = this.toastElement.querySelector( "div.toast-body" );
 
+            /**
+             * @type {HTMLDivElement}
+             */
+        this.toastMessagebox = this.toastElement.querySelector( "div.__toast_messagebox" );
+        this.toastElement.id = "";
+
         this.disposeEvent = new CustomEvent( "toast-dispose" );
 
     }
@@ -44,6 +50,23 @@ export class KFToast extends EventTarget {
 
     hide() {
         this.bootstrapToast.hide();
+    }
+
+        /**
+         * @param {String} messageText
+         */
+    showMessage( messageText ) {        
+
+        this.toastMessagebox.innerHTML = messageText;
+        this.toastMessagebox.classList.remove( "d-none" );
+
+    }
+
+    hideMessage() {
+
+        this.toastMessagebox.classList.add( "d-none" );
+        this.toastMessagebox.innerHTML = "";
+
     }
 
     maximize() {

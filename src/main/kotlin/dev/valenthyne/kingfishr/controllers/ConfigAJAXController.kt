@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
+import java.io.File
+import kotlin.io.path.Path
+import kotlin.io.path.createDirectory
 
 @Controller
 class ConfigAJAXController {
@@ -122,12 +125,22 @@ class ConfigAJAXController {
             response = ResponseEntity( HttpStatus.FORBIDDEN )
         } else {
 
-            val encodedPassword = BCryptPasswordEncoder().encode( password )
+            try {
 
-            val newUser = User( username = name, password = encodedPassword )
-            userRepository.save( newUser )
+                val encodedPassword = BCryptPasswordEncoder().encode(password)
 
-            response = ResponseEntity( HttpStatus.CREATED )
+                val newUser = User(username = name, password = encodedPassword)
+                userRepository.save(newUser)
+
+                Path("storage/$name").createDirectory()
+
+                response = ResponseEntity(HttpStatus.CREATED)
+
+            } catch( exc: FileAlreadyExistsException ) {
+                response = ResponseEntity( HttpStatus.OK )
+            } catch( exc: Exception ) {
+                response = ResponseEntity( "Unable to create user; please try again.", HttpStatus.INTERNAL_SERVER_ERROR )
+            }
 
         }
 
@@ -162,8 +175,19 @@ class ConfigAJAXController {
 
                 if( user != null ) {
 
+                    val oldName = user.username
+
                     user.username = newName
                     userRepository.save( user )
+
+                    val oldPath = File( "storage/$oldName" )
+                    val newPath = File( "storage/$newName" )
+
+                    if( oldPath.exists() ) {
+                        oldPath.renameTo( newPath )
+                    } else {
+                        newPath.toPath().createDirectory()
+                    }
 
                     response = ResponseEntity( HttpStatus.OK )
 

@@ -40,6 +40,14 @@ function setupCreateUserModal() {
 
 }
 
+function setupChangeUserPropertiesModal() {
+
+    const modalParent = document.getElementById( "modifyUserModal" );
+
+    
+
+}
+
 function setupDeleteUserModal() {
 
     const modalParent = document.getElementById( "deleteUserModal" );
@@ -51,7 +59,7 @@ function setupDeleteUserModal() {
 
     const deleteUserHandler = new ModalHandler( modalParent, modalOpener );
 
-    deleteUserHandler.modalConfirmButton.disabled = true;
+    modalOpener.addEventListener( "click", () => deleteUserHandler.modalConfirmButton.disabled = true );
 
     deleteUserHandler.modalInput.addEventListener( "input", () => {
 
@@ -66,7 +74,12 @@ function setupDeleteUserModal() {
     deleteUserHandler.onModalConfirm = async () => {
 
         if( userManagerAjaxController.selectedUser == null ) {
+            
             deleteUserHandler.showMessage( "User must be selected." );
+            
+            deleteUserHandler.modalConfirmButton.disabled = true;
+            deleteUserHandler.modalInput.value = "";
+
         } else {
 
             deleteUserHandler.hideMessage();

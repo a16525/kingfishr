@@ -24,7 +24,7 @@ export class FileDataEntry extends Entry {
         [ "rar",     new FileTypeTranslator( "file-earmark-zip",         "Compressed (rar)" ) ],
         [ "bzip2",   new FileTypeTranslator( "file-earmark-zip",         "Compressed (bzip2)" ) ],
         [ "gz",      new FileTypeTranslator( "file-earmark-zip",         "Compressed (gzip)" ) ],
-        [ "xz",      new FileTypeTranslator( "file-earmark-zip",         "Compressed (xz)" ) ]
+        [ "xz",      new FileTypeTranslator( "file-earmark-zip",         "Compressed (xz)" ) ],
 
             // Audio
         [ "mp3",     new FileTypeTranslator( "file-earmark-music",       "Audio" ) ],

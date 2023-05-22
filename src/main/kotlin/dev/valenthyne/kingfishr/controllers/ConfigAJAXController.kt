@@ -1,6 +1,7 @@
 package dev.valenthyne.kingfishr.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import dev.valenthyne.kingfishr.classes.ActiveUserManager
 import dev.valenthyne.kingfishr.classes.crudops.UserRepository
 import dev.valenthyne.kingfishr.classes.crudops.models.User
 import dev.valenthyne.kingfishr.classes.crudops.models.UserInfo
@@ -32,6 +33,8 @@ class ConfigAJAXController {
 
     @Autowired
     private lateinit var userRepository: UserRepository
+
+    private val activeUserManager = ActiveUserManager()
 
     @GetMapping( "/api/user" )
     fun getUser( @RequestParam( name = "id", required = false ) id: Long?,
@@ -191,6 +194,8 @@ class ConfigAJAXController {
                         newPath.toPath().createDirectory()
                     }
 
+                    activeUserManager.invalidateUserSession( user.username )
+
                 }
 
                 response = ResponseEntity( HttpStatus.OK )
@@ -225,6 +230,7 @@ class ConfigAJAXController {
                 } else {
 
                     userRepository.delete(user)
+                    activeUserManager.invalidateUserSession( user.username )
 
                     Path( "storage/${user.username}" ).deleteRecursively()
 

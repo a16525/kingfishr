@@ -3,50 +3,44 @@ package dev.valenthyne.kingfishr.classes
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.session.SessionInformation
 import org.springframework.security.core.session.SessionRegistry
+import org.springframework.stereotype.Component
 
+@Component
 class ActiveUserManager {
 
     @Autowired
-    lateinit var sessionRegistry: SessionRegistry
+    private lateinit var sessionRegistry: SessionRegistry
 
+    fun getLoggedInUsers(): Map<String, SessionInformation> {
 
+        val users: MutableMap<String, SessionInformation> = mutableMapOf()
+        val principals = sessionRegistry.allPrincipals
 
-    fun getLoggedInUsers(): Map<CustomUserDetails, SessionInformation> {
+        for( principal in principals ) {
 
-        val allPrincipals = sessionRegistry.allPrincipals
-        val loggedInUsers: MutableMap<CustomUserDetails, SessionInformation> = mutableMapOf()
+            for( session in sessionRegistry.getAllSessions( principal, false ) ) {
 
-        for( session in sessionRegistry.getAllSessions( allPrincipals, false ) ) {
+                val userDetails = principal as CustomUserDetails
+                users[userDetails.username] = session
 
-            if( session.principal is CustomUserDetails ) {
-                loggedInUsers[session.principal as CustomUserDetails] = session
             }
 
         }
 
-        return loggedInUsers
+        return users
 
     }
 
     fun invalidateUserSession( username: String ): Boolean {
 
         var invalidated = false
-        val userSessions = getLoggedInUsers()
+        val activeUsers = getLoggedInUsers()
+        val user = activeUsers[username]
 
-        for( userDetails in userSessions.keys ) {
+        if( user != null ) {
 
-            if( userDetails.username == username ) {
-
-                val session: SessionInformation? = userSessions[userDetails]
-
-                if( session != null ) {
-
-                    session.expireNow()
-                    invalidated = true
-
-                }
-
-            }
+            user.expireNow()
+            invalidated = true
 
         }
 

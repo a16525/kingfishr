@@ -34,7 +34,8 @@ class ConfigAJAXController {
     @Autowired
     private lateinit var userRepository: UserRepository
 
-    private val activeUserManager = ActiveUserManager()
+    @Autowired
+    private lateinit var activeUserManager: ActiveUserManager
 
     @GetMapping( "/api/user" )
     fun getUser( @RequestParam( name = "id", required = false ) id: Long?,

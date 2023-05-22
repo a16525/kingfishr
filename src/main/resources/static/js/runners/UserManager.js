@@ -40,6 +40,59 @@ function setupCreateUserModal() {
 
 }
 
+function setupDeleteUserModal() {
+
+    const modalParent = document.getElementById( "deleteUserModal" );
+
+        /**
+         * @type {HTMLButtonElement}
+         */
+    const modalOpener = document.querySelector( "button.__action_delete_user" );
+
+    const deleteUserHandler = new ModalHandler( modalParent, modalOpener );
+
+    deleteUserHandler.modalConfirmButton.disabled = true;
+
+    deleteUserHandler.modalInput.addEventListener( "input", () => {
+
+        if( deleteUserHandler.modalInput.value == "Yes, do as I say!" ) {
+            deleteUserHandler.modalConfirmButton.disabled = false;
+        } else {
+            deleteUserHandler.modalConfirmButton.disabled = true;
+        }
+
+    });
+
+    deleteUserHandler.onModalConfirm = async () => {
+
+        if( userManagerAjaxController.selectedUser == null ) {
+            deleteUserHandler.showMessage( "User must be selected." );
+        } else {
+
+            deleteUserHandler.hideMessage();
+            deleteUserHandler.disableButtons();
+
+            await userManagerAjaxController.deleteUser( userManagerAjaxController.selectedUser.id ).then( async () => {
+
+                deleteUserHandler.bootstrapModal.hide();
+                await userActionController.getUsers();
+
+            }).catch( error => {
+                
+                deleteUserHandler.showMessage( "An error occurred while deleting the user;<br>" + error );
+                deleteUserHandler.enableButtons();
+                
+                deleteUserHandler.modalConfirmButton.disabled = true;
+                deleteUserHandler.modalInput.value = "";
+
+            });
+
+        }
+
+    }
+
+}
+
 document.addEventListener( "DOMContentLoaded", async () => {
 
         /**
@@ -61,6 +114,7 @@ document.addEventListener( "DOMContentLoaded", async () => {
     userActionController = new UserActionController( displayManager, userManagerAjaxController, actionBar, managementCard );
 
     setupCreateUserModal();
+    setupDeleteUserModal();
 
     await userActionController.getUsers();
 

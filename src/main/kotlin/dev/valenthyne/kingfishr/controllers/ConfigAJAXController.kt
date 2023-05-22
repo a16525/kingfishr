@@ -20,8 +20,12 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import java.io.File
+import java.nio.file.FileAlreadyExistsException
+import java.util.*
+import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectory
+import kotlin.io.path.deleteRecursively
 
 @Controller
 class ConfigAJAXController {
@@ -123,23 +127,28 @@ class ConfigAJAXController {
 
         if( authentication is AnonymousAuthenticationToken || !authentication.authorities.contains( SimpleGrantedAuthority( "ROLE_ADMIN" ) ) ) {
             response = ResponseEntity( HttpStatus.FORBIDDEN )
+        } else
+        if( name.contains( Regex( """[#%&{}<>*?/$!'\\":@+`|=]+?""" ) ) ) {
+            response = ResponseEntity( "Invalid username.", HttpStatus.BAD_REQUEST )
         } else {
 
-            try {
+            val encodedPassword = BCryptPasswordEncoder().encode(password)
 
-                val encodedPassword = BCryptPasswordEncoder().encode(password)
+            if( userRepository.getUserByUsername( name ) != null ) {
+                response = ResponseEntity( "User with provided name already exists", HttpStatus.BAD_REQUEST )
+            } else {
 
-                val newUser = User(username = name, password = encodedPassword)
+                val newUser = User(username = name, password = encodedPassword, timestampCreated = Date())
                 userRepository.save(newUser)
 
-                Path("storage/$name").createDirectory()
+                try {
+                    Path("storage/$name").createDirectory()
+                } catch (exc: FileAlreadyExistsException) {
+                    response = ResponseEntity(HttpStatus.OK)
+                }
 
                 response = ResponseEntity(HttpStatus.CREATED)
 
-            } catch( exc: FileAlreadyExistsException ) {
-                response = ResponseEntity( HttpStatus.OK )
-            } catch( exc: Exception ) {
-                response = ResponseEntity( "Unable to create user; please try again.", HttpStatus.INTERNAL_SERVER_ERROR )
             }
 
         }
@@ -149,8 +158,7 @@ class ConfigAJAXController {
     }
 
     @PatchMapping( "/api/user" )
-    fun renameUser( @RequestParam( name = "id", required = false ) id: Long?,
-                    @RequestParam( name = "name", required = false ) name: String?,
+    fun renameUser( @RequestParam( name = "id", required = true ) id: Long,
                     @RequestParam( name = "newname", required = true ) newName: String ): ResponseEntity<String> {
 
         val authentication = SecurityContextHolder.getContext().authentication
@@ -158,43 +166,37 @@ class ConfigAJAXController {
 
         if( authentication is AnonymousAuthenticationToken || !authentication.authorities.contains( SimpleGrantedAuthority( "ROLE_ADMIN" ) ) ) {
             response = ResponseEntity( HttpStatus.FORBIDDEN )
+        } else
+        if( newName.contains( Regex( """#%&\{}<>*?/\$!'\\":@+`|=""" ) ) ) {
+            response = ResponseEntity( "Invalid username.", HttpStatus.BAD_REQUEST )
         } else {
 
-            if( id == null && name == null ) {
-                response = ResponseEntity( "Parameter 'id' or 'name' must be set.", HttpStatus.BAD_REQUEST )
-            } else {
+            val user : User? = userRepository.getUserByID(id)
 
-                var user : User? = null
+            if( user != null ) {
 
-                if( id != null ) {
-                    user = userRepository.getUserByID( id )
-                } else
-                if( name != null ) {
-                    user = userRepository.getUserByUsername( name )
-                }
+                val oldName = user.username
 
-                if( user != null ) {
+                user.username = newName
+                userRepository.save( user )
 
-                    val oldName = user.username
+                if( !user.isConfigurator ) {
 
-                    user.username = newName
-                    userRepository.save( user )
+                    val oldPath = File("storage/$oldName")
+                    val newPath = File("storage/$newName")
 
-                    val oldPath = File( "storage/$oldName" )
-                    val newPath = File( "storage/$newName" )
-
-                    if( oldPath.exists() ) {
-                        oldPath.renameTo( newPath )
+                    if (oldPath.exists()) {
+                        oldPath.renameTo(newPath)
                     } else {
                         newPath.toPath().createDirectory()
                     }
 
-                    response = ResponseEntity( HttpStatus.OK )
-
-                } else {
-                    response = ResponseEntity( HttpStatus.NOT_FOUND )
                 }
 
+                response = ResponseEntity( HttpStatus.OK )
+
+            } else {
+                response = ResponseEntity( HttpStatus.NOT_FOUND )
             }
 
         }
@@ -203,9 +205,9 @@ class ConfigAJAXController {
 
     }
 
+    @OptIn(ExperimentalPathApi::class)
     @DeleteMapping( "/api/user" )
-    fun deleteUser( @RequestParam( name = "id", required = false ) id: Long?,
-                    @RequestParam( name = "name", required = false ) name: String? ): ResponseEntity<String> {
+    fun deleteUser( @RequestParam( name = "id", required = true ) id: Long ): ResponseEntity<String> {
 
         val authentication = SecurityContextHolder.getContext().authentication
         lateinit var response: ResponseEntity<String>
@@ -214,32 +216,24 @@ class ConfigAJAXController {
             response = ResponseEntity( HttpStatus.FORBIDDEN )
         } else {
 
-            if( id == null && name == null ) {
-                response = ResponseEntity( "Parameter 'id' or 'name' must be set.", HttpStatus.BAD_REQUEST )
-            } else {
+            val user : User? = userRepository.getUserByID( id )
 
-                var user : User? = null
+            if( user != null ) {
 
-                if( id != null ) {
-                    user = userRepository.getUserByID( id )
-                } else
-                if( name != null ) {
-                    user = userRepository.getUserByUsername( name )
-                }
-
-                if( user != null ) {
-
-                    if( user.isConfigurator ) {
-                        response = ResponseEntity( "Cannot delete a configurator account.", HttpStatus.BAD_REQUEST )
-                    } else {
-                        userRepository.delete(user)
-                        response = ResponseEntity( HttpStatus.OK )
-                    }
-
+                if( user.isConfigurator ) {
+                    response = ResponseEntity( "Cannot delete a configurator account.", HttpStatus.BAD_REQUEST )
                 } else {
-                    response = ResponseEntity( HttpStatus.NOT_FOUND )
+
+                    userRepository.delete(user)
+
+                    Path( "storage/${user.username}" ).deleteRecursively()
+
+                    response = ResponseEntity( HttpStatus.OK )
+
                 }
 
+            } else {
+                response = ResponseEntity( HttpStatus.NOT_FOUND )
             }
 
         }

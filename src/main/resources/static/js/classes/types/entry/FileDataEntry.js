@@ -24,6 +24,7 @@ export class FileDataEntry extends Entry {
         [ "rar",     new FileTypeTranslator( "file-earmark-zip",         "Compressed (rar)" ) ],
         [ "bzip2",   new FileTypeTranslator( "file-earmark-zip",         "Compressed (bzip2)" ) ],
         [ "gz",      new FileTypeTranslator( "file-earmark-zip",         "Compressed (gzip)" ) ],
+        [ "xz",      new FileTypeTranslator( "file-earmark-zip",         "Compressed (xz)" ) ]
 
             // Audio
         [ "mp3",     new FileTypeTranslator( "file-earmark-music",       "Audio" ) ],
@@ -83,6 +84,7 @@ export class FileDataEntry extends Entry {
         [ "bin",     new FileTypeTranslator( "file-earmark-binary",      "Binary" ) ],
         [ "tar",     new FileTypeTranslator( "file-earmark-zip",         "Tarball" ) ],
         [ "deb",     new FileTypeTranslator( "file-earmark-zip",         "Debian package" ) ],
+        [ "exe",     new FileTypeTranslator( "filetype-exe",             "Executable" ) ],
         [ "generic", new FileTypeTranslator( "file-earmark",             "Generic" ) ],
         [ "unknown", new FileTypeTranslator( "file-earmark",             "Unknown" ) ]
     ]);

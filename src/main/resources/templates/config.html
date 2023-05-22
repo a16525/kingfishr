@@ -22,7 +22,7 @@
 
         <div class="__modals">
 
-            <div class="modal fade __create_folder_modal" id="createUserModal" tabindex="-1">
+            <div class="modal fade __create_user_modal" id="createUserModal" tabindex="-1">
 
                 <div class="modal-dialog modal-dialog-centered">
 
@@ -55,6 +55,48 @@
                 </div>
 
             </div>
+
+            <div class="modal fade __delete_user_modal" id="deleteUserModal" tabindex="-1">
+
+                <div class="modal-dialog modal-dialog-centered">
+
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="bi bi-person-fill-exclamation" aria-hidden="true"></i> Delete user</h5>
+                        </div>
+
+                        <div class="modal-body">
+                            
+                            <div class="alert alert-danger d-none __modal_messagebox" role="alert"></div>
+
+                            <div class="alert alert-danger text-center" role="alert">
+                                
+                                <h2 class="text-center">Warning!</h2>
+
+                                <strong>
+                                    This action <i>WILL</i> result in loss of data!<br>
+                                    To continue, type in the phrase below.
+                                </strong>
+
+                            </div>
+
+                            <form class="__modal_form">
+                                <input type="text" name="doasisay" class="form-control" placeholder="Yes, do as I say!">
+                            </form>
+
+                        </div>
+
+                        <div class="modal-footer">
+
+                            <button type="button" class="btn btn-primary __modal_cancel">Cancel</button>
+                            <button type="button" class="btn btn-danger __modal_confirm">DELETE</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 

@@ -7,6 +7,7 @@ export class UserDataEntry extends Entry {
      * @property {Number} id
      * @property {String} username
      * @property {Number} storageused
+     * @property {Number} timestampCreated
      * @property {Boolean} configurator
      */
 
@@ -15,12 +16,12 @@ export class UserDataEntry extends Entry {
          * @param {UserDataEntryLike} JSON 
          * @returns {UserEntry}
          */
-    static fromJSON( JSON ) {
+    static fromJSON( JSON ) {        
 
-        const { id, username, storageUsed, configurator } = JSON;
+        const { id, username, storageUsed, timestampCreated, configurator } = JSON;
 
-        if( id != undefined && username != undefined && storageUsed != undefined && configurator != undefined ) {
-            return new UserDataEntry( id, username, storageUsed, configurator );
+        if( id != undefined && username != undefined && storageUsed != undefined && timestampCreated != null && configurator != undefined ) {
+            return new UserDataEntry( id, username, storageUsed, timestampCreated, configurator );
         } else {
             throw new Error( "Invalid JSON data passed to UserEntry constructor." );
         }
@@ -32,15 +33,17 @@ export class UserDataEntry extends Entry {
          * @param {Number} id 
          * @param {String} username 
          * @param {Number} storageUsed
+         * @param {Date} timestampCreated
          * @param {Boolean} isConfigurator
          */
-    constructor( id, username, storageUsed, isConfigurator ) {
+    constructor( id, username, storageUsed, timestampCreated, isConfigurator ) {
 
         super();
 
         this.id = id;
         this.username = username;
         this.storageUsed = storageUsed;
+        this.timestampCreated =  new Date( timestampCreated );
         this.isConfigurator = isConfigurator;
 
     }

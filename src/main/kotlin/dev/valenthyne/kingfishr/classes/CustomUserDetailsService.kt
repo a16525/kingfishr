@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import java.util.*
 
 class CustomUserDetailsService: UserDetailsService {
 
@@ -19,7 +20,8 @@ class CustomUserDetailsService: UserDetailsService {
 
             val defaultConfiguratorUser = User(
                     username = "configurator",
-                    password = BCryptPasswordEncoder().encode( "password" )
+                    password = BCryptPasswordEncoder().encode( "password" ),
+                    timestampCreated = Date()
             )
 
             defaultConfiguratorUser.isConfigurator = true

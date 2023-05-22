@@ -14,6 +14,8 @@ export class UserManagerAJAXController extends AJAXController {
 
     }
 
+    static illegalUsernameCharacters = "[#%&{}\\<>*?/$!'\":@+`|=]+?";
+
     constructor() {
 
         super();
@@ -131,6 +133,9 @@ export class UserManagerAJAXController extends AJAXController {
         if( username == null || username.length == 0 ) {
             throw new Error( "Username cannot be empty." );
         } else
+        if( username.match( UserManagerAJAXController.illegalUsernameCharacters ) != null ) {
+            throw new Error( "Invalid username." );
+        } else
         if( password == null || password.length == 0 ) {
             throw new Error( "Password cannot be empty." );
         } else {
@@ -160,42 +165,25 @@ export class UserManagerAJAXController extends AJAXController {
          */
     async renameUser( id, newName ) {
 
-        const endpoint = UserManagerAJAXController.endpoints.RENAMEUSER;
-        const request = endpoint.appendParameters( new URLSearchParams({
-            id: id,
-            newname: newName
-        }));
+        if( newName.match( UserManagerAJAXController.illegalUsernameCharacters ) != null ) {
+            throw new Error( "Invalid username." );
+        } else {
 
-        await fetch( request, { method: endpoint.method }).then( async response => {
+            const endpoint = UserManagerAJAXController.endpoints.RENAMEUSER;
+            const request = endpoint.appendParameters( new URLSearchParams({
+                id: id,
+                newname: newName
+            }));
 
-            if( !response.ok ) {
-                throw new Error( await response.text() );
-            }
+            await fetch( request, { method: endpoint.method }).then( async response => {
 
-        });
+                if( !response.ok ) {
+                    throw new Error( await response.text() );
+                }
 
-    }
+            });
 
-        /**
-         * @overload
-         * @param {String} oldName
-         * @param {String} newName 
-         */
-    async renameUser( oldName, newName ) {
-
-        const endpoint = UserManagerAJAXController.endpoints.RENAMEUSER;
-        const request = endpoint.appendParameters( new URLSearchParams({
-            name: oldName,
-            newname: newName
-        }));
-
-        await fetch( request, { method: endpoint.method }).then( async response => {
-
-            if( !response.ok ) {
-                throw new Error( await response.text() );
-            }
-
-        });
+        }
 
     }
 
@@ -217,27 +205,6 @@ export class UserManagerAJAXController extends AJAXController {
 
         });
 
-    }
-    
-        /**
-         * @overload
-         * @param {String} name
-         */
-    async deleteUser( name ) {
-    
-        const endpoint = UserManagerAJAXController.endpoints.DELETEUSER;
-        const request = endpoint.appendParameters( new URLSearchParams({
-            name: name
-        }));
-    
-        await fetch( request, { method: endpoint.method }).then( async response => {
-    
-            if( !response.ok ) {
-                throw new Error( await response.text() );
-            }
-    
-        });
-    
     }
 
 }

@@ -27,6 +27,8 @@ function setupCreateUserModal() {
         await userManagerAjaxController.createUser( formData ).then( async () => {
 
             createUserHandler.bootstrapModal.hide();
+            createUserHandler.clearInputs();
+
             await userActionController.getUsers();
 
         }).catch( error => {
@@ -40,11 +42,73 @@ function setupCreateUserModal() {
 
 }
 
-function setupChangeUserPropertiesModal() {
+function setupRenameUserModal() {
 
-    const modalParent = document.getElementById( "modifyUserModal" );
+    const modalParent = document.getElementById( "renameUserModal" );
 
-    
+        /**
+         * @type {HTMLButtonElement}
+         */
+    const modalOpener = document.querySelector( "button.__action_rename_user" );
+
+    const renameUserHandler = new ModalHandler( modalParent, modalOpener );
+
+    renameUserHandler.onModalConfirm = async () => {
+
+        renameUserHandler.hideMessage();
+        renameUserHandler.disableButtons();
+
+        const formData = new FormData( renameUserHandler.modalForm );
+
+        await userManagerAjaxController.renameUser( userManagerAjaxController.selectedUser, formData ).then( async () => {
+
+            renameUserHandler.bootstrapModal.hide();
+            await userActionController.getUsers();
+
+        }).catch( error => {
+
+            renameUserHandler.enableButtons();
+            renameUserHandler.showMessage( "An error occurred while renaming the user;<br>" + error )
+
+        });
+
+    };
+
+}
+
+function setupChangeUserPasswordModal() {
+
+    const modalParent = document.getElementById( "changeUserPasswordModal" );
+
+        /**
+         * @type {HTMLButtonElement}
+         */
+    const modalOpener = document.querySelector( "button.__action_change_user_password" );
+
+    const changeUserPasswordHandler = new ModalHandler( modalParent, modalOpener );
+
+    changeUserPasswordHandler.onModalConfirm = async () => {
+
+        changeUserPasswordHandler.hideMessage();
+        changeUserPasswordHandler.disableButtons();
+
+        const formData = new FormData( changeUserPasswordHandler.modalForm );
+
+        await userManagerAjaxController.changeUserPassword( userManagerAjaxController.selectedUser, formData ).then( async () => {
+
+            changeUserPasswordHandler.bootstrapModal.hide();
+            changeUserPasswordHandler.clearInputs();
+
+            await userActionController.getUsers();
+
+        }).catch( error => {
+
+            changeUserPasswordHandler.enableButtons();
+            changeUserPasswordHandler.showMessage( "An error occurred while changing the user's password;<br>" + error )
+
+        });
+
+    };
 
 }
 
@@ -61,9 +125,9 @@ function setupDeleteUserModal() {
 
     modalOpener.addEventListener( "click", () => deleteUserHandler.modalConfirmButton.disabled = true );
 
-    deleteUserHandler.modalInput.addEventListener( "input", () => {
+    deleteUserHandler.modalInput[0].addEventListener( "input", () => {
 
-        if( deleteUserHandler.modalInput.value == "Yes, do as I say!" ) {
+        if( deleteUserHandler.modalInput[0].value == "Yes, do as I say!" ) {
             deleteUserHandler.modalConfirmButton.disabled = false;
         } else {
             deleteUserHandler.modalConfirmButton.disabled = true;
@@ -73,34 +137,23 @@ function setupDeleteUserModal() {
 
     deleteUserHandler.onModalConfirm = async () => {
 
-        if( userManagerAjaxController.selectedUser == null ) {
+        deleteUserHandler.hideMessage();
+        deleteUserHandler.disableButtons();
+
+        await userManagerAjaxController.deleteUser( userManagerAjaxController.selectedUser ).then( async () => {
+
+            deleteUserHandler.bootstrapModal.hide();
+            await userActionController.getUsers();
+
+        }).catch( error => {
             
-            deleteUserHandler.showMessage( "User must be selected." );
+            deleteUserHandler.showMessage( "An error occurred while deleting the user;<br>" + error );
+            deleteUserHandler.enableButtons();
             
             deleteUserHandler.modalConfirmButton.disabled = true;
-            deleteUserHandler.modalInput.value = "";
+            deleteUserHandler.modalInput[0].value = "";
 
-        } else {
-
-            deleteUserHandler.hideMessage();
-            deleteUserHandler.disableButtons();
-
-            await userManagerAjaxController.deleteUser( userManagerAjaxController.selectedUser.id ).then( async () => {
-
-                deleteUserHandler.bootstrapModal.hide();
-                await userActionController.getUsers();
-
-            }).catch( error => {
-                
-                deleteUserHandler.showMessage( "An error occurred while deleting the user;<br>" + error );
-                deleteUserHandler.enableButtons();
-                
-                deleteUserHandler.modalConfirmButton.disabled = true;
-                deleteUserHandler.modalInput.value = "";
-
-            });
-
-        }
+        });        
 
     }
 
@@ -127,6 +180,8 @@ document.addEventListener( "DOMContentLoaded", async () => {
     userActionController = new UserActionController( displayManager, userManagerAjaxController, actionBar, managementCard );
 
     setupCreateUserModal();
+    setupRenameUserModal();
+    setupChangeUserPasswordModal();
     setupDeleteUserModal();
 
     await userActionController.getUsers();

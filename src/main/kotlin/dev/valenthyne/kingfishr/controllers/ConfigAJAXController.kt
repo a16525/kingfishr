@@ -134,13 +134,16 @@ class ConfigAJAXController {
         } else
         if( name.contains( Regex( """[#%&{}<>*?/$!'\\":@+`|=]+?""" ) ) ) {
             response = ResponseEntity( "Invalid username.", HttpStatus.BAD_REQUEST )
+        } else
+        if( password.length <= 3 ) {
+            response = ResponseEntity( "Password must have atleast four characters.", HttpStatus.BAD_REQUEST )
         } else {
-
-            val encodedPassword = BCryptPasswordEncoder().encode(password)
 
             if( userRepository.getUserByUsername( name ) != null ) {
                 response = ResponseEntity( "User with provided name already exists", HttpStatus.BAD_REQUEST )
             } else {
+
+                val encodedPassword = BCryptPasswordEncoder().encode(password)
 
                 val newUser = User(username = name, password = encodedPassword, timestampCreated = Date())
                 userRepository.save(newUser)
@@ -195,14 +198,58 @@ class ConfigAJAXController {
                         newPath.toPath().createDirectory()
                     }
 
-                    activeUserManager.invalidateUserSession( user.username )
-
                 }
+
+                activeUserManager.invalidateUserSession( oldName )
 
                 response = ResponseEntity( HttpStatus.OK )
 
             } else {
                 response = ResponseEntity( HttpStatus.NOT_FOUND )
+            }
+
+        }
+
+        return response
+
+    }
+
+    @PatchMapping( "/api/user/password" )
+    fun changeUserPassword( @RequestParam( name = "id", required = true ) id: Long,
+                            @RequestParam( name = "oldpassword", required = true ) oldPassword: String,
+                            @RequestParam( name = "newpassword", required = true ) newPassword: String ): ResponseEntity<String> {
+
+        val authentication = SecurityContextHolder.getContext().authentication
+        lateinit var response: ResponseEntity<String>
+
+        if( authentication is AnonymousAuthenticationToken || !authentication.authorities.contains( SimpleGrantedAuthority( "ROLE_ADMIN" ) ) ) {
+            response = ResponseEntity( HttpStatus.FORBIDDEN )
+        } else
+        if( newPassword.length <= 3 ) {
+            response = ResponseEntity( "New password must have atleast four characters.", HttpStatus.BAD_REQUEST )
+        } else {
+
+            val user: User? = userRepository.getUserByID( id )
+
+            if( user != null ) {
+
+                val passwordEncoder = BCryptPasswordEncoder()
+
+                if( passwordEncoder.matches( oldPassword, user.password ) ) {
+
+                    val encodedNewPassword = passwordEncoder.encode( newPassword )
+                    user.password = encodedNewPassword
+
+                    userRepository.save( user )
+
+                    activeUserManager.invalidateUserSession( user.username )
+
+                    response = ResponseEntity( HttpStatus.OK )
+
+                } else {
+                    response = ResponseEntity( "Old user password provided is incorrect.", HttpStatus.BAD_REQUEST )
+                }
+
             }
 
         }

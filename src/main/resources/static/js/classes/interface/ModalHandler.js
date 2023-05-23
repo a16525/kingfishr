@@ -35,9 +35,9 @@ export class ModalHandler {
         this.modalForm = this.modalElement.querySelector( "form.__modal_form" );
 
             /**
-             * @type {HTMLInputElement}
+             * @type {HTMLInputElement[]}
              */
-        this.modalInput = this.modalForm.querySelector( "input" );
+        this.modalInput = Array.from( this.modalForm.querySelectorAll( "input" ) );
 
     }
 
@@ -49,7 +49,7 @@ export class ModalHandler {
         this.modalCancelButton.disabled = false;
         this.modalConfirmButton.disabled = false;
 
-        this.modalInput.value = "";
+        this.modalInput.forEach( input => input.value = "" );
 
         this.bootstrapModal.show();
 
@@ -93,6 +93,10 @@ export class ModalHandler {
         this.modalMessageBox.classList.add( "d-none" );
         this.modalMessageBox.innerHTML = "";
 
+    }
+
+    clearInputs() {
+        this.modalInput.forEach( input => input.value = "" );
     }
 
 }

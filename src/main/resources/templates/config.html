@@ -56,6 +56,73 @@
 
             </div>
 
+            <div class="modal fade __rename_user_modal" id="renameUserModal" tabindex="-1">
+
+                <div class="modal-dialog modal-dialog-centered">
+
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="bi bi-pencil-fill" aria-hidden="true"></i> Rename user</h5>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="alert alert-warning d-none __modal_messagebox" role="alert"></div>
+
+                            <form class="__modal_form">
+                                <input type="text" name="username" class="form-control" placeholder="New username">
+                            </form>
+
+                        </div>
+
+                        <div class="modal-footer">
+
+                            <button type="button" class="btn btn-danger __modal_cancel">Cancel</button>
+                            <button type="button" class="btn btn-primary __modal_confirm">Confirm</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal fade __change_user_password" id="changeUserPasswordModal" tabindex="-1">
+
+                <div class="modal-dialog modal-dialog-centered">
+
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="bi bi-key-fill" aria-hidden="true"></i> Change user password</h5>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="alert alert-warning d-none __modal_messagebox" role="alert"></div>
+
+                            <form class="__modal_form">
+                                <input type="password" name="old-password" class="form-control mb-1" placeholder="Old password">
+                                <input type="password" name="new-password" class="form-control" placeholder="New password">
+                            </form>
+
+                        </div>
+
+                        <div class="modal-footer">
+
+                            <button type="button" class="btn btn-danger __modal_cancel">Cancel</button>
+                            <button type="button" class="btn btn-primary __modal_confirm">Confirm</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
             <div class="modal fade __delete_user_modal" id="deleteUserModal" tabindex="-1">
 
                 <div class="modal-dialog modal-dialog-centered">
@@ -163,15 +230,19 @@
                                     <div class="d-flex w-auto pe-0 align-items-center __action_bar">
 
                                         <button class="btn rounded-circle __rounded_button __action_create_user" aria-label="Create user">
-                                            <i class="bi bi-plus" aria-hidden="true"></i>
+                                            <i class="bi bi-person-plus-fill" aria-hidden="true"></i>
                                         </button>
 
                                         <button class="btn rounded-circle __rounded_button __action_rename_user" aria-label="Rename user">
-                                            <i class="bi bi-gear-fill" aria-hidden="true"></i>
+                                            <i class="bi bi-pencil-fill" aria-hidden="true"></i>
+                                        </button>
+
+                                        <button class="btn rounded-circle __rounded_button __action_change_user_password" aria-label="Change user password">
+                                            <i class="bi bi-key-fill" aria-hidden="true"></i>
                                         </button>
 
                                         <button class="btn rounded-circle __rounded_button __action_delete_user" aria-label="Delete user">
-                                            <i class="bi bi-x" aria-hidden="true"></i>
+                                            <i class="bi bi-person-x-fill" aria-hidden="true"></i>
                                         </button>
 
                                         <button class="btn rounded-circle __rounded_button __action_refresh" aria-label="Refresh">

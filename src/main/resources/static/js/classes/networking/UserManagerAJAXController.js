@@ -10,6 +10,7 @@ export class UserManagerAJAXController extends AJAXController {
         GETALLUSERS: new Endpoint( "/api/users", Endpoint.httpMethods.GET ),
         CREATEUSER: new Endpoint( "/api/user", Endpoint.httpMethods.POST ),
         RENAMEUSER: new Endpoint( "/api/user", Endpoint.httpMethods.PATCH ),
+        CHANGEUSERPASSWORD: new Endpoint( "/api/user/password", Endpoint.httpMethods.PATCH ),
         DELETEUSER: new Endpoint( "/api/user", Endpoint.httpMethods.DELETE )
 
     }
@@ -136,8 +137,8 @@ export class UserManagerAJAXController extends AJAXController {
         if( username.match( UserManagerAJAXController.illegalUsernameCharacters ) != null ) {
             throw new Error( "Invalid username." );
         } else
-        if( password == null || password.length == 0 ) {
-            throw new Error( "Password cannot be empty." );
+        if( password == null || password.length <= 3 ) {
+            throw new Error( "Password must not be empty/must have atleast four characters." );
         } else {
 
             const endpoint = UserManagerAJAXController.endpoints.CREATEUSER;
@@ -160,18 +161,26 @@ export class UserManagerAJAXController extends AJAXController {
 
 
         /**
-         * @param {Number} id 
-         * @param {String} newName 
+         * @param {UserDataEntry} user
+         * @param {FormData} formData   
          */
-    async renameUser( id, newName ) {
+    async renameUser( user, formData ) {
 
+        const newName = formData.get( "username" );
+
+        if( user == null ) {
+            throw new Error( "User must be selected." );
+        } else
+        if( newName == null || newName.length == 0 ) {
+            throw new Error( "New username cannot be empty." )
+        } else
         if( newName.match( UserManagerAJAXController.illegalUsernameCharacters ) != null ) {
             throw new Error( "Invalid username." );
         } else {
 
             const endpoint = UserManagerAJAXController.endpoints.RENAMEUSER;
             const request = endpoint.appendParameters( new URLSearchParams({
-                id: id,
+                id: user.id,
                 newname: newName
             }));
 
@@ -188,22 +197,66 @@ export class UserManagerAJAXController extends AJAXController {
     }
 
         /**
-         * @param {Number} id 
+         * @param {UserDataEntry} user 
+         * @param {FormData} formData 
          */
-    async deleteUser( id ) {
+    async changeUserPassword( user, formData ) {
 
-        const endpoint = UserManagerAJAXController.endpoints.DELETEUSER;
-        const request = endpoint.appendParameters( new URLSearchParams({
-            id: id
-        }));
+        const oldPassword = formData.get( "old-password" );
+        const newPassword = formData.get( "new-password" );
 
-        await fetch( request, { method: endpoint.method }).then( async response => {
+        if( user == null ) {
+            throw new Error( "User must be selected." );
+        } else
+        if( oldPassword == null || oldPassword.length == 0 ) {
+            throw new Error( "Old password cannot be empty." );
+        } else
+        if( newPassword == null || newPassword.length <= 3 ) {
+            throw new Error( "New password must not be empty/must have atleast four characters." );
+        } else {
 
-            if( !response.ok ) {
-                throw new Error( await response.text() );
-            }
+            const endpoint = UserManagerAJAXController.endpoints.CHANGEUSERPASSWORD;
+            const request = endpoint.appendParameters( new URLSearchParams({
+                id: user.id,
+                oldpassword: oldPassword,
+                newpassword: newPassword
+            }));
 
-        });
+            await fetch( request, { method: endpoint.method }).then( async response => {
+
+                if( !response.ok ) {
+                    throw new Error( await response.text() );
+                }
+
+            });
+
+        }
+
+    }
+
+        /**
+         * @param {UserDataEntry} user 
+         */
+    async deleteUser( user ) {
+
+        if( user == null ) {
+            throw new Error( "User must be selected." );
+        } else {
+
+            const endpoint = UserManagerAJAXController.endpoints.DELETEUSER;
+            const request = endpoint.appendParameters( new URLSearchParams({
+                id: user.id
+            }));
+
+            await fetch( request, { method: endpoint.method }).then( async response => {
+
+                if( !response.ok ) {
+                    throw new Error( await response.text() );
+                }
+
+            });
+
+        }
 
     }
 

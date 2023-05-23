@@ -68,7 +68,7 @@ function setupUploadFilesModal() {
 
     uploadFilesHandler.onModalConfirm = async () => {
 
-        const files = Array.from( uploadFilesHandler.modalInput.files );
+        const files = Array.from( uploadFilesHandler.modalInput[0].files );
 
         if( files.length == 0 ) {
             uploadFilesHandler.showMessage( "Must select files(s) to be uploaded." );

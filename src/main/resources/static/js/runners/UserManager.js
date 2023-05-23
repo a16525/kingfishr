@@ -2,9 +2,27 @@ import { UserManagerAJAXController } from "../classes/networking/UserManagerAJAX
 import { UserActionController } from "../classes/interface/UserActionController.js";
 import { DisplayManager } from "../classes/interface/DisplayManager.js";
 import { ModalHandler } from "../classes/interface/ModalHandler.js";
+import { SearchAgent } from "../classes/interface/SearchAgent.js";
 
+    /**
+     * @type {UserManagerAJAXController}
+     */
 let userManagerAjaxController = new UserManagerAJAXController();
-let displayManager, userActionController;
+
+    /**
+     * @type {DisplayManager}
+     */
+let displayManager; 
+
+    /**
+     * @type {UserActionController}
+     */
+let userActionController; 
+
+    /**
+     * @type {SearchAgent}
+     */
+let searchAgent;
 
 function setupCreateUserModal() {
 
@@ -63,6 +81,7 @@ function setupRenameUserModal() {
         await userManagerAjaxController.renameUser( userManagerAjaxController.selectedUser, formData ).then( async () => {
 
             renameUserHandler.bootstrapModal.hide();
+            
             await userActionController.getUsers();
 
         }).catch( error => {
@@ -159,6 +178,12 @@ function setupDeleteUserModal() {
 
 }
 
+function setupSearchbar() {
+
+    //const inputElement = 
+
+}
+
 document.addEventListener( "DOMContentLoaded", async () => {
 
         /**
@@ -178,12 +203,13 @@ document.addEventListener( "DOMContentLoaded", async () => {
 
     displayManager = new DisplayManager( attachedElement );
     userActionController = new UserActionController( displayManager, userManagerAjaxController, actionBar, managementCard );
+    searchAgent = new SearchAgent();
 
     setupCreateUserModal();
     setupRenameUserModal();
     setupChangeUserPasswordModal();
     setupDeleteUserModal();
 
-    await userActionController.getUsers();
+    userActionController.getUsers();
 
 });

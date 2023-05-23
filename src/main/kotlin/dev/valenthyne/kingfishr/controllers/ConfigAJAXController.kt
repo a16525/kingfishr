@@ -23,10 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import java.io.File
 import java.nio.file.FileAlreadyExistsException
 import java.util.*
-import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.Path
-import kotlin.io.path.createDirectory
-import kotlin.io.path.deleteRecursively
+import kotlin.io.path.*
 
 @Controller
 class ConfigAJAXController {
@@ -148,13 +145,15 @@ class ConfigAJAXController {
                 val newUser = User(username = name, password = encodedPassword, timestampCreated = Date())
                 userRepository.save(newUser)
 
-                try {
-                    Path("storage/$name").createDirectory()
-                } catch (exc: FileAlreadyExistsException) {
-                    response = ResponseEntity(HttpStatus.OK)
-                }
+                val userDirectoryPath = Path( "storage/$name" )
+                if( !userDirectoryPath.exists() ) {
 
-                response = ResponseEntity(HttpStatus.CREATED)
+                    userDirectoryPath.createDirectory()
+                    response = ResponseEntity( HttpStatus.CREATED )
+
+                } else {
+                    response = ResponseEntity( HttpStatus.OK )
+                }
 
             }
 

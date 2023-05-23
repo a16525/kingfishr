@@ -46,7 +46,7 @@ export class SchemeableDisplayManager extends DisplayManager {
         }
 
         this.togglerButton = togglerButton;
-        this.togglerButton.addEventListener( "click", () => this.toggleScheme() );
+        this.togglerButton.addEventListener( "click", () => this.toggleDisplayScheme() );
 
     }
 
@@ -126,7 +126,7 @@ export class SchemeableDisplayManager extends DisplayManager {
 
             case SchemeableDisplayManager.schemes.LIST:
 
-                this.scheme = DisplayManager.schemes.GRID;
+                this.scheme = SchemeableDisplayManager.schemes.GRID;
                 this.currentTargetElement = this.targetElements.GRID;
 
                 listIcon.classList.add( "d-none" );
@@ -136,7 +136,7 @@ export class SchemeableDisplayManager extends DisplayManager {
 
             case SchemeableDisplayManager.schemes.GRID:
 
-                this.scheme = DisplayManager.schemes.LIST;
+                this.scheme = SchemeableDisplayManager.schemes.LIST;
                 this.currentTargetElement = this.targetElements.LIST;
 
                 listIcon.classList.remove( "d-none" );

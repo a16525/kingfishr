@@ -61,7 +61,7 @@ export class KFToastManager {
         const toast = this.trackedToasts.get( toastID );
         setTimeout( () => toast.hide(), 3000 );
 
-        toast.addEventListener( "hidden.bs.toast", () => {
+        toast.toastElement.addEventListener( "hidden.bs.toast", () => {
 
             this.trackedToasts.delete( toastID );
             toast.remove();

@@ -38,7 +38,7 @@ export class KFToast extends EventTarget {
              * @type {HTMLDivElement}
              */
         this.toastMessagebox = this.toastElement.querySelector( "div.__toast_messagebox" );
-        this.toastElement.id = "";
+        this.toastElement.removeAttribute( "id" );
 
         this.disposeEvent = new CustomEvent( "toast-dispose" );
 
@@ -110,6 +110,7 @@ export class KFToast extends EventTarget {
     }
 
     remove() {
+        console.log( this.toastElement )
         this.toastElement.remove();
     }
 

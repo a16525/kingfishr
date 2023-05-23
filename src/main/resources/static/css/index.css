@@ -89,3 +89,7 @@ th.__filetable_icon {
     max-width: 60%;
 
 }
+
+form.__search_filters_dropdown {
+    width: 400px;
+}

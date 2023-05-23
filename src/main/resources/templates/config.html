@@ -369,30 +369,16 @@
 
                                             <input type="number" class="form-control">
 
-                                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">MB</button>
-                                            <ul class="dropdown-menu dropdown-menu-end __storage_unit_dropdown">
+                                            <select class="form-select">
 
-                                                <li class="dropdown-item" data-unit="bytes">
-                                                    Bytes <span class="unit">B</span>
-                                                </li>
+                                                <option value="bytes">Bytes</option>
+                                                <option value="kilobytes">Kilobytes</option>
+                                                <option value="megabytes" selected>Megabytes</option>
+                                                <option value="gigabytes">Gigabytes</option>
+                                                <option value="terabytes">Terabytes</option>
 
-                                                <li class="dropdown-item" data-unit="kilobytes">
-                                                    Kilobytes <span class="unit">KB</span>
-                                                </li>
+                                            </select>
 
-                                                <li class="dropdown-item __selected_unit" data-unit="megabytes">
-                                                    Megabytes <span class="unit">MB</span>
-                                                </li>
-
-                                                <li class="dropdown-item" data-unit="gigabytes">
-                                                    Gigabytes <span class="unit">GB</span>
-                                                </li>
-
-                                                <li class="dropdown-item" data-unit="terabytes">
-                                                    Terabytes <span class="unit">TB</span>
-                                                </li>
-
-                                            </ul>
                                             <button class="btn btn-success" type="button">Apply</button>
 
                                         </div>

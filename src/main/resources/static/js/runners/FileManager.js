@@ -131,11 +131,6 @@ document.addEventListener( "DOMContentLoaded", async () => {
         /**
          * @type {HTMLDivElement}
          */
-    const navigationBar = document.querySelector( "div.__navigation_component" );
-
-        /**
-         * @type {HTMLDivElement}
-         */
     const navigationToggleSchemeButton = document.querySelector( "button.__nav_toggle_scheme" );
 
         /**
@@ -144,7 +139,7 @@ document.addEventListener( "DOMContentLoaded", async () => {
     const toastContainer = document.querySelector( "div.toast-container" );
 
     schemeableDisplayManager = new SchemeableDisplayManager( SchemeableDisplayManager.schemes.LIST, attachedElement, navigationToggleSchemeButton );
-    fileActionController = new FileActionController( schemeableDisplayManager, fileManagerAjaxController, navigationBar );
+    fileActionController = new FileActionController( schemeableDisplayManager, fileManagerAjaxController );
     toastManager = new KFToastManager( toastContainer );
 
     setupHeightUpdateForcers();

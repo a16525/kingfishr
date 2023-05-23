@@ -9,34 +9,33 @@ export class FileActionController extends ActionController {
          * @param {FileManagerAJAXController} fileManagerAjaxController 
          * @param {HTMLDivElement} navigationBar 
          */
-    constructor( displayManager, fileManagerAjaxController, navigationBar ) {
+    constructor( displayManager, fileManagerAjaxController ) {
 
         super( displayManager );
 
         this.fileManagerAjaxController = fileManagerAjaxController;
-        this.navigationBar = navigationBar;
 
             /**
              * @type {HTMLDivElement}
              */
-        this.breadcrumb = navigationBar.querySelector( "nav > ol.breadcrumb" );
+        this.breadcrumb = document.querySelector( "nav > ol.breadcrumb" );
 
             /**
              * @type {HTMLButtonElement}
              */
-        this.upButton = navigationBar.querySelector( "button.__nav_back" );
+        this.upButton = document.querySelector( "button.__nav_back" );
         this.upButton.addEventListener( "click", () => this.navigateUp() );
 
             /**
              * @type {HTMLButtonElement}
              */
-        this.homeButton = navigationBar.querySelector( "button.__nav_home" );
+        this.homeButton = document.querySelector( "button.__nav_home" );
         this.homeButton.addEventListener( "click", () => this.navigateHome() );
 
             /**
              * @type {HTMLButtonElement}
              */
-        this.refreshButton = navigationBar.querySelector( "button.__nav_refresh" );
+        this.refreshButton = document.querySelector( "button.__nav_refresh" );
         this.refreshButton.addEventListener( "click", () => this.refreshView() );
 
         window.addEventListener( "click", (evt) => this.getContextFromClick( evt ) );

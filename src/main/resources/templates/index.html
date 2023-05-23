@@ -268,32 +268,80 @@
 
                     <div class="row py-2 border-bottom">
 
-                        <div class="input-group">
+                        <div class="d-flex">
 
-                            <div class="form-floating">
+                            <div class="d-flex pe-0 align-items-center">
 
-                                <input type="search" class="form-control" id="storage-search-input" placeholder="Search" aria-label="Search">
+                                <button class="btn rounded-circle __rounded_button __nav_back" aria-label="Parent directory">
+                                    <i class="bi bi-arrow-up" aria-hidden="true"></i>
+                                </button>
 
-                                <label for="storage-search-input">
-                                    <i class="bi bi-search" aria-hidden="true"></i>
-                                    Search
-                                </label>
+                                <button class="btn rounded-circle __rounded_button __nav_home" aria-label="Root directory">
+                                    <i class="bi bi-house" aria-hidden="true"></i>
+                                </button>
+
+                                <button class="btn rounded-circle __rounded_button __nav_refresh" aria-label="Refresh">
+                                    <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                                </button>
 
                             </div>
 
-                            <div class="btn-group dropdown-center">
+                            <div class="w-100 mx-2">
 
-                                <button class="btn btn-outline-secondary rounded-0 rounded-end dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Filters" type="button">
-                                    <i class="bi bi-sliders2" aria-hidden="true"></i>
-                                </button>
+                                <div class="input-group">
 
-                                <div class="dropdown-menu">
+                                    <div class="btn-group dropdown-center">
 
-                                    <div class="d-flex">
+                                        <button class="btn btn-outline-secondary rounded-0 rounded-start dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Filters" type="button">
+                                            <i class="bi bi-sliders2" aria-hidden="true"></i>
+                                        </button>
 
-                                        <button type="btn btn-primary __filter_apply_button">Apply</button>
+                                        <form class="dropdown-menu p-4 __search_filters_dropdown">
+
+                                            <div class="input-group mb-2">
+
+                                                <div class="input-group-text">
+                                                    <input class="form-check-input mt-0 __file_size_checkbox" type="checkbox" value="" aria-label="Apply file size filter">
+                                                </div>
+
+                                                <span class="input-group-text">File size:</span>
+
+                                                <select class="form-select">
+                                                    <option value="bigger">Bigger than</option>
+                                                    <option value="smaller">Smaller than</option>
+                                                    <option value="equal">Equal to</option>
+                                                </select>
+
+                                            </div>
+
+                                            <div class="input-group mb-2">
+
+                                                <div class="input-group-text">
+                                                    <input class="form-check-input mt-0 __file_type_checkbox" type="checkbox" value="" aria-label="Apply file type filter">
+                                                </div>
+
+                                                <span class="input-group-text">File type:</span>
+
+                                                <select class="form-select">
+                                                    <option value="none">Select an option</option>
+                                                </select>
+
+                                            </div>
+
+                                        </form>
 
                                     </div>
+
+                                    <div class="form-floating">
+
+                                        <input name="search-name" id="search-name" type="search" class="form-control" placeholder="Search" aria-label="File name">
+                                        <label for="search-name">Search</label>
+
+                                    </div>
+
+                                    <button class="btn btn-outline-secondary __button_search" type="button" aria-label="Perform search">
+                                        <i class="bi bi-search" aria-hidden="true"></i>
+                                    </button>
 
                                 </div>
 
@@ -305,27 +353,11 @@
 
                     <div class="d-flex flex-nowrap row border-bottom pe-0 __navigation_component">
 
-                        <div class="d-flex w-auto py-2 pe-0">
-
-                            <button class="btn rounded-circle __rounded_button __nav_back" aria-label="Parent directory">
-                                <i class="bi bi-arrow-up" aria-hidden="true"></i>
-                            </button>
-
-                            <button class="btn rounded-circle __rounded_button __nav_home" aria-label="Root directory">
-                                <i class="bi bi-house" aria-hidden="true"></i>
-                            </button>
-
-                            <button class="btn rounded-circle __rounded_button __nav_refresh" aria-label="Refresh">
-                                <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
-                            </button>
-
-                        </div>
-
                         <nav id="directory_navigator" class="py-2" aria-label="breadcrumb">
 
                             <ol id="directory_navigator_list" class="breadcrumb px-3 py-2 m-0 rounded-pill">
 
-                                <li class="breadcrumb-item active"></li> <!--placeholder-->
+                                <li class="breadcrumb-item active"></li>
 
                             </ol>
 

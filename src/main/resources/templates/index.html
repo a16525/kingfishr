@@ -90,6 +90,12 @@
 
         </div>
 
+        <div class="__dropdowns">
+
+
+
+        </div>
+
         <div class="d-none __toast_templates">
 
             <div id="fileUploadToast" class="toast __toast_fileupload" role="alert" aria-live="assertive" aria-atomic="true">
@@ -408,7 +414,7 @@
 
                     <div class="row __display_manager_default_target_element __display_manager_scheme_list">
 
-                        <table id="fileview_table" class="table table-light table-hover m-0 p-0 __fileview_table ">
+                        <table id="fileview_table" class="table table-light table-hover m-0 p-0 __fileview_table">
 
                             <thead>
 
@@ -418,6 +424,7 @@
                                     <th scope="col">Name</th>
                                     <th scope="col">Type</th>
                                     <th scope="col">Size</th>
+                                    <th class="__filetable_properties_column" scope="col"></th>
 
                                 </tr>
 
@@ -433,9 +440,34 @@
 
                     </div>
 
-                    <div class="row __display_manager_scheme_grid">
+                    <div class="row pt-3 g-3 row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 row-cols-xxl-6 d-none __display_manager_scheme_grid">
 
+                        <div class="col d-none __display_manager_scheme_grid_data_entry_template">
 
+                            <div class="card shadow-sm">
+
+                                <div class="d-flex justify-content-center py-5">
+                                    <i class="d-flex bi text-secondary __data_entry_card_big_icon" aria-hidden="true"></i>
+                                </div>
+
+                                <button class="__card_click_captor data_entry stretched-link"></button>
+
+                                <div class="d-flex py-1 pe-1 justify-content-between card-footer">
+
+                                    <div class="align-self-center py-2 __data_entry_card_info">
+                                        <i class="bi pe-2 __data_entry_card_small_icon" aria-hidden="true"></i>
+                                        <span class="__data_entry_card_name"></span>
+                                    </div>
+
+                                    <button class="btn rounded-circle __rounded_button __entry_properties" type="button">
+                                        <i class="bi bi-three-dots-vertical" aria-hidden="true"></i>
+                                    </button>
+    
+                                </div>
+    
+                            </div>
+
+                        </div>
 
                     </div>
 

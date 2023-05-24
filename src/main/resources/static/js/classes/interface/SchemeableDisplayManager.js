@@ -1,4 +1,6 @@
 import { Entry } from "../types/entry/Entry.js";
+import { FileDataEntry } from "../types/entry/FileDataEntry.js";
+import { FileTypeTranslator } from "../types/entry/FileTypeTranslator.js";
 import { DisplayManager } from "./DisplayManager.js";
 
     /**
@@ -19,7 +21,6 @@ export class SchemeableDisplayManager extends DisplayManager {
     constructor( scheme, viewParent, togglerButton ) {
         
         super( viewParent );
-
         this.scheme = scheme;
         
         this.targetElements = {
@@ -48,6 +49,16 @@ export class SchemeableDisplayManager extends DisplayManager {
         this.togglerButton = togglerButton;
         this.togglerButton.addEventListener( "click", () => this.toggleDisplayScheme() );
 
+            /**
+             * @type {Map<any, Entry>?}
+             */
+        this.oldData = undefined;
+
+            /**
+             * @type {HTMLDivElement}
+             */
+        this.cardTemplate = document.querySelector( "div.__display_manager_scheme_grid_data_entry_template" );
+
     }
 
         /**
@@ -72,12 +83,24 @@ export class SchemeableDisplayManager extends DisplayManager {
 
                     const entryData = entry.dataArray();
 
-                    for( let i = 0; i < entryData.length + 1; i++ ) {
+                    for( let i = 0; i < entryData.length + 2; i++ ) {
 
                         const currentCell = entryRow.insertCell( i );
 
                         if( i == 0 ) {
                             currentCell.appendChild( entry.iconElement() );
+                        } else
+                        if( i == entryData.length + 1 ) {
+
+                            const propertiesButton = document.createElement( "button" );
+                            propertiesButton.classList.add( "btn", "rounded-circle", "__rounded_button", "__entry_properties" );
+
+                            const propertiesButtonIcon = document.createElement( "i" );
+                            propertiesButtonIcon.classList.add( "bi", "bi-three-dots-vertical" );
+
+                            propertiesButton.appendChild( propertiesButtonIcon );
+                            currentCell.appendChild( propertiesButton );
+                            
                         } else {
                             currentCell.innerText = entryData[ i - 1 ];
                         }
@@ -93,10 +116,60 @@ export class SchemeableDisplayManager extends DisplayManager {
             break;
 
             case SchemeableDisplayManager.schemes.GRID:
-                // TBI
+                
+                const gridContent = this.currentTargetElement;
+                gridContent.innerHTML = "";
+
+                data.forEach( ( entry, key ) => {
+
+                            /**
+                         * @type {HTMLDivElement}
+                         */
+                    const dataEntryCard = this.cardTemplate.cloneNode( true );
+
+                        /**
+                         * @type {HTMLSpanElement}
+                         */
+                    const nameEntry = dataEntryCard.querySelector( "span.__data_entry_card_name" );
+
+                        /**
+                         * @type {HTMLElement}
+                         */
+                    const bigIcon = dataEntryCard.querySelector( "i.__data_entry_card_big_icon" );
+
+                        /**
+                         * @type {HTMLElement}
+                         */
+                    const smallIcon = dataEntryCard.querySelector( "i.__data_entry_card_small_icon" );
+
+                        /**
+                         * @type {HTMLButtonElement}
+                         */
+                    const clickCaptor = dataEntryCard.querySelector( "button.__card_click_captor" );
+                    clickCaptor.dataset.entryid = key;
+
+                    nameEntry.innerText = entry.name;
+
+                        /**
+                         * @type {FileTypeTranslator}
+                         */
+                    const translator = FileDataEntry.typeTranslationMap.get( entry.type );
+                    const iconName = "bi-" + translator.fileIcon;
+
+                    bigIcon.classList.add( iconName );
+                    smallIcon.classList.add( iconName );
+
+                    dataEntryCard.classList.remove( "d-none" );
+
+                    gridContent.appendChild( dataEntryCard );
+
+                });
+
             break;
 
         }
+
+        this.oldData = data;
 
     }
 
@@ -129,6 +202,9 @@ export class SchemeableDisplayManager extends DisplayManager {
                 this.scheme = SchemeableDisplayManager.schemes.GRID;
                 this.currentTargetElement = this.targetElements.GRID;
 
+                this.targetElements.LIST.classList.add( "d-none" )
+                this.targetElements.GRID.classList.remove( "d-none" );
+
                 listIcon.classList.add( "d-none" );
                 gridIcon.classList.remove( "d-none" );
 
@@ -139,12 +215,17 @@ export class SchemeableDisplayManager extends DisplayManager {
                 this.scheme = SchemeableDisplayManager.schemes.LIST;
                 this.currentTargetElement = this.targetElements.LIST;
 
+                this.targetElements.LIST.classList.remove( "d-none" )
+                this.targetElements.GRID.classList.add( "d-none" );
+
                 listIcon.classList.remove( "d-none" );
                 gridIcon.classList.add( "d-none" );
 
             break;
 
         }
+
+        this.updateView( this.oldData );
 
     }
 

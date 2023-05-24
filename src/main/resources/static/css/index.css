@@ -45,14 +45,14 @@ nav.navbar > a.nav-link.active {
     text-decoration: underline;
 }
 
-button.__nav_refresh > i.bi-arrow-clockwise {
+button.__rounded_button > i.bi-arrow-clockwise, button.__rounded_button > i.bi-three-dots-vertical {
 
     position: relative;
     top: 1px;
 
 }
 
-div.__display_manager_scheme_list {
+div.__display_manager_scheme_list, div.__display_manager_scheme_grid {
     overflow-y: scroll;
 }
 
@@ -92,4 +92,40 @@ th.__filetable_icon {
 
 form.__search_filters_dropdown {
     width: 400px;
+}
+
+div.__data_entry_card_info {
+    
+    overflow-y: scroll;
+    white-space: nowrap;
+    z-index: 2;
+
+}
+
+i.__data_entry_card_small_icon {
+    
+    position: sticky;
+    left: 0;
+    background-color: #F7F7F7;
+
+}
+
+button.__entry_properties {
+    z-index: 2;
+}
+
+button.__entry_properties:hover {
+    background-color: #C0C4C8;
+}
+
+th.__filetable_properties_column {
+    width: 64px;
+}
+
+i.bi.__data_entry_card_big_icon {
+    font-size: 3em;
+}
+
+button.__card_click_captor {
+    opacity: 0;
 }

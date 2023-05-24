@@ -61,5 +61,8 @@ tr.data_entry > td {
 }
 
 tbody.__display_manager_scheme_list_content > tr.data_entry {
+
     cursor: pointer;
+    vertical-align: middle;
+
 }

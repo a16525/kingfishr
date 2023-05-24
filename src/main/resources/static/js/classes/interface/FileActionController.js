@@ -122,6 +122,10 @@ export class FileActionController extends ActionController {
                 this.handleEntryClick( evt );
             break;
 
+            case "button":
+                this.handleCardClick( evt );
+            break;
+
             case "a":
                 this.handleBreadcrumbClick( evt );
             break;
@@ -183,6 +187,39 @@ export class FileActionController extends ActionController {
             await this.refreshView();
 
             this.updateBreadcrumb();
+
+        }
+
+    }
+
+        /**
+         * @param {MouseEvent} evt 
+         */
+    async handleCardClick( evt ) {
+
+            /**
+             * @type {HTMLElement?}
+             */
+        const dataElement = evt.target;
+
+        if( dataElement.classList.contains( "data_entry" ) ) {
+
+            const entryID = dataElement.dataset.entryid;
+
+            if( this.fileManagerAjaxController.workingDirectoryContents.has( entryID ) ) {
+
+                const entry = this.fileManagerAjaxController.workingDirectoryContents.get( entryID );
+
+                if( entry.type == "dir" ) {
+
+                    this.fileManagerAjaxController.currentWorkingDirectory = entry.pathTo;
+                    await this.refreshView();
+
+                    this.updateBreadcrumb();
+
+                }
+
+            }
 
         }
 

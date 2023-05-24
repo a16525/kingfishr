@@ -5,18 +5,35 @@ import { SchemeableDisplayManager } from "../classes/interface/SchemeableDisplay
 import { FileActionController } from "../classes/interface/FileActionController.js";
 import { KFToastManager } from "../classes/interface/KFToastManager.js";
 
+    /**
+     * @type {FileManagerAJAXController}
+     */
 let fileManagerAjaxController = new FileManagerAJAXController();
-let schemeableDisplayManager, fileActionController, toastManager;
+
+    /**
+     * @type {SchemeableDisplayManager}
+     */
+let schemeableDisplayManager;
+
+    /**
+     * @type {FileActionController}
+     */
+let fileActionController;
+
+    /**
+     * @type {KFToastManager}
+     */
+let toastManager;
 
 function setupHeightUpdateForcers() {
 
-    window.addEventListener( "scroll", () => schemeableDisplayManager.updateTableHeight() );
-    window.addEventListener( "resize", () => schemeableDisplayManager.updateTableHeight() );
+    window.addEventListener( "scroll", () => schemeableDisplayManager.updateHeight() );
+    window.addEventListener( "resize", () => schemeableDisplayManager.updateHeight() );
 
     const storageForceUpdateElements = Array.from( document.getElementsByClassName( "__storage_forceupdate" ) );
 
     storageForceUpdateElements.forEach( element => {
-        element.addEventListener( "click", () => schemeableDisplayManager.updateTableHeight() );
+        element.addEventListener( "click", () => schemeableDisplayManager.updateHeight() );
     });
 
 }

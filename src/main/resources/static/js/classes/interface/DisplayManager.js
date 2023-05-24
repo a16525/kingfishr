@@ -50,16 +50,16 @@ export class DisplayManager {
 
         });
 
-        this.updateTableHeight();
+        this.updateHeight();
 
     }
 
-    updateTableHeight() {
+    updateHeight() {
 
             /**
              * @type {HTMLDivElement}
              */
-        const target = this.viewParent.querySelector( "div.__display_manager_scheme_list" );
+        const target = this.currentTargetElement;
         const parent = target.parentElement;
 
         const children = Array.from( parent.children );

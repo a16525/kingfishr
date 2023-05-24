@@ -111,7 +111,7 @@ export class SchemeableDisplayManager extends DisplayManager {
 
                 });
 
-                this.updateTableHeight();
+                this.updateHeight();
 
             break;
 
@@ -165,21 +165,13 @@ export class SchemeableDisplayManager extends DisplayManager {
 
                 });
 
+                this.updateHeight();
+
             break;
 
         }
 
         this.oldData = data;
-
-    }
-
-        /**
-         * @override
-         */
-    updateTableHeight() {
-
-        if( this.scheme != SchemeableDisplayManager.schemes.LIST ) return;
-        super.updateTableHeight();
 
     }
 

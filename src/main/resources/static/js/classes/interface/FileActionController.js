@@ -113,57 +113,16 @@ export class FileActionController extends ActionController {
             /**
              * @type {HTMLElement?}
              */
-        const targetElement = evt.target;
-        const targetElementTag = targetElement.tagName.toLowerCase();
-
-        switch( targetElementTag ) {
-
-            case "td":
-                this.handleEntryClick( evt );
-            break;
-
-            case "button":
-                this.handleCardClick( evt );
-            break;
-
-            case "a":
-                this.handleBreadcrumbClick( evt );
-            break;
-
+        const target = evt.target;
+        const targetTag = target.tagName.toLowerCase();
+        
+        if( targetTag == "i" && target.parentElement.classList.contains( "__entry_properties" ) ) {
+            this.handleEntryPropertiesClick( evt );
         }
 
-    }
-
-        /**
-         * @param {MouseEvent} evt 
-         */
-    async handleEntryClick( evt ) {
-
-            /**
-             * @type {HTMLElement?}
-             */
-        const targetElement = evt.target;
-        const dataElement = targetElement.parentElement;
-
-        if( dataElement.classList.contains( "data_entry" ) ) {
-
-            const entryID = dataElement.dataset.entryid;
-
-            if( this.fileManagerAjaxController.workingDirectoryContents.has( entryID ) ) {
-
-                const entry = this.fileManagerAjaxController.workingDirectoryContents.get( entryID );
-
-                if( entry.type == "dir" ) {
-
-                    this.fileManagerAjaxController.currentWorkingDirectory = entry.pathTo;
-                    await this.refreshView();
-
-                    this.updateBreadcrumb();
-
-                }
-
-            }
-
+        if( ( targetTag == "td" && target.parentElement.classList.contains( "data_entry" ) ) ||
+            ( targetTag == "button" && target.classList.contains( "__card_click_captor" ) ) ) {
+            this.handleEntryClick( evt );
         }
 
     }
@@ -171,59 +130,113 @@ export class FileActionController extends ActionController {
         /**
          * @param {MouseEvent} evt
          */
-    async handleBreadcrumbClick( evt ) {
+    handleEntryPropertiesClick( evt ) {
 
-            /**
-             * @type {HTMLElement?}
-             */
-        const targetElement = evt.target;
-        const breadcrumbListItemElement = targetElement.parentElement;
+        const clickType = evt.button;
+        switch( clickType ) {
 
-        if( breadcrumbListItemElement.classList.contains( "breadcrumb-item" ) ) {
+            case 1:
 
-            const newWorkingDirectory = evt.target.dataset.pathto;
+            break;
 
-            this.fileManagerAjaxController.currentWorkingDirectory = newWorkingDirectory;
-            await this.refreshView();
-
-            this.updateBreadcrumb();
+            case 2:
+                
+            break;
 
         }
 
     }
 
-        /**
-         * @param {MouseEvent} evt 
-         */
-    async handleCardClick( evt ) {
-
-            /**
-             * @type {HTMLElement?}
-             */
-        const dataElement = evt.target;
-
-        if( dataElement.classList.contains( "data_entry" ) ) {
-
-            const entryID = dataElement.dataset.entryid;
-
-            if( this.fileManagerAjaxController.workingDirectoryContents.has( entryID ) ) {
-
-                const entry = this.fileManagerAjaxController.workingDirectoryContents.get( entryID );
-
-                if( entry.type == "dir" ) {
-
-                    this.fileManagerAjaxController.currentWorkingDirectory = entry.pathTo;
-                    await this.refreshView();
-
-                    this.updateBreadcrumb();
-
-                }
-
-            }
-
-        }
-
-    }
+    //    /**
+    //     * @param {MouseEvent} evt 
+    //     */
+    //async handleEntryClick( evt ) {
+//
+    //        /**
+    //         * @type {HTMLElement?}
+    //         */
+    //    const targetElement = evt.target;
+    //    const dataElement = targetElement.parentElement;
+//
+    //    if( dataElement.classList.contains( "data_entry" ) ) {
+//
+    //        const entryID = dataElement.dataset.entryid;
+//
+    //        if( this.fileManagerAjaxController.workingDirectoryContents.has( entryID ) ) {
+//
+    //            const entry = this.fileManagerAjaxController.workingDirectoryContents.get( entryID );
+//
+    //            if( entry.type == "dir" ) {
+//
+    //                this.fileManagerAjaxController.currentWorkingDirectory = entry.pathTo;
+    //                await this.refreshView();
+//
+    //                this.updateBreadcrumb();
+//
+    //            }
+//
+    //        }
+//
+    //    }
+//
+    //}
+//
+    //    /**
+    //     * @param {MouseEvent} evt
+    //     */
+    //async handleBreadcrumbClick( evt ) {
+//
+    //        /**
+    //         * @type {HTMLElement?}
+    //         */
+    //    const targetElement = evt.target;
+    //    const breadcrumbListItemElement = targetElement.parentElement;
+//
+    //    if( breadcrumbListItemElement.classList.contains( "breadcrumb-item" ) ) {
+//
+    //        const newWorkingDirectory = evt.target.dataset.pathto;
+//
+    //        this.fileManagerAjaxController.currentWorkingDirectory = newWorkingDirectory;
+    //        await this.refreshView();
+//
+    //        this.updateBreadcrumb();
+//
+    //    }
+//
+    //}
+//
+    //    /**
+    //     * @param {MouseEvent} evt 
+    //     */
+    //async handleCardClick( evt ) {
+//
+    //        /**
+    //         * @type {HTMLElement?}
+    //         */
+    //    const dataElement = evt.target;
+//
+    //    if( dataElement.classList.contains( "data_entry" ) ) {
+//
+    //        const entryID = dataElement.dataset.entryid;
+//
+    //        if( this.fileManagerAjaxController.workingDirectoryContents.has( entryID ) ) {
+//
+    //            const entry = this.fileManagerAjaxController.workingDirectoryContents.get( entryID );
+//
+    //            if( entry.type == "dir" ) {
+//
+    //                this.fileManagerAjaxController.currentWorkingDirectory = entry.pathTo;
+    //                await this.refreshView();
+//
+    //                this.updateBreadcrumb();
+//
+    //            }
+//
+    //        }
+//
+    //    }
+//
+    //}
 
     async navigateUp() {
 

@@ -92,14 +92,19 @@ export class SchemeableDisplayManager extends DisplayManager {
                         } else
                         if( i == entryData.length + 1 ) {
 
+                            const parentDiv = document.createElement( "div" );
+                            parentDiv.classList.add( "dropdown" );
+
                             const propertiesButton = document.createElement( "button" );
                             propertiesButton.classList.add( "btn", "rounded-circle", "__rounded_button", "__entry_properties" );
 
                             const propertiesButtonIcon = document.createElement( "i" );
                             propertiesButtonIcon.classList.add( "bi", "bi-three-dots-vertical" );
 
+                            parentDiv.appendChild( propertiesButton );
                             propertiesButton.appendChild( propertiesButtonIcon );
-                            currentCell.appendChild( propertiesButton );
+                            
+                            currentCell.appendChild( parentDiv );
                             
                         } else {
                             currentCell.innerText = entryData[ i - 1 ];

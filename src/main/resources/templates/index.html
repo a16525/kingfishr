@@ -92,7 +92,80 @@
 
         <div class="__dropdowns">
 
+            <ul class="dropdown-menu d-none __dropdown_context_file">
+               
+                <li>
 
+                    <a class="dropdown-item" href="#">
+                        <i class="bi bi-download" aria-hidden="true"></i>
+                        Download
+                    </a>
+
+                </li>
+
+                <li><hr class="dropdown-divider"></li>
+
+                <li>
+
+                    <a class="dropdown-item" href="#">
+                        <i class="bi bi-pencil" aria-hidden="true"></i>
+                        Rename
+                    </a>
+
+                </li>
+                
+                <li>
+
+                    <a class="dropdown-item text-danger" href="#">
+                        <i class="bi bi-trash3" aria-hidden="true"></i>
+                        Delete
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a class="dropdown-item" href="#">
+                        <i class="bi bi-clipboard2-fill" aria-hidden="true"></i>
+                        Duplicate
+                    </a>
+
+                </li>
+
+            </ul>
+
+            <ul class="dropdown-menu d-none __dropdown_context_folder">
+
+                <li>
+
+                    <a class="dropdown-item" href="#">
+                        <i class="bi bi-folder2-open" aria-hidden="true"></i>
+                        Open
+                    </a>
+
+                </li>
+
+                <li><hr class="dropdown-divider"></li>
+
+                <li>
+
+                    <a class="dropdown-item" href="#">
+                        <i class="bi bi-pencil" aria-hidden="true"></i>
+                        Rename
+                    </a>
+
+                </li>
+                
+                <li>
+
+                    <a class="dropdown-item text-danger" href="#">
+                        <i class="bi bi-trash3" aria-hidden="true"></i>
+                        Delete
+                    </a>
+
+                </li>
+
+            </ul>
 
         </div>
 
@@ -459,10 +532,14 @@
                                         <span class="__data_entry_card_name"></span>
                                     </div>
 
-                                    <button class="btn rounded-circle __rounded_button __entry_properties" type="button">
-                                        <i class="bi bi-three-dots-vertical" aria-hidden="true"></i>
-                                    </button>
+                                    <div class="dropdown">
+
+                                        <button class="btn rounded-circle __rounded_button __entry_properties" type="button" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical" aria-hidden="true"></i>
+                                        </button>
     
+                                    </div>
+
                                 </div>
     
                             </div>

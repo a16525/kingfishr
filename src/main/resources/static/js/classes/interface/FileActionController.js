@@ -1,6 +1,8 @@
 import { ActionController } from "./ActionController.js";
 import { DisplayManager } from "./DisplayManager.js";
 import { FileManagerAJAXController } from "../networking/FileManagerAJAXController.js";
+import { SchemeableDisplayManager } from "./SchemeableDisplayManager.js";
+import { FileDataEntry } from "../types/entry/FileDataEntry.js";
 
 export class FileActionController extends ActionController {
 
@@ -116,127 +118,210 @@ export class FileActionController extends ActionController {
         const target = evt.target;
         const targetTag = target.tagName.toLowerCase();
         
-        if( targetTag == "i" && target.parentElement.classList.contains( "__entry_properties" ) ) {
-            this.handleEntryPropertiesClick( evt );
+        if( ( targetTag == "i" && target.parentElement.classList.contains( "__entry_properties" ) ) || ( targetTag == "button" && target.classList.contains( "__entry_properties" ) ) ) {
+            
+                /**
+                 * @type {SchemeableDisplayManager}
+                 */
+            const schemeableDisplayManager = this.displayManager;
+
+            switch( schemeableDisplayManager.scheme ) {
+
+                case SchemeableDisplayManager.schemes.LIST:
+                    this.handlePropertiesClick( evt, false );
+                break;
+
+                case SchemeableDisplayManager.schemes.GRID:
+                    this.handlePropertiesClick( evt, true );
+                break;
+
+            }
+
         }
 
-        if( ( targetTag == "td" && target.parentElement.classList.contains( "data_entry" ) ) ||
-            ( targetTag == "button" && target.classList.contains( "__card_click_captor" ) ) ) {
-            this.handleEntryClick( evt );
+        if( targetTag == "td" && target.parentElement.classList.contains( "data_entry" ) ) {
+            
+
+
         }
 
     }
 
         /**
-         * @param {MouseEvent} evt
+         * 
+         * @param {MouseEvent} evt 
+         * @param {Boolean} isGridLayout 
          */
-    handleEntryPropertiesClick( evt ) {
+    handlePropertiesClick( evt, isGridLayout ) {
 
-        const clickType = evt.button;
-        switch( clickType ) {
+            /**
+             * @type {HTMLElement}
+             */
+        const target = evt.target;
+        const targetTag = target.tagName.toLowerCase();
 
-            case 1:
+        let button = targetTag == "button" ? target : target.parentElement;
 
-            break;
+        let dataElement = target;
 
-            case 2:
-                
-            break;
+        if( isGridLayout ) {
+
+            switch( targetTag ) {
+
+                case "i":
+                    for( let i = 0; i < 4; i++ ) dataElement = dataElement.parentElement;
+                break;
+    
+                case "button":
+                    for( let i = 0; i < 3; i++ ) dataElement = dataElement.parentElement;
+                break;
+    
+            }
+
+            dataElement = dataElement.querySelector( "button.__card_click_captor.data_entry" );
+
+        } else {
+
+            switch( targetTag ) {
+
+                case "i":
+                    for( let i = 0; i < 3; i++ ) dataElement = dataElement.parentElement;
+                break;
+    
+                case "button":
+                    for( let i = 0; i < 2; i++ ) dataElement = dataElement.parentElement;
+                break;
+    
+            }
+
+        }
+
+        console.log( dataElement );
+
+        if( dataElement.classList.contains( "data_entry" ) ) {
+
+            const entryID = dataElement.dataset.entryid;
+
+            if( this.fileManagerAjaxController.workingDirectoryContents.has( entryID ) ) {
+
+                const entry = this.fileManagerAjaxController.workingDirectoryContents.get( entryID );
+
+                if( entry.type == "dir" ) {
+                    this.showDropdown( button, entry, "div.__dropdowns > ul.__dropdown_context_folder" );
+                } else {
+                    this.showDropdown( button, entry, "div.__dropdowns > ul.__dropdown_context_file" );
+                }
+
+            }
 
         }
 
     }
 
-    //    /**
-    //     * @param {MouseEvent} evt 
-    //     */
-    //async handleEntryClick( evt ) {
-//
-    //        /**
-    //         * @type {HTMLElement?}
-    //         */
-    //    const targetElement = evt.target;
-    //    const dataElement = targetElement.parentElement;
-//
-    //    if( dataElement.classList.contains( "data_entry" ) ) {
-//
-    //        const entryID = dataElement.dataset.entryid;
-//
-    //        if( this.fileManagerAjaxController.workingDirectoryContents.has( entryID ) ) {
-//
-    //            const entry = this.fileManagerAjaxController.workingDirectoryContents.get( entryID );
-//
-    //            if( entry.type == "dir" ) {
-//
-    //                this.fileManagerAjaxController.currentWorkingDirectory = entry.pathTo;
-    //                await this.refreshView();
-//
-    //                this.updateBreadcrumb();
-//
-    //            }
-//
-    //        }
-//
-    //    }
-//
-    //}
-//
-    //    /**
-    //     * @param {MouseEvent} evt
-    //     */
-    //async handleBreadcrumbClick( evt ) {
-//
-    //        /**
-    //         * @type {HTMLElement?}
-    //         */
-    //    const targetElement = evt.target;
-    //    const breadcrumbListItemElement = targetElement.parentElement;
-//
-    //    if( breadcrumbListItemElement.classList.contains( "breadcrumb-item" ) ) {
-//
-    //        const newWorkingDirectory = evt.target.dataset.pathto;
-//
-    //        this.fileManagerAjaxController.currentWorkingDirectory = newWorkingDirectory;
-    //        await this.refreshView();
-//
-    //        this.updateBreadcrumb();
-//
-    //    }
-//
-    //}
-//
-    //    /**
-    //     * @param {MouseEvent} evt 
-    //     */
-    //async handleCardClick( evt ) {
-//
-    //        /**
-    //         * @type {HTMLElement?}
-    //         */
-    //    const dataElement = evt.target;
-//
-    //    if( dataElement.classList.contains( "data_entry" ) ) {
-//
-    //        const entryID = dataElement.dataset.entryid;
-//
-    //        if( this.fileManagerAjaxController.workingDirectoryContents.has( entryID ) ) {
-//
-    //            const entry = this.fileManagerAjaxController.workingDirectoryContents.get( entryID );
-//
-    //            if( entry.type == "dir" ) {
-//
-    //                this.fileManagerAjaxController.currentWorkingDirectory = entry.pathTo;
-    //                await this.refreshView();
-//
-    //                this.updateBreadcrumb();
-//
-    //            }
-//
-    //        }
-//
-    //    }
-//
-    //}
+        /**
+         * 
+         * @param {HTMLButtonElement} button 
+         * @param {FileDataEntry} entry
+         * @param {String} querySelector 
+         */
+    showDropdown( button, entry, querySelector ) {
+
+        console.log( "A" )
+
+            /**
+             * @type {HTMLUListElement}
+             */
+        const dropdownElement = document.querySelector( querySelector ).cloneNode( true );
+        const dropdownParent = button.parentElement;
+        
+            // Rename
+        let _ = dropdownElement.querySelector( ".__rename_option" );
+        _ != null ? _.addEventListener( "click", () => {
+
+            
+
+        }): null;
+
+            // Delete
+        _ = dropdownElement.querySelector( ".__delete_option" );
+        _ != null ? _.addEventListener( "click", () => {
+            
+
+
+        }): null;
+
+            // Download
+        _ = dropdownElement.querySelector( ".__download_option" );
+        _ != null ? _.addEventListener( "click", () => {
+            
+
+
+        }): null;
+
+            // Duplicate
+        _ = dropdownElement.querySelector( ".__duplicate_option" );
+        _ != null ? _.addEventListener( "click", () => {
+            
+
+
+        }): null;
+
+            // Open
+        _ = dropdownElement.querySelector( ".__open_option" );
+        _ != null ? _.addEventListener( "click", async () => {
+            
+            this.fileManagerAjaxController.currentWorkingDirectory = entry.pathTo;
+            await this.refreshView();
+
+            this.updateBreadcrumb();
+
+        }): null;
+
+        button.setAttribute( "data-bs-toggle", "dropdown" );
+        dropdownParent.appendChild( dropdownElement );
+        dropdownElement.classList.remove( "d-none" );
+
+        const bootstrapDropdown = new bootstrap.Dropdown( dropdownElement, { reference: button } );
+
+            // hacky fix (this entire method is fu------ hacky) to remove dropdown because Dropdown.autoClose wasn't working
+        const removeDropdown = () => {
+
+            button.removeAttribute( "data-bs-toggle", "dropdown" );
+            dropdownElement.remove();
+
+            document.removeEventListener( "click", () => removeDropdown() )
+
+        }
+
+        document.addEventListener( "click", () => removeDropdown() );
+
+        bootstrapDropdown.show();
+
+    }
+
+        /**
+         * @param {MouseEvent} evt
+        */
+    async handleBreadcrumbClick( evt ) {
+
+            /**
+             * @type {HTMLElement?}
+             */
+        const targetElement = evt.target;
+        const breadcrumbListItemElement = targetElement.parentElement;
+
+        if( breadcrumbListItemElement.classList.contains( "breadcrumb-item" ) ) {
+
+            const newWorkingDirectory = evt.target.dataset.pathto;
+
+            this.fileManagerAjaxController.currentWorkingDirectory = newWorkingDirectory;
+            await this.refreshView();
+
+            this.updateBreadcrumb();
+
+        }
+
+    }
 
     async navigateUp() {
 

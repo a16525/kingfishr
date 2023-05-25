@@ -60,6 +60,13 @@ tr.data_entry > td {
 
 }
 
+tr.data_entry > td.dropdown {
+
+    overflow: unset;
+    text-overflow: unset;
+
+}
+
 tbody.__display_manager_scheme_list_content > tr.data_entry {
 
     cursor: pointer;

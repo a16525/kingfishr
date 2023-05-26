@@ -10,19 +10,19 @@ export class FileManagerAJAXController extends AJAXController {
         */
     static endpoints = {
 
-        PATHEXISTS: new Endpoint( "/api/path", Endpoint.httpMethods.GET ),
-
         DIRCONTENTS: new Endpoint( "/api/dir/contents", Endpoint.httpMethods.GET ),
         CREATEDIR: new Endpoint( "/api/dir", Endpoint.httpMethods.POST ),
-        RENAMEDIR: new Endpoint( "/api/dir", Endpoint.httpMethods.PATCH ),
         DELETEDIR: new Endpoint( "/api/dir", Endpoint.httpMethods.DELETE ),
 
-        DOWNLOADFILE: new Endpoint( "/api/file", Endpoint.httpMethods.GET ),
         UPLOADFILE: new Endpoint( "/api/file", Endpoint.httpMethods.POST ),
-        RENAMEFILE: new Endpoint( "/api/file", Endpoint.httpMethods.PATCH ),
+        DUPLICATEFILE: new Endpoint( "api/file/copy", Endpoint.httpMethods.POST ),
         DELETEFILE: new Endpoint( "/api/file", Endpoint.httpMethods.DELETE ),
 
+        RENAMEENTRY: new Endpoint( "/api/entry", Endpoint.httpMethods.PATCH )
+
     }
+
+    static illegalNameCharacters = "[#%&{}\\<>*?/$!'\":@+`|=]+?";
 
     constructor() {
 
@@ -163,8 +163,103 @@ export class FileManagerAJAXController extends AJAXController {
         xhr.send( fileData );
 
     }
-       
     
+        /**
+         * @param {FileDataEntry} dataEntry
+         */
+    async duplicateFile( dataEntry ) {
+
+        const endpoint = FileManagerAJAXController.endpoints.DUPLICATEFILE;
+        const request = endpoint.appendParameters( new URLSearchParams({
+            pathtofile: dataEntry.pathTo
+        }));
+
+        await fetch( request, { method: endpoint.method }).then( async response => {
+
+            if( !response.ok ) {
+                throw new Error( await response.text() );
+            }
+
+        });
+
+
+    }
+    
+        /**
+         * @param {FileDataEntry} dataEntry
+         * @param {FormData} formData   
+         */
+    async renameEntry( dataEntry, formData ) {
+
+        const newName = formData.get( "newname" );
+
+        if( newName == null || newName.length == 0 ) {
+            throw new Error( "New name cannot be empty." )
+        } else
+        if( newName.match( FileManagerAJAXController.illegalNameCharacters ) != null ) {
+            throw new Error( "Invalid name." );
+        } else {
+
+            const endpoint = FileManagerAJAXController.endpoints.RENAMEENTRY;
+            const request = endpoint.appendParameters( new URLSearchParams({
+                pathtoentry: dataEntry.pathTo,
+                newname: newName + "." + dataEntry.type
+            }));
+
+            await fetch( request, { method: endpoint.method }).then( async response => {
+
+                if( !response.ok ) {
+                    throw new Error( await response.text() );
+                }
+
+            });
+
+        }
+
+    }
+
+        /**
+         * @param {FileDataEntry} dataEntry
+         */
+    async deleteFile( dataEntry ) {
+
+        const endpoint = FileManagerAJAXController.endpoints.DELETEFILE;
+        const request = endpoint.appendParameters( new URLSearchParams({
+            pathtofile: dataEntry.pathTo
+        }));
+
+        await fetch( request, { method: endpoint.method }).then( async response => {
+
+            if( !response.ok ) {
+                throw new Error( await response.text() );
+            }
+
+        });
+
+    }
+
+        /**
+         * @param {FileDataEntry} dataEntry
+         * @param {Boolean} recursively
+         */
+    async deleteFolder( dataEntry, recursively ) {
+
+        const endpoint = FileManagerAJAXController.endpoints.DELETEDIR;
+        const request = endpoint.appendParameters( new URLSearchParams({
+            pathtofolder: dataEntry.pathTo,
+            recursively: recursively
+        }));
+
+        await fetch( request, { method: endpoint.method }).then( async response => {
+
+            if( !response.ok ) {
+                throw new Error( await response.text() );
+            }
+
+        });
+
+    }
+
     async goToHome() {
 
         this.currentWorkingDirectory = "/";

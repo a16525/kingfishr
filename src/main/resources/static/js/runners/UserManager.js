@@ -178,12 +178,6 @@ function setupDeleteUserModal() {
 
 }
 
-function setupSearchbar() {
-
-    //const inputElement = 
-
-}
-
 document.addEventListener( "DOMContentLoaded", async () => {
 
         /**

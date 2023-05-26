@@ -56,6 +56,10 @@ div.__display_manager_scheme_list, div.__display_manager_scheme_grid {
     overflow-y: scroll;
 }
 
+div.__display_manager_scheme_list {
+    background-color: #F8F9FA;
+}
+
 table.__fileview_table {
 
     table-layout: fixed;
@@ -70,6 +74,7 @@ table.__fileview_table thead {
 
     position: sticky;
     top: 0;
+    z-index: 1;
     
 }
 

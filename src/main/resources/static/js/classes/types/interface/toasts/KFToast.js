@@ -110,7 +110,6 @@ export class KFToast extends EventTarget {
     }
 
     remove() {
-        console.log( this.toastElement )
         this.toastElement.remove();
     }
 

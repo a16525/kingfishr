@@ -3,6 +3,7 @@ import { DisplayManager } from "./DisplayManager.js";
 import { FileManagerAJAXController } from "../networking/FileManagerAJAXController.js";
 import { SchemeableDisplayManager } from "./SchemeableDisplayManager.js";
 import { FileDataEntry } from "../types/entry/FileDataEntry.js";
+import { ModalHandler } from "../interface/ModalHandler.js";
 
 export class FileActionController extends ActionController {
 
@@ -41,7 +42,6 @@ export class FileActionController extends ActionController {
         this.refreshButton.addEventListener( "click", () => this.refreshView() );
 
         window.addEventListener( "click", (evt) => this.getContextFromClick( evt ) );
-        
 
     }
 
@@ -117,31 +117,41 @@ export class FileActionController extends ActionController {
              */
         const target = evt.target;
         const targetTag = target.tagName.toLowerCase();
-        
-        if( ( targetTag == "i" && target.parentElement.classList.contains( "__entry_properties" ) ) || ( targetTag == "button" && target.classList.contains( "__entry_properties" ) ) ) {
-            
-                /**
-                 * @type {SchemeableDisplayManager}
-                 */
-            const schemeableDisplayManager = this.displayManager;
 
-            switch( schemeableDisplayManager.scheme ) {
+            /**
+             * @type {SchemeableDisplayManager}
+             */
+        const schemeableDisplayManager = this.displayManager;   
 
-                case SchemeableDisplayManager.schemes.LIST:
-                    this.handlePropertiesClick( evt, false );
-                break;
+        switch( targetTag ) {
 
-                case SchemeableDisplayManager.schemes.GRID:
-                    this.handlePropertiesClick( evt, true );
-                break;
+            case "i": case "button":
 
-            }
+                let isPropertiesButton = targetTag == "i" ?
+                    target.parentElement.classList.contains( "__entry_properties" ) :
+                    target.classList.contains( "__entry_properties" );
 
-        }
+                if( isPropertiesButton ) {
 
-        if( targetTag == "td" && target.parentElement.classList.contains( "data_entry" ) ) {
-            
+                    switch( schemeableDisplayManager.scheme ) {
 
+                        case SchemeableDisplayManager.schemes.LIST:
+                            this.handlePropertiesClick( evt, false );
+                        break;
+
+                        case SchemeableDisplayManager.schemes.GRID:
+                            this.handlePropertiesClick( evt, true );
+                        break;
+
+                    }
+
+                } 
+
+            break;
+
+            case "a":
+                this.handleBreadcrumbClick( evt );
+            break;
 
         }
 
@@ -196,8 +206,6 @@ export class FileActionController extends ActionController {
 
         }
 
-        console.log( dataElement );
-
         if( dataElement.classList.contains( "data_entry" ) ) {
 
             const entryID = dataElement.dataset.entryid;
@@ -226,56 +234,157 @@ export class FileActionController extends ActionController {
          */
     showDropdown( button, entry, querySelector ) {
 
-        console.log( "A" )
-
             /**
              * @type {HTMLUListElement}
              */
         const dropdownElement = document.querySelector( querySelector ).cloneNode( true );
         const dropdownParent = button.parentElement;
         
-            // Rename
-        let _ = dropdownElement.querySelector( ".__rename_option" );
-        _ != null ? _.addEventListener( "click", () => {
+        const renameOption = dropdownElement.querySelector( ".__rename_option" );
+        if( renameOption != null ) {
 
-            
+            renameOption.addEventListener( "click", () => {
 
-        }): null;
+                const modalElement = document.getElementById( "renameModal" );
+                const renameHandler = new ModalHandler( modalElement, renameOption );
 
-            // Delete
-        _ = dropdownElement.querySelector( ".__delete_option" );
-        _ != null ? _.addEventListener( "click", () => {
-            
+                renameHandler.onModalConfirm = async () => {
 
+                    renameHandler.hideMessage();
+                    renameHandler.disableButtons();
 
-        }): null;
+                    const formData = new FormData( renameHandler.modalForm );
 
-            // Download
-        _ = dropdownElement.querySelector( ".__download_option" );
-        _ != null ? _.addEventListener( "click", () => {
-            
+                    await this.fileManagerAjaxController.renameEntry( entry, formData ).then( async () => {
 
+                        renameHandler.bootstrapModal.hide();
+                        await this.refreshView();
 
-        }): null;
+                        renameHandler.clearModalListeners();
 
-            // Duplicate
-        _ = dropdownElement.querySelector( ".__duplicate_option" );
-        _ != null ? _.addEventListener( "click", () => {
-            
+                    }).catch( error => {
 
+                        renameHandler.showMessage( "An error occurred while renaming the entry;<br>" + error );
+                        renameHandler.enableButtons(); 
 
-        }): null;
+                    });
 
-            // Open
-        _ = dropdownElement.querySelector( ".__open_option" );
-        _ != null ? _.addEventListener( "click", async () => {
-            
-            this.fileManagerAjaxController.currentWorkingDirectory = entry.pathTo;
-            await this.refreshView();
+                };
 
-            this.updateBreadcrumb();
+                renameHandler.onModalOpen();
 
-        }): null;
+            });
+
+        }
+
+        const deleteOption = dropdownElement.querySelector( ".__delete_option" );
+        if( deleteOption != null ) {
+
+            deleteOption.addEventListener( "click", () => {
+
+                let modalElement;
+
+                if( entry.type == "dir" ) {
+                    modalElement = document.getElementById( "deleteFolderModal" );
+                } else {
+                    modalElement = document.getElementById( "deleteFileModal" );
+                }
+    
+                const deleteHandler = new ModalHandler( modalElement, deleteOption );
+                
+                deleteHandler.onModalConfirm = async () => {
+    
+                    deleteHandler.hideMessage();
+                    deleteHandler.disableButtons();
+    
+                    if( entry.type == "dir" ) {
+    
+                        const formData = new FormData( deleteHandler.modalForm );
+    
+                        const checkboxValue = formData.get( "deleteRecursivelyCheckbox" );
+                        const deleteRecursively = checkboxValue != null;
+    
+                        await this.fileManagerAjaxController.deleteFolder( entry, deleteRecursively ).then( async () => {
+                            
+                            deleteHandler.bootstrapModal.hide();
+                            await this.refreshView();
+    
+                            deleteHandler.clearModalListeners();
+
+                        }).catch( error => {
+    
+                            deleteHandler.showMessage( "An error occurred while deleting the folder;<br>" + error );
+                            deleteHandler.enableButtons();
+    
+                        });
+    
+                    } else {
+    
+                        await this.fileManagerAjaxController.deleteFile( entry ).then( async () => {
+    
+                            deleteHandler.bootstrapModal.hide();
+                            await this.refreshView();
+
+                            deleteHandler.clearModalListeners();
+    
+                        }).catch( error => {
+    
+                            deleteHandler.showMessage( "An error occurred while deleting the file;<br>" + error );
+                            deleteHandler.enableButtons();
+    
+                        });
+    
+                    }
+    
+                };
+                
+                deleteHandler.onModalOpen();
+
+            });
+
+        }
+
+        const downloadOption = dropdownElement.querySelector( ".__download_option" );
+        if( downloadOption != null ) {
+
+            downloadOption.addEventListener( "click", () => {
+
+                const download = document.createElement( "a" );
+                download.href = "/api/file?pathtofile=" + entry.pathTo;
+    
+                document.body.appendChild( download );
+                download.click();
+                document.body.removeChild( download );
+
+            });
+
+        }
+
+        const duplicateOption = dropdownElement.querySelector( ".__duplicate_option" );
+        if( duplicateOption != null ) {
+
+            duplicateOption.addEventListener( "click", async () => {
+
+                await this.fileManagerAjaxController.duplicateFile( entry );
+                await this.refreshView();
+
+            });
+
+        }
+
+        const openOption = dropdownElement.querySelector( ".__open_option" );
+        if( openOption != null ) {
+
+            openOption.addEventListener( "click", async () => {
+
+                this.fileManagerAjaxController.currentWorkingDirectory = entry.pathTo;
+                await this.refreshView();
+    
+                this.updateBreadcrumb();
+
+            });
+
+        }
 
         button.setAttribute( "data-bs-toggle", "dropdown" );
         dropdownParent.appendChild( dropdownElement );

@@ -88,6 +88,106 @@
 
             </div>
 
+            <div class="modal fade __rename_modal" id="renameModal" tabindex="-1">
+
+                <div class="modal-dialog modal-dialog-centered">
+
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="bi bi-pencil-fill" aria-hidden="true"></i> Rename</h5>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="alert alert-warning d-none __modal_messagebox" role="alert"></div>
+
+                            <form class="__modal_form">
+                                <input type="text" name="newname" class="form-control" placeholder="New name">
+                            </form>
+
+                        </div>
+
+                        <div class="modal-footer">
+
+                            <button type="button" class="btn btn-danger __modal_cancel">Cancel</button>
+                            <button type="button" class="btn btn-primary __modal_confirm">Confirm</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal fade __delete_file_modal" id="deleteFileModal" tabindex="-1">
+
+                <div class="modal-dialog modal-dialog-centered">
+
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="bi bi-file-earmark-minus-fill" aria-hidden="true"></i> Delete file</h5>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="alert alert-danger d-none __modal_messagebox" role="alert"></div>
+                            Are you sure you want to delete this file?
+
+                        </div>
+
+                        <div class="modal-footer">
+
+                            <button type="button" class="btn btn-primary __modal_cancel">Cancel</button>
+                            <button type="button" class="btn btn-danger __modal_confirm">Delete</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal fade __delete_folder_modal" id="deleteFolderModal" tabindex="-1">
+
+                <div class="modal-dialog modal-dialog-centered">
+
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="bi bi-folder-minus" aria-hidden="true"></i> Delete folder</h5>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="alert alert-danger d-none __modal_messagebox" role="alert"></div>
+                            Are you sure you want to delete this folder?
+
+                            <form class="form-check __modal_form">
+                                <input class="form-check-input __delete_recursively" name="deleteRecursivelyCheckbox" id="deleteRecursivelyCheckbox" type="checkbox" value="">
+                                <label class="form-check-label" for="deleteRecursivelyCheckbox">
+                                    Delete recursively <strong>(Dangerous)</strong>
+                                </label>
+                            </form>
+
+                        </div>
+
+                        <div class="modal-footer">
+
+                            <button type="button" class="btn btn-primary __modal_cancel">Cancel</button>
+                            <button type="button" class="btn btn-danger __modal_confirm">Delete</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
 
         <div class="__dropdowns">
@@ -113,21 +213,21 @@
                     </a>
 
                 </li>
-                
-                <li>
-
-                    <a class="dropdown-item text-danger __delete_option" href="#">
-                        <i class="bi bi-trash3" aria-hidden="true"></i>
-                        Delete
-                    </a>
-
-                </li>
 
                 <li>
 
                     <a class="dropdown-item __duplicate_option" href="#">
                         <i class="bi bi-clipboard2-fill" aria-hidden="true"></i>
                         Duplicate
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a class="dropdown-item text-danger __delete_option" href="#">
+                        <i class="bi bi-trash3" aria-hidden="true"></i>
+                        Delete
                     </a>
 
                 </li>
@@ -349,22 +449,6 @@
 
                         <div class="d-flex">
 
-                            <div class="d-flex pe-0 align-items-center">
-
-                                <button class="btn rounded-circle __rounded_button __nav_back" aria-label="Parent directory">
-                                    <i class="bi bi-arrow-up" aria-hidden="true"></i>
-                                </button>
-
-                                <button class="btn rounded-circle __rounded_button __nav_home" aria-label="Root directory">
-                                    <i class="bi bi-house" aria-hidden="true"></i>
-                                </button>
-
-                                <button class="btn rounded-circle __rounded_button __nav_refresh" aria-label="Refresh">
-                                    <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
-                                </button>
-
-                            </div>
-
                             <div class="w-100 mx-2">
 
                                 <div class="input-group">
@@ -426,11 +510,68 @@
 
                             </div>
 
+                            <div class="d-flex ps-0 align-items-center">
+
+                                <button class="btn rounded-circle __rounded_button __nav_toggle_scheme" type="button" aria-label="Display scheme toggle">
+
+                                    <i class="bi bi-list align-middle __displayicon_scheme_list" aria-hidden="true"></i>
+                                    <i class="bi bi-grid-3x2-gap align-middle d-none __displayicon_scheme_grid" aria-hidden="true"></i>
+    
+                                </button>
+    
+                                <div class="dropdown">
+    
+                                    <button class="btn rounded-circle __rounded_button __nav_create" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Create">
+                                        <i class="bi bi-plus" aria-hidden="true"></i>
+                                    </button>
+    
+                                    <ul class="dropdown-menu">
+    
+                                        <li>
+    
+                                            <button class="dropdown-item __nav_create_mkdir" type="button">
+                                                <i class="bi bi-folder-plus" aria-hidden="true"></i> Create folder
+                                            </button>
+    
+                                        </li>
+    
+                                        <li><hr class="dropdown-divider"></li>
+    
+                                        <li>
+    
+                                            <button class="dropdown-item __nav_create_upload" type="button">
+                                                <i class="bi bi-file-earmark-arrow-up" aria-hidden="true"></i> Upload..
+                                            </button>
+    
+                                        </li>
+    
+                                    </ul>
+    
+                                </div>
+
+                            </div>
+
                         </div>
 
                     </div>
 
                     <div class="d-flex flex-nowrap row border-bottom pe-0 __navigation_component">
+
+                        <div class="d-flex w-auto py-2 ps-2 pe-0 ms-auto">
+
+                            <button class="btn rounded-circle __rounded_button __nav_back" aria-label="Parent directory">
+                                <i class="bi bi-arrow-up" aria-hidden="true"></i>
+                            </button>
+
+                            <button class="btn rounded-circle __rounded_button __nav_home" aria-label="Root directory">
+                                <i class="bi bi-house" aria-hidden="true"></i>
+                            </button>
+
+                            <button class="btn rounded-circle __rounded_button __nav_refresh" aria-label="Refresh">
+                                <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                            </button>
+
+                        </div>
 
                         <nav id="directory_navigator" class="py-2" aria-label="breadcrumb">
 
@@ -442,50 +583,9 @@
 
                         </nav>
 
-                        <div class="d-flex w-auto py-2 pe-2 ps-0 ms-auto">
-
-                            <button class="btn rounded-circle __rounded_button __nav_toggle_scheme" type="button" aria-label="Display scheme toggle">
-
-                                <i class="bi bi-list align-middle __displayicon_scheme_list" aria-hidden="true"></i>
-                                <i class="bi bi-grid-3x2-gap align-middle d-none __displayicon_scheme_grid" aria-hidden="true"></i>
-
-                            </button>
-
-                            <div class="dropdown">
-
-                                <button class="btn rounded-circle __rounded_button __nav_create" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Create">
-                                    <i class="bi bi-plus" aria-hidden="true"></i>
-                                </button>
-
-                                <ul class="dropdown-menu">
-
-                                    <li>
-
-                                        <button class="dropdown-item __nav_create_mkdir" type="button">
-                                            <i class="bi bi-folder-plus" aria-hidden="true"></i> Create folder
-                                        </button>
-
-                                    </li>
-
-                                    <li><hr class="dropdown-divider"></li>
-
-                                    <li>
-
-                                        <button class="dropdown-item __nav_create_upload" type="button">
-                                            <i class="bi bi-file-earmark-arrow-up" aria-hidden="true"></i> Upload..
-                                        </button>
-
-                                    </li>
-
-                                </ul>
-
-                            </div>
-
-                        </div>
-
                     </div>
 
-                    <div class="row __display_manager_default_target_element __display_manager_scheme_list">
+                    <div class="h-100 row __display_manager_default_target_element __display_manager_scheme_list">
 
                         <table id="fileview_table" class="table table-light table-hover m-0 p-0 __fileview_table">
 

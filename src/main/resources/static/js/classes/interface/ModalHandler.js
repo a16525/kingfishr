@@ -10,19 +10,22 @@ export class ModalHandler {
         this.bootstrapModal = new bootstrap.Modal( this.modalElement, {} );
 
         this.modalOpenButton = openModalButton;
-        this.modalOpenButton.addEventListener( "click", () => this.onModalOpen() );
+        this.openHandler = () => this.onModalOpen();
+        this.modalOpenButton.addEventListener( "click", this.openHandler );
 
             /**
              * @type {HTMLButtonElement}
              */
         this.modalCancelButton = this.modalElement.querySelector( "button.__modal_cancel" );
-        this.modalCancelButton.addEventListener( "click", () => this.onModalCancel() );
+        this.cancelHandler = () => this.onModalCancel();
+        this.modalCancelButton.addEventListener( "click", this.cancelHandler );
 
             /**
              * @type {HTMLButtonElement}
              */
         this.modalConfirmButton = this.modalElement.querySelector( "button.__modal_confirm" );
-        this.modalConfirmButton.addEventListener( "click", () => this.onModalConfirm() );
+        this.confirmHandler = () => this.onModalConfirm();
+        this.modalConfirmButton.addEventListener( "click", this.confirmHandler );
 
             /**
              * @type {HTMLDivElement}
@@ -34,10 +37,14 @@ export class ModalHandler {
              */
         this.modalForm = this.modalElement.querySelector( "form.__modal_form" );
 
-            /**
-             * @type {HTMLInputElement[]}
-             */
-        this.modalInput = Array.from( this.modalForm.querySelectorAll( "input" ) );
+        if( this.modalForm != null ) {
+
+                /**
+                 * @type {HTMLInputElement[]}
+                 */
+            this.modalInput = Array.from( this.modalForm.querySelectorAll( "input" ) );
+
+        }
 
     }
 
@@ -46,10 +53,11 @@ export class ModalHandler {
         this.modalMessageBox.classList.add( "d-none" );
         this.modalMessageBox.innerHTML = "";
 
-        this.modalCancelButton.disabled = false;
-        this.modalConfirmButton.disabled = false;
+        this.enableButtons();
 
-        this.modalInput.forEach( input => input.value = "" );
+        if( this.modalForm != null ) {
+            this.modalInput.forEach( input => input.value = "" );
+        }
 
         this.bootstrapModal.show();
 
@@ -96,7 +104,19 @@ export class ModalHandler {
     }
 
     clearInputs() {
-        this.modalInput.forEach( input => input.value = "" );
+
+        if( this.modalForm != null ) {
+            this.modalInput.forEach( input => input.value = "" );
+        }
+
+    }
+
+    clearModalListeners() {
+
+        this.modalOpenButton.removeEventListener( "click", this.openHandler );
+        this.modalCancelButton.removeEventListener( "click", this.cancelHandler );
+        this.modalConfirmButton.removeEventListener( "click", this.confirmHandler );
+
     }
 
 }

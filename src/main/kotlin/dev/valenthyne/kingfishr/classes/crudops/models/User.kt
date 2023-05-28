@@ -5,7 +5,7 @@ import org.hibernate.annotations.CreationTimestamp
 import java.util.Date
 
 @Entity
-@Table(name="USERS")
+@Table(name = "USERS")
 class User (
 
     @Id

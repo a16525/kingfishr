@@ -2,8 +2,13 @@ package dev.valenthyne.kingfishr.controllers
 
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import dev.valenthyne.kingfishr.classes.AESCryptUtils
 import dev.valenthyne.kingfishr.classes.KFGenericDataEntry
-import org.apache.tika.Tika
+import dev.valenthyne.kingfishr.classes.SessionEncryptionTokenManager
+import dev.valenthyne.kingfishr.classes.crudops.UserEncryptionDetailsRepository
+import dev.valenthyne.kingfishr.classes.crudops.UserRepository
+import jakarta.servlet.http.HttpSession
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.InputStreamResource
 import org.springframework.http.*
 import org.springframework.security.authentication.AnonymousAuthenticationToken
@@ -17,15 +22,26 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
 import java.nio.file.DirectoryNotEmptyException
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
+import javax.crypto.spec.IvParameterSpec
 import kotlin.io.path.*
 
 @Controller
 class UserAJAXController {
+
+    @Autowired
+    private lateinit var userRepository: UserRepository
+
+    @Autowired
+    private lateinit var userEncryptionDetailsRepository: UserEncryptionDetailsRepository
+
+    @Autowired
+    private lateinit var sessionEncryptionTokenManager: SessionEncryptionTokenManager
 
     @GetMapping( "/api/dir/contents" )
     fun listFiles( @RequestParam( name = "dir", required = true ) dir: String ): ResponseEntity<String> {
@@ -165,8 +181,9 @@ class UserAJAXController {
     }
 
     @PostMapping( "/api/file" )
-    fun uploadFile(@RequestParam( name = "dir", required = true ) dir: String,
-                   @RequestParam( name = "file", required = true ) file: MultipartFile ): ResponseEntity<String> {
+    fun uploadFile( session: HttpSession,
+                    @RequestParam( name = "dir", required = true ) dir: String,
+                    @RequestParam( name = "file", required = true ) file: MultipartFile ): ResponseEntity<String> {
 
         val auth : Authentication = SecurityContextHolder.getContext().authentication
         lateinit var response : ResponseEntity<String>
@@ -178,7 +195,7 @@ class UserAJAXController {
             val baseUserDirectory = "storage/" + auth.name
             val currentDirectory = Path( baseUserDirectory, dir )
 
-            val directoryGoal = Path( "$currentDirectory/${file.originalFilename}" )
+            val directoryGoal = Path( "$currentDirectory/${file.originalFilename}" ).toFile()
 
             if( directoryGoal.exists() ) {
                 response = ResponseEntity( "File with same name already exists on server", HttpStatus.BAD_REQUEST )
@@ -186,8 +203,33 @@ class UserAJAXController {
 
                 try {
 
-                    file.transferTo( directoryGoal )
-                    response = ResponseEntity( HttpStatus.CREATED )
+                    val user = userRepository.getUserByUsername( auth.name )!!
+                    val encryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )!!
+
+                    val salt = encryptionDetails.salt
+                    val iv = IvParameterSpec( encryptionDetails.iv )
+                    val key = AESCryptUtils.getKeyFromPassword( session.id, salt )
+                    val keyChv = AESCryptUtils.generateCheckValue( key, iv )
+
+                    val cryptPair = sessionEncryptionTokenManager.getSessionEncryptionPair( session.id )!!
+                    val chv = cryptPair.first
+
+                    if( keyChv == chv ) {
+
+                        val inputStream = file.inputStream
+                        val outputStream = directoryGoal.outputStream()
+
+                        val encryptedToken = cryptPair.second
+                        val rawToken = AESCryptUtils.decryptString( encryptedToken, key, iv )
+                        val encryptionKey = AESCryptUtils.getKeyFromPassword( rawToken, salt )
+
+                        AESCryptUtils.encryptFile( encryptionKey, iv, inputStream, outputStream )
+
+                        response = ResponseEntity( HttpStatus.CREATED )
+
+                    } else {
+                        response = ResponseEntity( "Couldn't upload file. Encryption failure.", HttpStatus.INTERNAL_SERVER_ERROR )
+                    }
 
                 } catch( exc : IOException ) {
                     println( exc.message )
@@ -203,7 +245,8 @@ class UserAJAXController {
     }
 
     @GetMapping( "/api/file" )
-    fun downloadFile( @RequestParam( name = "pathtofile", required = true ) pathToFile: String ): ResponseEntity<Any> {
+    fun downloadFile( session: HttpSession,
+                      @RequestParam( name = "pathtofile", required = true ) pathToFile: String ): ResponseEntity<Any> {
 
         val auth : Authentication = SecurityContextHolder.getContext().authentication
         lateinit var response: ResponseEntity<Any>
@@ -219,23 +262,47 @@ class UserAJAXController {
                 response = ResponseEntity(HttpStatus.NOT_FOUND)
             } else {
 
-                if(! targetFile.isFile) {
+                if( !targetFile.isFile ) {
                     response = ResponseEntity("Path leads to directory", HttpStatus.BAD_REQUEST)
                 } else {
 
-                    val resource = InputStreamResource(FileInputStream(targetFile))
-                    val headers = HttpHeaders()
+                    val user = userRepository.getUserByUsername( auth.name )!!
+                    val encryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )!!
 
-                    headers.contentType = try {
-                        MediaType.parseMediaType(Tika().detect(targetFile))
-                    } catch(exc : InvalidMediaTypeException) {
-                        MediaType.APPLICATION_OCTET_STREAM
+                    val salt = encryptionDetails.salt
+                    val iv = IvParameterSpec( encryptionDetails.iv )
+                    val key = AESCryptUtils.getKeyFromPassword( session.id, salt )
+                    val keyChv = AESCryptUtils.generateCheckValue( key, iv )
+
+                    val cryptPair = sessionEncryptionTokenManager.getSessionEncryptionPair( session.id )!!
+                    val chv = cryptPair.first
+
+                    if( keyChv == chv ) {
+
+                        val inputStream = targetFile.inputStream()
+
+                        val pipedInputStream = PipedInputStream()
+                        val pipedOutputStream = PipedOutputStream( pipedInputStream )
+
+                        val encryptedToken = cryptPair.second
+                        val rawToken = AESCryptUtils.decryptString( encryptedToken, key, iv )
+                        val encryptionKey = AESCryptUtils.getKeyFromPassword( rawToken, salt )
+
+                        AESCryptUtils.decryptFile( encryptionKey, iv, inputStream, pipedOutputStream )
+
+                        val resource = InputStreamResource( pipedInputStream )
+                        val headers = HttpHeaders()
+
+                        println( pipedInputStream.available() )
+
+                        headers.contentLength = pipedInputStream.available().toLong()
+                        headers.set("Content-disposition", "attachment; filename=" + targetFile.name)
+
+                        response = ResponseEntity(resource, headers, HttpStatus.OK)
+
+                    } else {
+                        response = ResponseEntity( "Couldn't download file. Encryption failure.", HttpStatus.INTERNAL_SERVER_ERROR )
                     }
-
-                    headers.contentLength = targetFile.length()
-                    headers.set("Content-disposition", "attachment; filename=" + targetFile.name)
-
-                    response = ResponseEntity(resource, headers, HttpStatus.OK)
 
                 }
 

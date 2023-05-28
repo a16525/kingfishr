@@ -1,10 +1,15 @@
 package dev.valenthyne.kingfishr.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import dev.valenthyne.kingfishr.classes.AESCryptUtils
 import dev.valenthyne.kingfishr.classes.ActiveUserManager
+import dev.valenthyne.kingfishr.classes.SessionEncryptionTokenManager
+import dev.valenthyne.kingfishr.classes.crudops.UserEncryptionDetailsRepository
 import dev.valenthyne.kingfishr.classes.crudops.UserRepository
 import dev.valenthyne.kingfishr.classes.crudops.models.User
+import dev.valenthyne.kingfishr.classes.crudops.models.UserEncryptionDetails
 import dev.valenthyne.kingfishr.classes.crudops.models.UserInfo
+import jakarta.servlet.http.HttpSession
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -21,8 +26,8 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import java.io.File
-import java.nio.file.FileAlreadyExistsException
 import java.util.*
+import javax.crypto.spec.IvParameterSpec
 import kotlin.io.path.*
 
 @Controller
@@ -30,6 +35,12 @@ class ConfigAJAXController {
 
     @Autowired
     private lateinit var userRepository: UserRepository
+
+    @Autowired
+    private lateinit var userEncryptionDetailsRepository : UserEncryptionDetailsRepository
+
+    @Autowired
+    private lateinit var sessionEncryptionTokenManager: SessionEncryptionTokenManager
 
     @Autowired
     private lateinit var activeUserManager: ActiveUserManager
@@ -121,7 +132,7 @@ class ConfigAJAXController {
 
     @PostMapping( "/api/user" )
     fun createUser( @RequestParam( name = "name", required = true ) name: String,
-                    @RequestParam( name = "password", required = true ) password: String ): ResponseEntity<String> {
+                    @RequestParam( name = "password", required = true ) rawPassword: String ): ResponseEntity<String> {
 
         val authentication = SecurityContextHolder.getContext().authentication
         lateinit var response: ResponseEntity<String>
@@ -132,7 +143,7 @@ class ConfigAJAXController {
         if( name.contains( Regex( """[#%&{}<>*?/$!'\\":@+`|=]+?""" ) ) ) {
             response = ResponseEntity( "Invalid username.", HttpStatus.BAD_REQUEST )
         } else
-        if( password.length <= 3 ) {
+        if( rawPassword.length <= 3 ) {
             response = ResponseEntity( "Password must have atleast four characters.", HttpStatus.BAD_REQUEST )
         } else {
 
@@ -140,10 +151,22 @@ class ConfigAJAXController {
                 response = ResponseEntity( "User with provided name already exists", HttpStatus.BAD_REQUEST )
             } else {
 
-                val encodedPassword = BCryptPasswordEncoder().encode(password)
+                val encodedPassword = BCryptPasswordEncoder().encode(rawPassword)
 
                 val newUser = User(username = name, password = encodedPassword, timestampCreated = Date())
                 userRepository.save(newUser)
+
+                val salt = AESCryptUtils.generateSalt()
+                val key = AESCryptUtils.getKeyFromPassword( rawPassword, salt )
+                val iv = AESCryptUtils.generateIv()
+
+                val chv = AESCryptUtils.generateCheckValue( key, iv )
+
+                val rawToken = AESCryptUtils.generateSecureString()
+                val encryptedToken = AESCryptUtils.encryptString( rawToken, key, iv )
+
+                val encryptionDetails = UserEncryptionDetails( token = encryptedToken, salt = salt, iv = iv.iv, chv = chv, user = newUser )
+                userEncryptionDetailsRepository.save( encryptionDetails )
 
                 val userDirectoryPath = Path( "storage/$name" )
                 if( !userDirectoryPath.exists() ) {
@@ -214,7 +237,8 @@ class ConfigAJAXController {
     }
 
     @PatchMapping( "/api/user/password" )
-    fun changeUserPassword( @RequestParam( name = "id", required = true ) id: Long,
+    fun changeUserPassword( session: HttpSession,
+                            @RequestParam( name = "id", required = true ) id: Long,
                             @RequestParam( name = "oldpassword", required = true ) oldPassword: String,
                             @RequestParam( name = "newpassword", required = true ) newPassword: String ): ResponseEntity<String> {
 
@@ -236,12 +260,43 @@ class ConfigAJAXController {
 
                 if( passwordEncoder.matches( oldPassword, user.password ) ) {
 
+                    activeUserManager.invalidateUserSession( user.username )
+
                     val encodedNewPassword = passwordEncoder.encode( newPassword )
                     user.password = encodedNewPassword
 
                     userRepository.save( user )
 
-                    activeUserManager.invalidateUserSession( user.username )
+                    if( !user.isConfigurator ) {
+
+                        sessionEncryptionTokenManager.destroySessionEncryptionToken( session.id )
+
+                        val userEncryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )!!
+                        val salt = userEncryptionDetails.salt
+                        val iv = IvParameterSpec( userEncryptionDetails.iv )
+
+                        val key = AESCryptUtils.getKeyFromPassword( oldPassword, salt )
+                        val chv = AESCryptUtils.generateCheckValue( key, iv )
+
+                        if( chv == userEncryptionDetails.chv ) {
+
+                            val encToken = userEncryptionDetails.token
+                            val rawToken = AESCryptUtils.decryptString( encToken, key, iv )
+
+                            val newKey = AESCryptUtils.getKeyFromPassword( newPassword, salt )
+                            val newChv = AESCryptUtils.generateCheckValue( newKey, iv )
+                            val newEncToken = AESCryptUtils.encryptString( rawToken, newKey, iv )
+
+                            userEncryptionDetails.chv = newChv
+                            userEncryptionDetails.token = newEncToken
+
+                            userEncryptionDetailsRepository.save( userEncryptionDetails )
+
+                        } else {
+                            ResponseEntity( "Failed to update user details.", HttpStatus.INTERNAL_SERVER_ERROR )
+                        }
+
+                    }
 
                     response = ResponseEntity( HttpStatus.OK )
 

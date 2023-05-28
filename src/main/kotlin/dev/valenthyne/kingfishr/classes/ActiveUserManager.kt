@@ -37,7 +37,7 @@ class ActiveUserManager {
         val activeUsers = getLoggedInUsers()
         val user = activeUsers[username]
 
-        if( user != null ) {
+        if(user != null) {
 
             user.expireNow()
             invalidated = true
@@ -45,6 +45,13 @@ class ActiveUserManager {
         }
 
         return invalidated
+
+    }
+
+    fun getSessionInformationFromName( username: String ): SessionInformation? {
+
+        val activeUsers = getLoggedInUsers()
+        return activeUsers[username]
 
     }
 

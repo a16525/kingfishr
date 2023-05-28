@@ -2,6 +2,7 @@ package dev.valenthyne.kingfishr.configuration
 
 import dev.valenthyne.kingfishr.classes.CustomAuthenticationHandler
 import dev.valenthyne.kingfishr.classes.CustomUserDetailsService
+import dev.valenthyne.kingfishr.classes.SessionEncryptionTokenLogoutHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationProvider
@@ -50,6 +51,11 @@ class SecurityConfiguration {
     }
 
     @Bean
+    fun sessionEncryptionTokenLogoutHandler(): SessionEncryptionTokenLogoutHandler {
+        return SessionEncryptionTokenLogoutHandler()
+    }
+
+    @Bean
     fun securityFilterChain( http: HttpSecurity ): SecurityFilterChain {
 
         http
@@ -74,6 +80,7 @@ class SecurityConfiguration {
                     .deleteCookies( "JSESSIONID" )
                     .logoutUrl( "/logout" )
                     .logoutSuccessUrl( "/login?logout" )
+                    .addLogoutHandler( sessionEncryptionTokenLogoutHandler() )
             }
             .sessionManagement { session ->
                 session

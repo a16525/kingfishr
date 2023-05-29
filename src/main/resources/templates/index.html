@@ -320,328 +320,137 @@
 
         <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
-        <nav class="nav d-xl-flex d-none flex-column nav-pills py-3 pe-3 text-bg-dark vh-100 col-2">
+        <div class="w-100 vh-100" role="tabpanel">
 
-            <div class="ps-3" aria-hidden="true">
+            <div class="container-fluid __display_manager_attachment_point h-100">
 
-                <p class="text-center" th:if="${hostname}" th:inline="text">
-                    <small>Hosted on <i>[[${hostname}]]</i></small>
-                </p>
+                <nav class="navbar bg-light row py-2 border-bottom">
 
-                <hr>
+                    <div class="container-fluid">
+    
+                        <span class="navbar-brand">
+                            <span>Kingfishr</span> 
+                            <span class="mx-2">—</span>
+                            <strong sec:authentication="name">Unknown</strong>
+                        </span>
+    
+                        <form class="d-flex" th:action="@{/logout}" method="POST">
 
-            </div>
+                            <button class="btn btn-danger" type="submit">
 
-            <div>
+                                <span class="d-none d-lg-block">Log out</span>
+                                <i class="d-lg-none bi bi-door-closed-fill" aria-label="Log out"></i>
 
-                <a class="nav-link active rounded-0 rounded-end text-white" id="navpills-dashboardtab" data-bs-toggle="pill" data-bs-target="#views-dashboard" role="tab" aria-controls="views-dashboard" aria-selected="true">
-                    <i class="bi bi-speedometer ms-4 me-2" aria-hidden="true"></i>Dashboard
-                </a>
+                            </button>
 
-                <a class="nav-link rounded-0 rounded-end text-white __storage_forceupdate" id="navpills-storagetab" data-bs-toggle="pill" data-bs-target="#views-storage" role="tab" aria-controls="views-storage" aria-selected="false">
-                    <i class="bi bi-device-hdd-fill ms-4 me-2" aria-hidden="true"></i>Storage
-                </a>
-
-                <a class="nav-link rounded-0 rounded-end text-white" id="navpills-settingstab" data-bs-toggle="pill" data-bs-target="#views-settings" role="tab" aria-controls="views-settings" aria-selected="false">
-                    <i class="bi bi-sliders ms-4 me-2" aria-hidden="true"></i>Preferences
-                </a>
-
-            </div>
-
-            <div class="mt-auto ps-3">
-
-                <form class="d-flex" th:action="@{/logout}" method="POST">
-
-                    <button class="w-100 btn btn-danger ms-auto" type="submit">
-                        <span>Log out of <strong sec:authentication="name">unknown</strong></span>
-                    </button>
-
-                </form>
-
-            </div>
-
-        </nav>
-
-        <div class="col-xl-10 col-12 p-0 vh-100 tab-content" id="views">
-
-            <div class="tab-pane fade show active p-3" id="views-dashboard" role="tabpanel" aria-labelledby="navpills-dashboardtab" tabindex="0">
-
-                <div class="row row-cols-1 row-cols-md-2 g-4">
-
-                    <div class="col">
-
-                        <div class="card shadow-sm h-100">
-
-                            <div class="card-body">
-
-                                <h5 class="card-title pb-2">
-                                    <i class="bi bi-bar-chart-fill me-1" aria-hidden="true"></i>Stats
-                                </h5>
-
-                                <div class="progress mb-2">
-                                    <div class="progress-bar" role="progressbar" aria-label="Space used" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-
-                                <div>
-
-                                    <span class="d-block w-100">
-                                        Total space used:
-                                        <span class="float-end" id="value-spaceused">x</span>
-                                    </span>
-
-                                    <span class="d-block w-100">
-                                        Space left:
-                                        <span class="float-end" id="value-spaceleft">y</span>
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
+                        </form>
+    
                     </div>
+    
+                </nav>
 
-                    <div class="col">
+                <div class="row py-2 border-bottom">
 
-                        <div class="card shadow-sm h-100">
+                    <div class="d-flex">
 
-                            <div class="card-body">
+                        <div class="w-100 mx-2">
 
-                                <h5 class="card-title">
-                                    <i class="bi bi-clock-fill me-1" aria-hidden="true"></i>
-                                    Recent files
-                                </h5>
+                            <div class="input-group">
 
-                                <div class="mb-3">
-                                    ...
-                                </div>
+                                <div class="btn-group dropdown-center">
 
-                                <h5 class="card-title">
-                                    <i class="bi bi-pin-angle-fill me-1" aria-hidden="true"></i>
-                                    Pinned files
-                                </h5>
-
-                                <div class="pb-2">
-                                    ...
-                                    <p class="card-text d-none">
-                                        <small>x more..</small>
-                                    </p>
-                                </div>
-
-                                <a href="#">View all pinned files</a>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="tab-pane fade" id="views-storage" role="tabpanel" aria-labelledby="navpills-storagetab" tabindex="0">
-
-                <div class="container-fluid __display_manager_attachment_point h-100">
-
-                    <div class="row py-2 border-bottom">
-
-                        <div class="d-flex">
-
-                            <div class="w-100 mx-2">
-
-                                <div class="input-group">
-
-                                    <div class="btn-group dropdown-center">
-
-                                        <button class="btn btn-outline-secondary rounded-0 rounded-start dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Filters" type="button">
-                                            <i class="bi bi-sliders2" aria-hidden="true"></i>
-                                        </button>
-
-                                        <form class="dropdown-menu p-4 __search_filters_dropdown">
-
-                                            <div class="input-group mb-2">
-
-                                                <div class="input-group-text">
-                                                    <input class="form-check-input mt-0 __file_size_checkbox" type="checkbox" value="" aria-label="Apply file size filter">
-                                                </div>
-
-                                                <span class="input-group-text">File size:</span>
-
-                                                <select class="form-select">
-                                                    <option value="bigger">Bigger than</option>
-                                                    <option value="smaller">Smaller than</option>
-                                                    <option value="equal">Equal to</option>
-                                                </select>
-
-                                            </div>
-
-                                            <div class="input-group mb-2">
-
-                                                <div class="input-group-text">
-                                                    <input class="form-check-input mt-0 __file_type_checkbox" type="checkbox" value="" aria-label="Apply file type filter">
-                                                </div>
-
-                                                <span class="input-group-text">File type:</span>
-
-                                                <select class="form-select">
-                                                    <option value="none">Select an option</option>
-                                                </select>
-
-                                            </div>
-
-                                        </form>
-
-                                    </div>
-
-                                    <div class="form-floating">
-
-                                        <input name="search-name" id="search-name" type="search" class="form-control" placeholder="Search" aria-label="File name">
-                                        <label for="search-name">Search</label>
-
-                                    </div>
-
-                                    <button class="btn btn-outline-secondary __button_search" type="button" aria-label="Perform search">
-                                        <i class="bi bi-search" aria-hidden="true"></i>
+                                    <button class="btn btn-outline-secondary rounded-0 rounded-start dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Filters" type="button">
+                                        <i class="bi bi-sliders2" aria-hidden="true"></i>
                                     </button>
 
+                                    <form class="dropdown-menu p-4 __search_filters_dropdown">
+
+                                        <div class="input-group mb-2">
+
+                                            <div class="input-group-text">
+                                                <input class="form-check-input mt-0 __file_size_checkbox" type="checkbox" value="" aria-label="Apply file size filter">
+                                            </div>
+
+                                            <span class="input-group-text">File size:</span>
+
+                                            <select class="form-select">
+                                                <option value="bigger">Bigger than</option>
+                                                <option value="smaller">Smaller than</option>
+                                                <option value="equal">Equal to</option>
+                                            </select>
+
+                                        </div>
+
+                                        <div class="input-group mb-2">
+
+                                            <div class="input-group-text">
+                                                <input class="form-check-input mt-0 __file_type_checkbox" type="checkbox" value="" aria-label="Apply file type filter">
+                                            </div>
+
+                                            <span class="input-group-text">File type:</span>
+
+                                            <select class="form-select">
+                                                <option value="none">Select an option</option>
+                                            </select>
+
+                                        </div>
+
+                                    </form>
+
                                 </div>
 
-                            </div>
+                                <div class="form-floating">
 
-                            <div class="d-flex ps-0 align-items-center">
+                                    <input name="search-name" id="search-name" type="search" class="form-control" placeholder="Search" aria-label="File name">
+                                    <label for="search-name">Search</label>
 
-                                <button class="btn rounded-circle __rounded_button __nav_toggle_scheme" type="button" aria-label="Display scheme toggle">
+                                </div>
 
-                                    <i class="bi bi-list align-middle __displayicon_scheme_list" aria-hidden="true"></i>
-                                    <i class="bi bi-grid-3x2-gap align-middle d-none __displayicon_scheme_grid" aria-hidden="true"></i>
-    
+                                <button class="btn btn-outline-secondary __button_search" type="button" aria-label="Perform search">
+                                    <i class="bi bi-search" aria-hidden="true"></i>
                                 </button>
-    
-                                <div class="dropdown">
-    
-                                    <button class="btn rounded-circle __rounded_button __nav_create" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Create">
-                                        <i class="bi bi-plus" aria-hidden="true"></i>
-                                    </button>
-    
-                                    <ul class="dropdown-menu">
-    
-                                        <li>
-    
-                                            <button class="dropdown-item __nav_create_mkdir" type="button">
-                                                <i class="bi bi-folder-plus" aria-hidden="true"></i> Create folder
-                                            </button>
-    
-                                        </li>
-    
-                                        <li><hr class="dropdown-divider"></li>
-    
-                                        <li>
-    
-                                            <button class="dropdown-item __nav_create_upload" type="button">
-                                                <i class="bi bi-file-earmark-arrow-up" aria-hidden="true"></i> Upload..
-                                            </button>
-    
-                                        </li>
-    
-                                    </ul>
-    
-                                </div>
 
                             </div>
 
                         </div>
 
-                    </div>
+                        <div class="d-flex ps-0 align-items-center">
 
-                    <div class="d-flex flex-nowrap row border-bottom pe-0 __navigation_component">
+                            <button class="btn rounded-circle __rounded_button __nav_toggle_scheme" type="button" aria-label="Display scheme toggle">
 
-                        <div class="d-flex w-auto py-2 ps-2 pe-0 ms-auto">
+                                <i class="bi bi-list align-middle __displayicon_scheme_list" aria-hidden="true"></i>
+                                <i class="bi bi-grid-3x2-gap align-middle d-none __displayicon_scheme_grid" aria-hidden="true"></i>
 
-                            <button class="btn rounded-circle __rounded_button __nav_back" aria-label="Parent directory">
-                                <i class="bi bi-arrow-up" aria-hidden="true"></i>
                             </button>
 
-                            <button class="btn rounded-circle __rounded_button __nav_home" aria-label="Root directory">
-                                <i class="bi bi-house" aria-hidden="true"></i>
-                            </button>
+                            <div class="dropdown">
 
-                            <button class="btn rounded-circle __rounded_button __nav_refresh" aria-label="Refresh">
-                                <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
-                            </button>
+                                <button class="btn rounded-circle __rounded_button __nav_create" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Create">
+                                    <i class="bi bi-plus" aria-hidden="true"></i>
+                                </button>
 
-                        </div>
+                                <ul class="dropdown-menu">
 
-                        <nav id="directory_navigator" class="py-2" aria-label="breadcrumb">
+                                    <li>
 
-                            <ol id="directory_navigator_list" class="breadcrumb px-3 py-2 m-0 rounded-pill">
-
-                                <li class="breadcrumb-item active"></li>
-
-                            </ol>
-
-                        </nav>
-
-                    </div>
-
-                    <div class="h-100 row __display_manager_default_target_element __display_manager_scheme_list">
-
-                        <table id="fileview_table" class="table table-light table-hover m-0 p-0 __fileview_table">
-
-                            <thead>
-
-                                <tr>
-
-                                    <th class="__filetable_icon" scope="col">#</th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Type</th>
-                                    <th scope="col">Size</th>
-                                    <th class="__filetable_properties_column" scope="col"></th>
-
-                                </tr>
-
-                            </thead>
-
-                            <tbody class="__display_manager_scheme_list_content">
-
-
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 row-cols-xxl-6 d-none __display_manager_scheme_grid">
-
-                        <div class="col py-3 px-3 d-none __display_manager_scheme_grid_data_entry_template">
-
-                            <div class="card shadow-sm">
-
-                                <div class="d-flex justify-content-center py-5">
-                                    <i class="d-flex bi text-secondary __data_entry_card_big_icon" aria-hidden="true"></i>
-                                </div>
-
-                                <button class="__card_click_captor data_entry stretched-link"></button>
-
-                                <div class="d-flex py-1 pe-1 justify-content-between card-footer">
-
-                                    <div class="align-self-center py-2 __data_entry_card_info">
-                                        <i class="bi pe-2 __data_entry_card_small_icon" aria-hidden="true"></i>
-                                        <span class="__data_entry_card_name"></span>
-                                    </div>
-
-                                    <div class="dropdown">
-
-                                        <button class="btn rounded-circle __rounded_button __entry_properties" type="button">
-                                            <i class="bi bi-three-dots-vertical" aria-hidden="true"></i>
+                                        <button class="dropdown-item __nav_create_mkdir" type="button">
+                                            <i class="bi bi-folder-plus" aria-hidden="true"></i> Create folder
                                         </button>
-    
-                                    </div>
 
-                                </div>
-    
+                                    </li>
+
+                                    <li><hr class="dropdown-divider"></li>
+
+                                    <li>
+
+                                        <button class="dropdown-item __nav_create_upload" type="button">
+                                            <i class="bi bi-file-earmark-arrow-up" aria-hidden="true"></i> Upload..
+                                        </button>
+
+                                    </li>
+
+                                </ul>
+
                             </div>
 
                         </div>
@@ -650,34 +459,106 @@
 
                 </div>
 
-            </div>
+                <div class="d-flex flex-nowrap row border-bottom pe-0 __navigation_component">
 
-            <div class="tab-pane fade p-3" id="views-settings" role="tabpanel" aria-labelledby="navpills-settingstab" tabindex="0">
+                    <div class="d-flex w-auto py-2 ps-2 pe-0 ms-auto">
+
+                        <button class="btn rounded-circle __rounded_button __nav_back" aria-label="Parent directory">
+                            <i class="bi bi-arrow-up" aria-hidden="true"></i>
+                        </button>
+
+                        <button class="btn rounded-circle __rounded_button __nav_home" aria-label="Root directory">
+                            <i class="bi bi-house" aria-hidden="true"></i>
+                        </button>
+
+                        <button class="btn rounded-circle __rounded_button __nav_refresh" aria-label="Refresh">
+                            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                        </button>
+
+                    </div>
+
+                    <nav id="directory_navigator" class="py-2" aria-label="breadcrumb">
+
+                        <ol id="directory_navigator_list" class="breadcrumb px-3 py-2 m-0 rounded-pill">
+
+                            <li class="breadcrumb-item active"></li>
+
+                        </ol>
+
+                    </nav>
+
+                </div>
+
+                <div class="h-100 row __display_manager_default_target_element __display_manager_scheme_list">
+
+                    <table id="fileview_table" class="table table-light table-hover m-0 p-0 __fileview_table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th class="__filetable_icon" scope="col">#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Size</th>
+                                <th class="__filetable_properties_column" scope="col"></th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody class="__display_manager_scheme_list_content">
+
+
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 row-cols-xxl-6 d-none __display_manager_scheme_grid">
+
+                    <div class="col py-3 px-3 d-none __display_manager_scheme_grid_data_entry_template">
+
+                        <div class="card shadow-sm">
+
+                            <div class="d-flex justify-content-center py-5">
+                                <i class="d-flex bi text-secondary __data_entry_card_big_icon" aria-hidden="true"></i>
+                            </div>
+
+                            <button class="__card_click_captor data_entry stretched-link"></button>
+
+                            <div class="d-flex py-1 pe-1 justify-content-between card-footer">
+
+                                <div class="align-self-center py-2 __data_entry_card_info">
+                                    <i class="bi pe-2 __data_entry_card_small_icon" aria-hidden="true"></i>
+                                    <span class="__data_entry_card_name"></span>
+                                </div>
+
+                                <div class="dropdown">
+
+                                    <button class="btn rounded-circle __rounded_button __entry_properties" type="button">
+                                        <i class="bi bi-three-dots-vertical" aria-hidden="true"></i>
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
 
-        <nav class="navbar p-0 d-xl-none d-flex justify-content-evenly text-bg-dark" role="tablist" aria-orientation="horizontal">
-
-            <a class="nav-link py-2 active" id="navbar-dashboardtab" data-bs-toggle="pill" data-bs-target="#views-dashboard" role="tab" aria-controls="views-dashboard" aria-selected="false">
-                Dashboard
-            </a>
-
-            <a class="nav-link py-2 __storage_forceupdate" id="navbar-storagetab" data-bs-toggle="pill" data-bs-target="#views-storage" role="tab" aria-controls="views-storage" aria-selected="false">
-                Storage
-            </a>
-
-            <a class="nav-link py-2" id="navbar-settingstab" data-bs-toggle="pill" data-bs-target="#views-settings" role="tab" aria-controls="views-settings" aria-selected="false">
-                Preferences
-            </a>
-
-        </nav>
-
         <!-- Scripts -->
         <script th:src="@{ ${ '/webjars/bootstrap/' + bootstrap_version + '/js/bootstrap.bundle.min.js' } }"></script>
 
-        <script src="/js/runners/SynchronizeNavbars.js"></script>
         <script type="module" src="/js/runners/FileManager.js"></script>
 
     </body>

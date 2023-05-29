@@ -169,224 +169,79 @@
 
         </div>
 
-        <nav class="nav d-xl-flex d-none flex-column nav-pills py-3 pe-3 text-bg-dark vh-100 col-2">
+        <div class="w-100 vh-100">
 
-            <div class="ps-3" aria-hidden="true">
+            <div class="container-fluid __display_manager_attachment_point">
 
-                <h4 class="text-secondary text-center">Configuration</h4>
+                <nav class="navbar bg-light row py-2 border-bottom">
 
-                <p class="text-center" th:if="${hostname}" th:inline="text">
-                    <small>Hosted on <i>[[${hostname}]]</i></small>
-                </p>
+                    <div class="container-fluid">
+    
+                        <span class="navbar-brand">
+                            <span>Kingfishr</span> 
+                            <span class="mx-2">—</span>
+                            <strong class="text-danger">Config</strong>
+                        </span>
+    
+                        <form class="d-flex" th:action="@{/logout}" method="POST">
 
-                <hr>
+                            <button class="btn btn-danger" type="submit">
 
-            </div>
+                                <span class="d-none d-lg-block">Log out</span>
+                                <i class="d-lg-none bi bi-door-closed-fill" aria-label="Log out"></i>
 
-            <div>
+                            </button>
 
-                <a class="nav-link active rounded-0 rounded-end text-white" id="navpills-accountstab" data-bs-toggle="pill" data-bs-target="#views-accounts" role="tab" aria-controls="views-accounts" aria-selected="true">
-                    <i class="bi bi-person-fill ms-4 me-2" aria-hidden="true"></i>Accounts
-                </a>
+                        </form>
+    
+                    </div>
+    
+                </nav>
 
-                <a class="nav-link rounded-0 rounded-end text-white" id="navpills-settingstab" data-bs-toggle="pill" data-bs-target="#views-settings" role="tab" aria-controls="views-settings" aria-selected="false">
-                    <i class="bi bi-motherboard-fill ms-4 me-2" aria-hidden="true"></i>Settings
-                </a>
+                <div class="row border-bottom border-1 py-2">
 
-                <a class="nav-link rounded-0 rounded-end text-white" id="navpills-logstab" data-bs-toggle="pill" data-bs-target="#views-logs" role="tab" aria-controls="views-logs" aria-selected="false">
-                    <i class="bi bi-activity ms-4 me-2" aria-hidden="true"></i>Logs
-                </a>
+                    <div class="d-flex">
 
-            </div>
+                        <div class="d-flex w-auto pe-0 align-items-center __action_bar">
 
-            <div class="mt-auto ps-3">
+                            <button class="btn rounded-circle __rounded_button __action_create_user" aria-label="Create user">
+                                <i class="bi bi-person-plus-fill" aria-hidden="true"></i>
+                            </button>
 
-                <form class="d-flex" th:action="@{/logout}" method="POST">
+                            <button class="btn rounded-circle __rounded_button __action_rename_user" aria-label="Rename user">
+                                <i class="bi bi-pencil-fill" aria-hidden="true"></i>
+                            </button>
 
-                    <button class="w-100 btn btn-danger ms-auto" type="submit">
-                        <span>Log out of <strong sec:authentication="name">unknown</strong></span>
-                    </button>
+                            <button class="btn rounded-circle __rounded_button __action_change_user_password" aria-label="Change user password">
+                                <i class="bi bi-key-fill" aria-hidden="true"></i>
+                            </button>
 
-                </form>
+                            <button class="btn rounded-circle __rounded_button __action_delete_user" aria-label="Delete user">
+                                <i class="bi bi-person-x-fill" aria-hidden="true"></i>
+                            </button>
 
-            </div>
-
-        </nav>
-
-        <div class="col-xl-10 col-12 p-0 vh-100 tab-content" id="views">
-
-            <div class="tab-pane fade show active" id="views-accounts" role="tabpanel" aria-labelledby="navpills-accountstab" tabindex="0">
-
-                <div class="container-fluid __display_manager_attachment_point">
-
-                    <div class="row row-cols-1 row-cols-md-2">
-
-                        <div class="col border-2 border-end __section __section_userview_table">
-
-                            <div class="row border-bottom border-1 py-2">
-
-                                <div class="d-flex">
-
-                                    <div class="d-flex w-auto pe-0 align-items-center __action_bar">
-
-                                        <button class="btn rounded-circle __rounded_button __action_create_user" aria-label="Create user">
-                                            <i class="bi bi-person-plus-fill" aria-hidden="true"></i>
-                                        </button>
-
-                                        <button class="btn rounded-circle __rounded_button __action_rename_user" aria-label="Rename user">
-                                            <i class="bi bi-pencil-fill" aria-hidden="true"></i>
-                                        </button>
-
-                                        <button class="btn rounded-circle __rounded_button __action_change_user_password" aria-label="Change user password">
-                                            <i class="bi bi-key-fill" aria-hidden="true"></i>
-                                        </button>
-
-                                        <button class="btn rounded-circle __rounded_button __action_delete_user" aria-label="Delete user">
-                                            <i class="bi bi-person-x-fill" aria-hidden="true"></i>
-                                        </button>
-
-                                        <button class="btn rounded-circle __rounded_button __action_refresh" aria-label="Refresh">
-                                            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
-                                        </button>
-
-                                    </div>
-
-                                    <div class="ms-2 input-group">
-
-                                        <div class="input-group">
-
-                                            <div class="form-floating">
-            
-                                                <input name="searchByUsername" id="searchByUsername" type="search" class="form-control" placeholder="Search by username" aria-label="Search by username">
-                                                
-                                                <label for="searchByUsername">
-                                                    <i class="bi bi-search" aria-hidden="true"></i>
-                                                    Search by username
-                                                </label>
-            
-                                            </div>
-
-                                            <button class="btn btn-outline-secondary __search_by_username_apply" type="button">Search</button>
-        
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="row __display_manager_default_target_element __display_manager_scheme_list">
-
-                                <table class="table table-light table-hover p-0 __userview_table">
-
-                                    <thead>
-
-                                        <tr>
-
-                                            <th class="__userview_table_selector_column" scope="col">#</th>
-                                            <th scope="col">Username</th>
-                                            <th scope="col">Storage used</th>
-                                            <th scope="col">Configurator?</th>
-
-                                        </tr>
-
-                                    </thead>
-
-                                    <tbody class="__display_manager_scheme_list_content">
-                                        
-                                    </tbody>
-
-                                </table>
-
-                            </div>
+                            <button class="btn rounded-circle __rounded_button __action_refresh" aria-label="Refresh">
+                                <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                            </button>
 
                         </div>
 
-                        <div class="col p-3 __section __section_userview_details">
+                        <div class="ms-2 input-group">
 
-                            <div class="card rounded-0">
+                            <div class="input-group">
 
-                                <div class="card-body __userdata_card">
+                                <div class="form-floating">
 
-                                    <h5 class="card-title">
-                                        <i class="bi bi-person-fill me-2" aria-hidden="true"></i>
-                                        <span class="__userdata_username_entry">No user selected.</span>
-                                    </h5>
-
-                                    <div class="__userdata_information">
-
-                                        <span class="d-block w-100">
-                                            <strong>Created on:</strong>
-                                            <span class="float-end __userdata_created_timestamp">-</span>
-                                        </span><br>
-
-                                        <span class="d-block w-100">
-                                            <strong>Storage space used:</strong>
-                                            <span class="float-end __userdata_space_used">-</span>
-                                        </span>
-
-                                        <span class="d-block w-100">
-                                            <strong>Max. usage allowed:</strong>
-                                            <span class="float-end __userdata_space_limit">-</span>
-                                        </span>
-
-                                    </div>
-
-                                    <br><hr>
-
-                                    <h5 class="card-title">
-                                        <i class="bi bi-pie-chart-fill me-2" aria-hidden="true"></i>
-                                        User quota
-                                    </h5>
-
-                                    <div class="form-check">
-                                        <input class="form-check-input" id="__userdata_storage_enablequota" name="__userdata_storage_enablequota" type="checkbox" value="">
-                                        <label class="form-check-label" for="__userdata_storage_enablequota">Enable</label>
-                                    </div>
-
-                                    <div class="p-2 my-2 mb-3 shadow-sm bg-light">
-
-                                        <div class="progress">
-                                            <div class="progress-bar bg-success __userdata_storage_available" role="progressbar" aria-label="Storage available" style="width: 60%">Available</div>
-                                            <div class="progress-bar bg-warning text-dark __userdata_storage_userquota" role="progressbar" aria-label="User partition" style="width: 20%">Limit</div>
-                                            <div class="progress-bar bg-danger __userdata_storage_used" role="progressbar" aria-label="Storage used" style="width: 20%">Used</div>
-                                        </div>
-
-                                        <div class="d-flex mt-1 text-center">
-                                            <small class="__userdata_storage_available_size" style="width: 60%">700MB</small>
-                                            <small class="__userdata_storage_userquota_size" style="width: 20%">200MB</small>
-                                            <small class="__userdata_storage_used_size" style="width: 20%">200MB</small>
-                                        </div>
-
-
-                                    </div>
-
-                                    <div class="d-flex w-100">
-
-                                        <strong class="align-self-center">User limit:</strong>
-
-                                        <div class="ms-auto w-50 input-group">
-
-                                            <input type="number" class="form-control">
-
-                                            <select class="form-select">
-
-                                                <option value="bytes">Bytes</option>
-                                                <option value="kilobytes">Kilobytes</option>
-                                                <option value="megabytes" selected>Megabytes</option>
-                                                <option value="gigabytes">Gigabytes</option>
-                                                <option value="terabytes">Terabytes</option>
-
-                                            </select>
-
-                                            <button class="btn btn-success" type="button">Apply</button>
-
-                                        </div>
-
-                                    </div>
+                                    <input name="searchByUsername" id="searchByUsername" type="search" class="form-control" placeholder="Search by username" aria-label="Search by username">
+                                    
+                                    <label for="searchByUsername">
+                                        <i class="bi bi-search" aria-hidden="true"></i>
+                                        Search by username
+                                    </label>
 
                                 </div>
+
+                                <button class="btn btn-outline-secondary __search_by_username_apply" type="button">Search</button>
 
                             </div>
 
@@ -396,38 +251,38 @@
 
                 </div>
 
-            </div>
+                <div class="row __display_manager_default_target_element __display_manager_scheme_list">
 
-            <div class="tab-pane fade" id="views-settings" role="tabpanel" aria-labelledby="navpills-settingstab" tabindex="0">
+                    <table class="table table-light table-hover p-0 __userview_table">
 
-            </div>
+                        <thead>
 
-            <div class="tab-pane fade p-3" id="views-logs" role="tabpanel" aria-labelledby="navpills-logstab" tabindex="0">
+                            <tr>
+
+                                <th class="__userview_table_selector_column" scope="col">#</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Storage used</th>
+                                <th scope="col">Configurator?</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody class="__display_manager_scheme_list_content">
+                            
+                        </tbody>
+
+                    </table>
+
+                </div>
 
             </div>
 
         </div>
 
-        <nav class="navbar fixed-bottom d-xl-none d-flex p-0 justify-content-evenly text-bg-dark" role="tablist" aria-orientation="horizontal">
-
-            <a class="nav-link py-2 active" id="navbar-accountstab" data-bs-toggle="pill" data-bs-target="#views-accounts" role="tab" aria-controls="views-accounts" aria-selected="true">
-                Accounts
-            </a>
-
-            <a class="nav-link py-2" id="navbar-settingstab" data-bs-toggle="pill" data-bs-target="#views-settings" role="tab" aria-controls="views-settings" aria-selected="false">
-                Settings
-            </a>
-
-            <a class="nav-link py-2" id="navbar-logstab" data-bs-toggle="pill" data-bs-target="#views-logs" role="tab" aria-controls="views-logs" aria-selected="false">
-                Logs
-            </a>
-
-        </nav>
-
         <!-- Scripts -->
         <script th:src="@{ ${ '/webjars/bootstrap/' + bootstrap_version + '/js/bootstrap.bundle.min.js' } }"></script>
 
-        <script src="/js/runners/SynchronizeNavbars.js"></script>
         <script type="module" src="/js/runners/UserManager.js"></script>
 
     </body>

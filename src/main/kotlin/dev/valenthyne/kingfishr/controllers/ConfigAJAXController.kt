@@ -176,18 +176,6 @@ class ConfigAJAXController {
                 val newUser = User(username = name, password = encodedPassword, timestampCreated = Date())
                 userRepository.save(newUser)
 
-                val salt = AESCryptUtils.generateSalt()
-                val key = AESCryptUtils.getKeyFromPassword( rawPassword, salt )
-                val iv = AESCryptUtils.generateIv()
-
-                val chv = AESCryptUtils.generateCheckValue( key, iv )
-
-                val rawToken = AESCryptUtils.generateSecureString()
-                val encryptedToken = AESCryptUtils.encryptString( rawToken, key, iv )
-
-                val encryptionDetails = UserEncryptionDetails( token = encryptedToken, salt = salt, iv = iv.iv, chv = chv, user = newUser )
-                userEncryptionDetailsRepository.save( encryptionDetails )
-
                 val userDirectoryPath = Path( "storage/$name" )
                 if( !userDirectoryPath.exists() ) {
 
@@ -287,36 +275,7 @@ class ConfigAJAXController {
 
                     userRepository.save( user )
 
-                    if( !user.isConfigurator ) {
 
-                        sessionEncryptionTokenManager.destroySessionEncryptionToken( session.id )
-
-                        val userEncryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )!!
-                        val salt = userEncryptionDetails.salt
-                        val iv = IvParameterSpec( userEncryptionDetails.iv )
-
-                        val key = AESCryptUtils.getKeyFromPassword( oldPassword, salt )
-                        val chv = AESCryptUtils.generateCheckValue( key, iv )
-
-                        if( chv == userEncryptionDetails.chv ) {
-
-                            val encToken = userEncryptionDetails.token
-                            val rawToken = AESCryptUtils.decryptString( encToken, key, iv )
-
-                            val newKey = AESCryptUtils.getKeyFromPassword( newPassword, salt )
-                            val newChv = AESCryptUtils.generateCheckValue( newKey, iv )
-                            val newEncToken = AESCryptUtils.encryptString( rawToken, newKey, iv )
-
-                            userEncryptionDetails.chv = newChv
-                            userEncryptionDetails.token = newEncToken
-
-                            userEncryptionDetailsRepository.save( userEncryptionDetails )
-
-                        } else {
-                            ResponseEntity( "Failed to update user details.", HttpStatus.INTERNAL_SERVER_ERROR )
-                        }
-
-                    }
 
                     response = ResponseEntity( HttpStatus.OK )
 

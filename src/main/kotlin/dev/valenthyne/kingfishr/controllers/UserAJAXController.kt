@@ -206,30 +206,7 @@ class UserAJAXController {
                     val user = userRepository.getUserByUsername( auth.name )!!
                     val encryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )!!
 
-                    val salt = encryptionDetails.salt
-                    val iv = IvParameterSpec( encryptionDetails.iv )
-                    val key = AESCryptUtils.getKeyFromPassword( session.id, salt )
-                    val keyChv = AESCryptUtils.generateCheckValue( key, iv )
 
-                    val cryptPair = sessionEncryptionTokenManager.getSessionEncryptionPair( session.id )!!
-                    val chv = cryptPair.first
-
-                    if( keyChv == chv ) {
-
-                        val inputStream = file.inputStream
-                        val outputStream = directoryGoal.outputStream()
-
-                        val encryptedToken = cryptPair.second
-                        val rawToken = AESCryptUtils.decryptString( encryptedToken, key, iv )
-                        val encryptionKey = AESCryptUtils.getKeyFromPassword( rawToken, salt )
-
-                        AESCryptUtils.encryptFile( encryptionKey, iv, inputStream, outputStream )
-
-                        response = ResponseEntity( HttpStatus.CREATED )
-
-                    } else {
-                        response = ResponseEntity( "Couldn't upload file. Encryption failure.", HttpStatus.INTERNAL_SERVER_ERROR )
-                    }
 
                 } catch( exc : IOException ) {
                     println( exc.message )
@@ -258,7 +235,7 @@ class UserAJAXController {
             val baseUserDirectory = "storage/" + auth.name
             val targetFile = Path(baseUserDirectory, pathToFile).toFile()
 
-            if(! targetFile.exists()) {
+            if( !targetFile.exists() ) {
                 response = ResponseEntity(HttpStatus.NOT_FOUND)
             } else {
 
@@ -269,40 +246,7 @@ class UserAJAXController {
                     val user = userRepository.getUserByUsername( auth.name )!!
                     val encryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )!!
 
-                    val salt = encryptionDetails.salt
-                    val iv = IvParameterSpec( encryptionDetails.iv )
-                    val key = AESCryptUtils.getKeyFromPassword( session.id, salt )
-                    val keyChv = AESCryptUtils.generateCheckValue( key, iv )
 
-                    val cryptPair = sessionEncryptionTokenManager.getSessionEncryptionPair( session.id )!!
-                    val chv = cryptPair.first
-
-                    if( keyChv == chv ) {
-
-                        val inputStream = targetFile.inputStream()
-
-                        val pipedInputStream = PipedInputStream()
-                        val pipedOutputStream = PipedOutputStream( pipedInputStream )
-
-                        val encryptedToken = cryptPair.second
-                        val rawToken = AESCryptUtils.decryptString( encryptedToken, key, iv )
-                        val encryptionKey = AESCryptUtils.getKeyFromPassword( rawToken, salt )
-
-                        AESCryptUtils.decryptFile( encryptionKey, iv, inputStream, pipedOutputStream )
-
-                        val resource = InputStreamResource( pipedInputStream )
-                        val headers = HttpHeaders()
-
-                        println( pipedInputStream.available() )
-
-                        headers.contentLength = pipedInputStream.available().toLong()
-                        headers.set("Content-disposition", "attachment; filename=" + targetFile.name)
-
-                        response = ResponseEntity(resource, headers, HttpStatus.OK)
-
-                    } else {
-                        response = ResponseEntity( "Couldn't download file. Encryption failure.", HttpStatus.INTERNAL_SERVER_ERROR )
-                    }
 
                 }
 

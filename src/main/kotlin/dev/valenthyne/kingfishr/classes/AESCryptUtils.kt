@@ -1,8 +1,5 @@
 package dev.valenthyne.kingfishr.classes
 
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.security.SecureRandom
@@ -20,8 +17,10 @@ class AESCryptUtils {
     companion object {
 
         private const val algorithm = "AES/CBC/PKCS5Padding"
+        private const val ivLength = 16
+        private const val saltLength = 64
 
-        fun getKeyFromPassword(rawPassword: String, salt: ByteArray): SecretKey {
+        fun getKeyFromPassword( rawPassword: String, salt: ByteArray ): SecretKey {
 
             val keyFactory: SecretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
             val spec: KeySpec = PBEKeySpec(rawPassword.toCharArray(), salt, 65536, 256)
@@ -30,23 +29,9 @@ class AESCryptUtils {
 
         }
 
-        fun getStringFromKey( key: SecretKey ): String {
-
-            val rawKey = key.encoded
-            return Base64.getEncoder().encodeToString( rawKey )
-
-        }
-
-        fun getKeyFromString( stringKey: String ): SecretKey {
-
-            val decodedKey = Base64.getDecoder().decode( stringKey )
-            return SecretKeySpec( decodedKey, "AES" )
-
-        }
-
         fun generateIv(): IvParameterSpec {
 
-            val iv = ByteArray(16)
+            val iv = ByteArray( ivLength )
             SecureRandom().nextBytes(iv)
 
             return IvParameterSpec(iv)
@@ -55,15 +40,11 @@ class AESCryptUtils {
 
         fun generateSalt(): ByteArray {
 
-            val salt = ByteArray( 64 )
+            val salt = ByteArray( saltLength )
             SecureRandom().nextBytes( salt )
 
             return salt
 
-        }
-
-        fun generateCheckValue( key: SecretKey, iv: IvParameterSpec ): String {
-            return encryptString( "AAAAAAAA", key, iv ).slice( 0..8 )
         }
 
         fun generateSecureString(): String {
@@ -78,135 +59,22 @@ class AESCryptUtils {
 
         }
 
-        fun encryptString(input: String, key: SecretKey, iv: IvParameterSpec): String {
+        fun getIv( encryptedString: String ): IvParameterSpec {
 
-            val cipher = Cipher.getInstance(algorithm)
-            cipher.init(Cipher.ENCRYPT_MODE, key, iv)
+            val stringBytes = encryptedString.toByteArray()
+            val ivBytes = stringBytes.slice( 0 until ivLength ).toByteArray()
 
-            val cipherText: ByteArray = cipher.doFinal(input.toByteArray())
-
-            return Base64.getEncoder().encodeToString(cipherText)
+            return IvParameterSpec( ivBytes )
 
         }
 
-        fun decryptString(cipherText: String, key: SecretKey, iv: IvParameterSpec): String {
+        fun encryptString( rawString: String, key: SecretKey ) {
 
-            val cipher = Cipher.getInstance(algorithm)
-            cipher.init(Cipher.DECRYPT_MODE, key, iv)
+            val ivBytes = generateIv().iv
+            val stringBytes = rawString.toByteArray()
 
-            val plainText: ByteArray = cipher.doFinal(Base64.getDecoder().decode(cipherText))
-
-            return String(plainText)
-
-        }
-
-        fun encryptFile(key: SecretKey, iv: IvParameterSpec, inputFile: File, outputFile: File) {
-
-            val cipher = Cipher.getInstance(algorithm)
-            cipher.init(Cipher.ENCRYPT_MODE, key, iv)
-
-            val inputStream = FileInputStream(inputFile)
-            val outputStream = FileOutputStream(outputFile)
-
-            val buffer = ByteArray(64)
-            var bytesRead: Int
-
-            while (true) {
-
-                bytesRead = inputStream.read(buffer)
-                if (bytesRead == -1) break
-
-                val output = cipher.update(buffer, 0, bytesRead)
-                if (output != null) outputStream.write(output)
-
-            }
-
-            val outputBytes = cipher.doFinal()
-            if (outputBytes != null) outputStream.write(outputBytes)
-
-            inputStream.close()
-            outputStream.close()
-
-        }
-
-        fun encryptFile(key: SecretKey, iv: IvParameterSpec, inputStream: InputStream, outputStream: OutputStream) {
-
-            val cipher = Cipher.getInstance(algorithm)
-            cipher.init(Cipher.ENCRYPT_MODE, key, iv)
-
-            val buffer = ByteArray(64)
-            var bytesRead: Int
-
-            while (true) {
-
-                bytesRead = inputStream.read(buffer)
-                if (bytesRead == -1) break
-
-                val output = cipher.update(buffer, 0, bytesRead)
-                if (output != null) outputStream.write(output)
-
-            }
-
-            val outputBytes = cipher.doFinal()
-            if (outputBytes != null) outputStream.write(outputBytes)
-
-            inputStream.close()
-            outputStream.close()
-
-        }
-
-        fun decryptFile(key: SecretKey, iv: IvParameterSpec, inputFile: File, outputFile: File) {
-
-            val cipher = Cipher.getInstance(algorithm)
-            cipher.init(Cipher.DECRYPT_MODE, key, iv)
-
-            val inputStream = FileInputStream(inputFile)
-            val outputStream = FileOutputStream(outputFile)
-
-            val buffer = ByteArray(64)
-            var bytesRead: Int
-
-            while (true) {
-
-                bytesRead = inputStream.read(buffer)
-                if (bytesRead == -1) break
-
-                val output = cipher.update(buffer, 0, bytesRead)
-                if (output != null) outputStream.write(output)
-
-            }
-
-            val outputBytes = cipher.doFinal()
-            if (outputBytes != null) outputStream.write(outputBytes)
-
-            inputStream.close()
-            outputStream.close()
-
-        }
-
-        fun decryptFile(key: SecretKey, iv: IvParameterSpec, inputStream: InputStream, outputStream: OutputStream) {
-
-            val cipher = Cipher.getInstance(algorithm)
-            cipher.init(Cipher.DECRYPT_MODE, key, iv)
-
-            val buffer = ByteArray(64)
-            var bytesRead: Int
-
-            while (true) {
-
-                bytesRead = inputStream.read(buffer)
-                if (bytesRead == -1) break
-
-                val output = cipher.update(buffer, 0, bytesRead)
-                if (output != null) outputStream.write(output)
-
-            }
-
-            val outputBytes = cipher.doFinal()
-            if (outputBytes != null) outputStream.write(outputBytes)
-
-            inputStream.close()
-            outputStream.close()
+            val cipher = Cipher.getInstance( algorithm )
+            cipher.init()
 
         }
 

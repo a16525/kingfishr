@@ -13,7 +13,6 @@ class SessionEncryptionTokenManager {
     private lateinit var userEncryptionDetailsRepository: UserEncryptionDetailsRepository
 
     private val sessionEncryptionTokenMap: MutableMap<String, Pair<String, String>> = mutableMapOf()
-
     fun createSessionEncryptionToken( userId: Long, rawPassword: String, sessionId: String ): Boolean {
 
         var created = false
@@ -21,23 +20,7 @@ class SessionEncryptionTokenManager {
 
         if( encryptionDetails != null ) {
 
-            val iv = IvParameterSpec( encryptionDetails.iv )
 
-            val key = AESCryptUtils.getKeyFromPassword( rawPassword, encryptionDetails.salt )
-            val keyChv = AESCryptUtils.generateCheckValue( key, iv )
-
-            if( keyChv == encryptionDetails.chv ) {
-
-                val rawToken = AESCryptUtils.decryptString( encryptionDetails.token, key, iv )
-                val sessionKey = AESCryptUtils.getKeyFromPassword( sessionId, encryptionDetails.salt )
-                val sessionEncryptedToken = AESCryptUtils.encryptString( rawToken, sessionKey, iv )
-                val chv = AESCryptUtils.generateCheckValue( sessionKey, iv )
-
-                sessionEncryptionTokenMap[sessionId] = Pair( chv, sessionEncryptedToken )
-
-                created = true
-
-            }
 
         }
 

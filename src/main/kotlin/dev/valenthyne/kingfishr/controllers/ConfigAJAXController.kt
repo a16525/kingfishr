@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import java.io.File
 import java.util.*
+import javax.crypto.BadPaddingException
 import javax.crypto.spec.IvParameterSpec
 import kotlin.io.path.*
 
@@ -176,6 +177,14 @@ class ConfigAJAXController {
                 val newUser = User(username = name, password = encodedPassword, timestampCreated = Date())
                 userRepository.save(newUser)
 
+                val salt = AESCryptUtils.generateSalt()
+                val key = AESCryptUtils.getKeyFromPassword( rawPassword, salt )
+                val rawToken = AESCryptUtils.generateSecureString()
+                val encryptedToken = AESCryptUtils.encryptString( rawToken, key )
+
+                val encryptionDetails = UserEncryptionDetails( token = encryptedToken, salt = salt, user = newUser )
+                userEncryptionDetailsRepository.save( encryptionDetails )
+
                 val userDirectoryPath = Path( "storage/$name" )
                 if( !userDirectoryPath.exists() ) {
 
@@ -275,9 +284,37 @@ class ConfigAJAXController {
 
                     userRepository.save( user )
 
+                    if( !user.isConfigurator ) {
 
+                        sessionEncryptionTokenManager.destroySessionEncryptionToken( session.id )
 
-                    response = ResponseEntity( HttpStatus.OK )
+                        val userEncryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )!!
+                        val salt = userEncryptionDetails.salt
+
+                        val key = AESCryptUtils.getKeyFromPassword( oldPassword, salt )
+
+                        try {
+
+                            val encToken = userEncryptionDetails.token
+                            val rawToken = AESCryptUtils.decryptString( encToken, key )
+
+                            val newSalt = AESCryptUtils.generateSalt()
+                            val newKey = AESCryptUtils.getKeyFromPassword( newPassword, newSalt )
+
+                            val newEncToken = AESCryptUtils.encryptString( rawToken, newKey )
+
+                            userEncryptionDetails.salt = newSalt
+                            userEncryptionDetails.token = newEncToken
+
+                            userEncryptionDetailsRepository.save( userEncryptionDetails )
+
+                            response = ResponseEntity( HttpStatus.OK )
+
+                        } catch( exc: BadPaddingException ) {
+                            response = ResponseEntity( "Failed to update user details", HttpStatus.INTERNAL_SERVER_ERROR )
+                        }
+
+                    }
 
                 } else {
                     response = ResponseEntity( "Old user password provided is incorrect.", HttpStatus.BAD_REQUEST )

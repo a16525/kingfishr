@@ -16,12 +16,6 @@ class UserEncryptionDetails (
     @Column( nullable = false )
     var salt: ByteArray,
 
-    @Column( nullable = false )
-    var iv: ByteArray,
-
-    @Column( nullable = false )
-    var chv: String,
-
     @OneToOne( cascade = [ CascadeType.MERGE, CascadeType.REMOVE ])
     @JoinColumn( name = "user_id", referencedColumnName = "id" )
     var user: User

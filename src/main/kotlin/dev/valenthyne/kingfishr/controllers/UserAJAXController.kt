@@ -7,9 +7,13 @@ import dev.valenthyne.kingfishr.classes.KFGenericDataEntry
 import dev.valenthyne.kingfishr.classes.SessionEncryptionTokenManager
 import dev.valenthyne.kingfishr.classes.crudops.UserEncryptionDetailsRepository
 import dev.valenthyne.kingfishr.classes.crudops.UserRepository
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
+import org.apache.tika.Tika
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.InputStreamResource
+import org.springframework.core.io.Resource
+import org.springframework.core.io.WritableResource
 import org.springframework.http.*
 import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -28,6 +32,7 @@ import java.io.PipedOutputStream
 import java.nio.file.DirectoryNotEmptyException
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
+import javax.crypto.BadPaddingException
 import javax.crypto.spec.IvParameterSpec
 import kotlin.io.path.*
 
@@ -201,16 +206,31 @@ class UserAJAXController {
                 response = ResponseEntity( "File with same name already exists on server", HttpStatus.BAD_REQUEST )
             } else {
 
+                val sessionId = session.id
+                val user = userRepository.getUserByUsername( auth.name )!!
+                val encryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )!!
+
                 try {
 
-                    val user = userRepository.getUserByUsername( auth.name )!!
-                    val encryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )!!
+                    val salt = encryptionDetails.salt
+                    val key = AESCryptUtils.getKeyFromPassword( sessionId, salt )
 
+                    val encryptedToken = sessionEncryptionTokenManager.getSessionEncryptionToken( sessionId )!!
+                    val rawToken = AESCryptUtils.decryptString( encryptedToken, key )
 
+                    val encryptionKey = AESCryptUtils.getKeyFromPassword( rawToken, salt )
 
-                } catch( exc : IOException ) {
-                    println( exc.message )
-                    response = ResponseEntity( HttpStatus.INTERNAL_SERVER_ERROR )
+                    val inputStream = file.inputStream
+                    val outputStream = directoryGoal.outputStream()
+
+                    AESCryptUtils.encryptFile( encryptionKey, inputStream, outputStream )
+
+                    response = ResponseEntity( HttpStatus.OK )
+
+                } catch( exc: BadPaddingException ) {
+                    response = ResponseEntity( "Couldn't upload file. Encryption error.", HttpStatus.INTERNAL_SERVER_ERROR )
+                } catch( exc: IOException ) {
+                    response = ResponseEntity( "Couldn't upload file. I/O error.", HttpStatus.INTERNAL_SERVER_ERROR )
                 }
 
             }
@@ -223,10 +243,11 @@ class UserAJAXController {
 
     @GetMapping( "/api/file" )
     fun downloadFile( session: HttpSession,
-                      @RequestParam( name = "pathtofile", required = true ) pathToFile: String ): ResponseEntity<Any> {
+                      httpServletResponse: HttpServletResponse,
+                      @RequestParam( name = "pathtofile", required = true ) pathToFile: String ): ResponseEntity<String> {
 
         val auth : Authentication = SecurityContextHolder.getContext().authentication
-        lateinit var response: ResponseEntity<Any>
+        lateinit var response: ResponseEntity<String>
 
         if( auth is AnonymousAuthenticationToken ) {
             response = ResponseEntity( HttpStatus.FORBIDDEN )
@@ -243,10 +264,30 @@ class UserAJAXController {
                     response = ResponseEntity("Path leads to directory", HttpStatus.BAD_REQUEST)
                 } else {
 
+                    val sessionId = session.id
                     val user = userRepository.getUserByUsername( auth.name )!!
                     val encryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )!!
 
+                    try {
 
+                        val inputStream = targetFile.inputStream()
+                        val outputStream = httpServletResponse.outputStream
+
+                        val salt = encryptionDetails.salt
+                        val key = AESCryptUtils.getKeyFromPassword( sessionId, salt )
+
+                        val encryptedToken = sessionEncryptionTokenManager.getSessionEncryptionToken(sessionId)!!
+                        val rawToken = AESCryptUtils.decryptString( encryptedToken, key )
+                        val encryptionKey = AESCryptUtils.getKeyFromPassword( rawToken, salt )
+
+                        httpServletResponse.setHeader( "Content-Disposition", "attachment; filename=" + targetFile.name )
+                        AESCryptUtils.decryptFile( encryptionKey, inputStream, outputStream )
+
+                        response = ResponseEntity( HttpStatus.OK )
+
+                    } catch( exc: BadPaddingException ) {
+                        response = ResponseEntity( "Couldn't download file. Encryption error.", HttpStatus.INTERNAL_SERVER_ERROR )
+                    }
 
                 }
 

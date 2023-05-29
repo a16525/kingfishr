@@ -1,10 +1,10 @@
 package dev.valenthyne.kingfishr.classes.crudops.models
 
-class UserInfo( user: User ) {
+class UserInfo( user: User, storageUsed: Long? ) {
 
     val id = user.id
     val username = user.username
-    val storageUsed = 0
+    val storageUsed = if( storageUsed == null || storageUsed < 0 ) 0 else storageUsed
     val timestampCreated = user.timestampCreated
     val isConfigurator = user.isConfigurator
 

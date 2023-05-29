@@ -20,26 +20,6 @@ export class UserActionController extends ActionController {
         this.managementCard = managementCard;
 
             /**
-             * @type {HTMLSpanElement}
-             */
-        this.managementCard_usernameEntry = managementCard.querySelector( "span.__userdata_username_entry" );
-
-            /**
-             * @type {HTMLSpanElement}
-             */
-        this.managementCard_createdOn = managementCard.querySelector( "span.__userdata_created_timestamp" );
-
-            /**
-             * @type {HTMLSpanElement}
-             */
-        this.managementCard_spaceUsed = managementCard.querySelector( "span.__userdata_space_used" );
-
-            /**
-             * @type {HTMLSpanElement}
-             */
-        this.managementCard_spaceLimit = managementCard.querySelector( "span.__userdata_space_limit" );
-
-            /**
              * @type {HTMLButtonElement}
              */
         this.updateUsersButton = actionBar.querySelector( "button.__action_refresh" )
@@ -88,22 +68,11 @@ export class UserActionController extends ActionController {
             if( this.userManagerAjaxController.users.has( entryID ) ) {
 
                 const selectedUser = this.userManagerAjaxController.users.get( entryID );
-
                 this.userManagerAjaxController.selectedUser = selectedUser;
-                this.updateManagementCard();
 
             }
 
         }
-
-    }
- 
-    updateManagementCard() {
-
-        const selectedUser = this.userManagerAjaxController.selectedUser;
-
-        this.managementCard_usernameEntry.innerText = selectedUser.username;
-        this.managementCard_createdOn.innerText = selectedUser.timestampCreated.toISOString();
 
     }
 

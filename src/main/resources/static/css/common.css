@@ -17,18 +17,6 @@ nav.navbar > a.nav-link {
     
 }
 
-@media only screen and (max-width: 1200px) {
-    
-    body {
-        flex-direction: column;
-    }
-
-    div#views, div#views div.tab-pane {
-        height: calc( 100vh - 40px ) !important;
-    }
-
-}
-
 .tab-pane {
     height: 100vh;
 }

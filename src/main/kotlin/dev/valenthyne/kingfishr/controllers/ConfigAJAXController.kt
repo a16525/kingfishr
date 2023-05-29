@@ -71,7 +71,15 @@ class ConfigAJAXController {
 
                 if( user != null ) {
 
-                    val userInfo = UserInfo( user )
+                    val storageUsed: Long =
+                            if( user.isConfigurator ) {
+                                0
+                            } else {
+                                val dir = File( "storage/${user.username}" )
+                                dir.walkTopDown().filter { it.isFile }.map { it.length() }.sum()
+                            }
+
+                    val userInfo = UserInfo( user, storageUsed )
 
                     val jsonWriter = ObjectMapper().writer()
                     val dataJSON = jsonWriter.writeValueAsString( userInfo )
@@ -112,7 +120,19 @@ class ConfigAJAXController {
 
             } else {
 
-                val userInfo = users.map { user -> UserInfo( user ) }
+                val userInfo: MutableList<UserInfo> = mutableListOf()
+                for( user in users ) {
+
+                    val storageUsed: Long =
+                        if( user.isConfigurator ) {
+                            0
+                        } else {
+                            val dir = File( "storage/${user.username}" )
+                            dir.walkTopDown().filter { it.isFile }.map { it.length() }.sum()
+                        }
+
+                    userInfo.add( UserInfo( user, storageUsed ) )
+                }
 
                 val jsonWriter = ObjectMapper().writer()
                 val dataJSON = jsonWriter.writeValueAsString( userInfo )

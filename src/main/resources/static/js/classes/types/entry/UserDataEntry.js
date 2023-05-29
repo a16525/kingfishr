@@ -48,6 +48,32 @@ export class UserDataEntry extends Entry {
 
     }
 
+    humanReadableStorageOccupied() {
+
+        const units = [
+            "Bytes",
+            "Kilobytes",
+            "Megabytes",
+            "Gigabytes",
+            "Terabytes",
+            "Petabytes",
+            "Exabytes",
+            "Zettabytes",
+            "Brontobytes",
+            "Geopbytes"
+        ];
+
+        let sizeInBytes = this.storageUsed;
+        let scale = 0;
+
+        while( sizeInBytes >= 1000 && ++scale ) {
+            sizeInBytes /= 1000;
+        }
+
+        return sizeInBytes.toFixed( scale > 0 ? 1 : 0 ) + " " + units[scale];
+
+    }
+
         /**
          * @override
          */
@@ -56,8 +82,8 @@ export class UserDataEntry extends Entry {
         return [
             this.id,
             this.username,
-            this.storageUsed,
-            this.isConfigurator ? "Yes" : "No"
+            this.isConfigurator || this.storageUsed == 0 ? "None" : this.humanReadableStorageOccupied(),
+            this.timestampCreated.toISOString()
         ];
 
     }

@@ -180,6 +180,9 @@ function setupDeleteUserModal() {
 
 document.addEventListener( "DOMContentLoaded", async () => {
 
+    window.addEventListener( "scroll", () => { displayManager.updateHeight() })
+    window.addEventListener( "resize", () => { displayManager.updateHeight() })
+
         /**
          * @type {HTMLDivElement}
          */

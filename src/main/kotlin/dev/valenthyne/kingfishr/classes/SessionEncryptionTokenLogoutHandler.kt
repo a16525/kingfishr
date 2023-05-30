@@ -20,7 +20,7 @@ class SessionEncryptionTokenLogoutHandler: LogoutHandler {
         if( sessionEncryptionTokenManager.destroySessionEncryptionToken( sessionId ) ) {
             logger.info( "Destroyed session encryption token for session ID \"$sessionId\"" )
         } else {
-            logger.warn( "Couldn't destroy session encryption token for user \"$sessionId\"" )
+            logger.warn( "Couldn't destroy session encryption token for session ID \"$sessionId\". Ignore this error if the user is a configurator." )
         }
 
     }

@@ -75,7 +75,7 @@ class UserAJAXController {
 
                     if( path.isDirectory() ) {
 
-                        entry = KFGenericDataEntry( path.nameWithoutExtension, "dir", -1, relativePath )
+                        entry = KFGenericDataEntry( path.name, "dir", -1, relativePath )
                         entries.add( entry )
 
                     } else {

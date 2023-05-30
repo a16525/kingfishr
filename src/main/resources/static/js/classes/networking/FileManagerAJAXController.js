@@ -203,7 +203,7 @@ export class FileManagerAJAXController extends AJAXController {
             const endpoint = FileManagerAJAXController.endpoints.RENAMEENTRY;
             const request = endpoint.appendParameters( new URLSearchParams({
                 pathtoentry: dataEntry.pathTo,
-                newname: newName + "." + dataEntry.type
+                newname: dataEntry.type != "dir" ? newName + "." + dataEntry.type : newName
             }));
 
             await fetch( request, { method: endpoint.method }).then( async response => {

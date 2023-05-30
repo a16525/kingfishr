@@ -125,7 +125,7 @@ export class SchemeableDisplayManager extends DisplayManager {
 
                 data.forEach( ( entry, key ) => {
 
-                            /**
+                        /**
                          * @type {HTMLDivElement}
                          */
                     const dataEntryCard = this.cardTemplate.cloneNode( true );
@@ -134,6 +134,11 @@ export class SchemeableDisplayManager extends DisplayManager {
                          * @type {HTMLSpanElement}
                          */
                     const nameEntry = dataEntryCard.querySelector( "span.__data_entry_card_name" );
+
+                        /**
+                         * @type {HTMLElement}
+                         */
+                    const entrySize = dataEntryCard.querySelector( "small.__data_entry_card_filesize" );
 
                         /**
                          * @type {HTMLElement}
@@ -152,6 +157,7 @@ export class SchemeableDisplayManager extends DisplayManager {
                     clickCaptor.dataset.entryid = key;
 
                     nameEntry.innerText = entry.name;
+                    entrySize.innerText = entry.humanReadableSize();
 
                         /**
                          * @type {FileTypeTranslator}

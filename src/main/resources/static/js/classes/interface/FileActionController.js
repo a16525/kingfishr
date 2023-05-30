@@ -171,7 +171,6 @@ export class FileActionController extends ActionController {
         const targetTag = target.tagName.toLowerCase();
 
         let button = targetTag == "button" ? target : target.parentElement;
-
         let dataElement = target;
 
         if( isGridLayout ) {

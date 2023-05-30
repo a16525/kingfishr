@@ -193,13 +193,8 @@ document.addEventListener( "DOMContentLoaded", async () => {
          */
     const actionBar = document.querySelector( "div.__action_bar" );
 
-        /**
-         * @type {HTMLDivElement}
-         */
-    const managementCard = document.querySelector( "div.__userdata_card" );
-
     displayManager = new DisplayManager( attachedElement );
-    userActionController = new UserActionController( displayManager, userManagerAjaxController, actionBar, managementCard );
+    userActionController = new UserActionController( displayManager, userManagerAjaxController, actionBar );
     searchAgent = new SearchAgent();
 
     setupCreateUserModal();

@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import java.io.File
 import java.util.*
 import javax.crypto.BadPaddingException
-import javax.crypto.spec.IvParameterSpec
 import kotlin.io.path.*
 
 @Controller
@@ -346,6 +345,11 @@ class ConfigAJAXController {
                 if( user.isConfigurator ) {
                     response = ResponseEntity( "Cannot delete a configurator account.", HttpStatus.BAD_REQUEST )
                 } else {
+
+                    val userEncryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )
+                    if( userEncryptionDetails != null ) {
+                        userEncryptionDetailsRepository.delete(userEncryptionDetails)
+                    }
 
                     userRepository.delete(user)
                     activeUserManager.invalidateUserSession( user.username )

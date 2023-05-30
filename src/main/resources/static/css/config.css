@@ -13,14 +13,6 @@ nav.navbar > a.nav-link.active {
 
 }
 
-@media only screen and (max-width: 1200px) {
-    
-    .__section {
-        max-height: calc( 100vh - 40px ) !important;
-    }
-
-}
-
 table.__userview_table {
 
     table-layout: fixed;
@@ -55,4 +47,8 @@ table.__userview_table thead {
 
 .__section.__section_userview_details {
     max-height: 100vh;
+}
+
+tr.data_entry.selected > td {
+    background-color: #E5E6E7;
 }

@@ -24,6 +24,7 @@ export class UserActionController extends ActionController {
              */
         this.updateUsersButton = actionBar.querySelector( "button.__action_refresh" )
         this.updateUsersButton.addEventListener( "click", () => this.getUsers() );
+        this.selectedUserElement = null;
 
         window.addEventListener( "click", (evt) => this.getContextFromClick( evt ) );
 
@@ -67,8 +68,15 @@ export class UserActionController extends ActionController {
 
             if( this.userManagerAjaxController.users.has( entryID ) ) {
 
+                if( this.selectedUserElement != null ) {
+                    this.selectedUserElement.classList.remove( "selected" );
+                }
+
                 const selectedUser = this.userManagerAjaxController.users.get( entryID );
                 this.userManagerAjaxController.selectedUser = selectedUser;
+                
+                this.selectedUserElement = dataElement;
+                this.selectedUserElement.classList.add( "selected" );
 
             }
 

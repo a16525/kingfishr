@@ -391,7 +391,7 @@ export class FileActionController extends ActionController {
 
         const bootstrapDropdown = new bootstrap.Dropdown( dropdownElement, { reference: button } );
 
-            // hacky fix (this entire method is fu------ hacky) to remove dropdown because Dropdown.autoClose wasn't working
+            // hacky fix to remove dropdown because Dropdown.autoClose wasn't working
         const removeDropdown = () => {
 
             button.removeAttribute( "data-bs-toggle", "dropdown" );

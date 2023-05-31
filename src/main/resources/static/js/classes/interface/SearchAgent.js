@@ -1,7 +1,6 @@
 import { Entry } from "../types/entry/Entry.js";
 import { SearchAgentPropertyValue } from "../types/interface/SearchAgentPropertyValue.js";
 
-    // This is not a real estate class, I promise
 export class SearchAgent {
 
     constructor() {

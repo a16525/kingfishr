@@ -346,9 +346,9 @@ class ConfigAJAXController {
                     response = ResponseEntity( "Cannot delete a configurator account.", HttpStatus.BAD_REQUEST )
                 } else {
 
-                    val userEncryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )
-                    if( userEncryptionDetails != null ) {
-                        userEncryptionDetailsRepository.delete(userEncryptionDetails)
+                    val encryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )
+                    if( encryptionDetails != null ) {
+                        userEncryptionDetailsRepository.delete( encryptionDetails )
                     }
 
                     userRepository.delete(user)

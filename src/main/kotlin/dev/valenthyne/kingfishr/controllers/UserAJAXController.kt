@@ -9,11 +9,7 @@ import dev.valenthyne.kingfishr.classes.crudops.UserEncryptionDetailsRepository
 import dev.valenthyne.kingfishr.classes.crudops.UserRepository
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
-import org.apache.tika.Tika
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.io.InputStreamResource
-import org.springframework.core.io.Resource
-import org.springframework.core.io.WritableResource
 import org.springframework.http.*
 import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -27,13 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
 import java.io.IOException
-import java.io.PipedInputStream
-import java.io.PipedOutputStream
 import java.nio.file.DirectoryNotEmptyException
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
 import javax.crypto.BadPaddingException
-import javax.crypto.spec.IvParameterSpec
 import kotlin.io.path.*
 
 @Controller
@@ -65,35 +58,44 @@ class UserAJAXController {
 
             if( currentDirectory.exists() ) {
 
-                val paths = currentDirectory.listDirectoryEntries()
-                val entries : MutableList<KFGenericDataEntry> = mutableListOf()
+                val absoluteCurrentPath = currentDirectory.toRealPath()
+                val absoluteUserPath = baseUserPath.toRealPath()
 
-                for( path in paths ) {
+                if( absoluteCurrentPath.startsWith( absoluteUserPath ) ) {
 
-                    val relativePath = path.relativeTo( baseUserPath ).pathString
-                    lateinit var entry : KFGenericDataEntry
+                    val paths = currentDirectory.listDirectoryEntries()
+                    val entries : MutableList<KFGenericDataEntry> = mutableListOf()
 
-                    if( path.isDirectory() ) {
+                    for(path in paths) {
 
-                        entry = KFGenericDataEntry( path.name, "dir", -1, relativePath )
-                        entries.add( entry )
+                        val relativePath = path.relativeTo(baseUserPath).pathString
+                        lateinit var entry : KFGenericDataEntry
 
-                    } else {
+                        if(path.isDirectory()) {
 
-                        entry = KFGenericDataEntry( path.toFile(), relativePath )
-                        entries.add( entry )
+                            entry = KFGenericDataEntry(path.name, "dir", - 1, relativePath)
+                            entries.add(entry)
+
+                        } else {
+
+                            entry = KFGenericDataEntry(path.toFile(), relativePath)
+                            entries.add(entry)
+
+                        }
 
                     }
 
+                    val jsonWriter = ObjectMapper().writer()
+                    val entriesJSON = jsonWriter.writeValueAsString(entries)
+
+                    val headers = HttpHeaders()
+                    headers.contentType = MediaType.APPLICATION_JSON
+
+                    response = ResponseEntity(entriesJSON, headers, HttpStatus.OK)
+
+                } else {
+                    response = ResponseEntity( HttpStatus.FORBIDDEN )
                 }
-
-                val jsonWriter = ObjectMapper().writer()
-                val entriesJSON = jsonWriter.writeValueAsString( entries )
-
-                val headers = HttpHeaders()
-                headers.contentType = MediaType.APPLICATION_JSON
-
-                response = ResponseEntity( entriesJSON, headers, HttpStatus.OK )
 
             } else {
                 response = ResponseEntity( "Folder not found", HttpStatus.NOT_FOUND )

@@ -1,6 +1,5 @@
 package dev.valenthyne.kingfishr.controllers
 
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.valenthyne.kingfishr.classes.AESCryptUtils
 import dev.valenthyne.kingfishr.classes.KFGenericDataEntry
@@ -10,26 +9,26 @@ import dev.valenthyne.kingfishr.classes.crudops.UserRepository
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.*
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AnonymousAuthenticationToken
-import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
-import java.io.File
 import java.io.IOException
 import java.nio.file.DirectoryNotEmptyException
 import java.nio.file.Files
-import java.nio.file.NoSuchFileException
+import java.nio.file.Path
 import javax.crypto.BadPaddingException
 import kotlin.io.path.*
 
-@Controller
+//@Controller
 class UserAJAXController {
 
     @Autowired
@@ -41,64 +40,61 @@ class UserAJAXController {
     @Autowired
     private lateinit var sessionEncryptionTokenManager: SessionEncryptionTokenManager
 
-    @GetMapping( "/api/dir/contents" )
-    fun listFiles( @RequestParam( name = "dir", required = true ) dir: String ): ResponseEntity<String> {
+    fun verifyPathTraversing(basePath: Path, checkPath: Path): Boolean {
+        val canonicalBasePath = basePath.toRealPath()
+        val canonicalCheckPath = checkPath.toRealPath()
+        return canonicalCheckPath.startsWith(canonicalBasePath)
+    }
 
-        val auth : Authentication = SecurityContextHolder.getContext().authentication
-        lateinit var response : ResponseEntity<String>
+    @GetMapping("/api/dir/contents")
+    fun listFiles(
+        @RequestParam( name = "dir", required = true ) path: String
+    ): ResponseEntity<String> {
 
-        if( auth is AnonymousAuthenticationToken ) {
-            response = ResponseEntity( HttpStatus.FORBIDDEN )
-        } else {
+        val authentication = SecurityContextHolder.getContext().authentication
+        lateinit var response: ResponseEntity<String>
 
-            val baseUserDirectory = "storage/" + auth.name
-            val baseUserPath = Path( baseUserDirectory )
+        if( authentication !is AnonymousAuthenticationToken ) {
 
-            val currentDirectory = Path( baseUserDirectory, dir )
+            val baseDirectoryString = "storage/" + authentication.name
+            val baseDirectoryPath = Path(baseDirectoryString)
 
-            if( currentDirectory.exists() ) {
+            val workingDirectoryString = baseDirectoryString + path
+            val workingDirectoryPath = Path(workingDirectoryString)
 
-                val absoluteCurrentPath = currentDirectory.toRealPath()
-                val absoluteUserPath = baseUserPath.toRealPath()
+            if( verifyPathTraversing(baseDirectoryPath, workingDirectoryPath) ) {
 
-                if( absoluteCurrentPath.startsWith( absoluteUserPath ) ) {
+                if( workingDirectoryPath.exists() ) {
 
-                    val paths = currentDirectory.listDirectoryEntries()
-                    val entries : MutableList<KFGenericDataEntry> = mutableListOf()
+                    val rawEntries = workingDirectoryPath.listDirectoryEntries()
+                    val compiledEntries: MutableList<KFGenericDataEntry> = mutableListOf()
 
-                    for(path in paths) {
+                    for(entry in rawEntries) {
 
-                        val relativePath = path.relativeTo(baseUserPath).pathString
-                        lateinit var entry : KFGenericDataEntry
+                        val relativePath = entry.relativeTo(baseDirectoryPath).pathString
 
-                        if(path.isDirectory()) {
-
-                            entry = KFGenericDataEntry(path.name, "dir", - 1, relativePath)
-                            entries.add(entry)
-
+                        if( entry.isDirectory() ) {
+                            compiledEntries.add( KFGenericDataEntry(entry.name, "dir", -1, relativePath) )
                         } else {
-
-                            entry = KFGenericDataEntry(path.toFile(), relativePath)
-                            entries.add(entry)
-
+                            compiledEntries.add( KFGenericDataEntry( entry.toFile(), relativePath ) )
                         }
 
                     }
 
                     val jsonWriter = ObjectMapper().writer()
-                    val entriesJSON = jsonWriter.writeValueAsString(entries)
+                    val parsedEntries = jsonWriter.writeValueAsString(compiledEntries)
 
                     val headers = HttpHeaders()
                     headers.contentType = MediaType.APPLICATION_JSON
 
-                    response = ResponseEntity(entriesJSON, headers, HttpStatus.OK)
+                    response = ResponseEntity(parsedEntries, headers, HttpStatus.OK)
 
                 } else {
-                    response = ResponseEntity( HttpStatus.FORBIDDEN )
+                    response = ResponseEntity("Folder not found", HttpStatus.NOT_FOUND)
                 }
 
             } else {
-                response = ResponseEntity( "Folder not found", HttpStatus.NOT_FOUND )
+                response = ResponseEntity(HttpStatus.FORBIDDEN)
             }
 
         }
@@ -107,38 +103,52 @@ class UserAJAXController {
 
     }
 
-    @PostMapping( "/api/dir" )
-    fun createDirectory( @RequestParam( name = "dir", required = true ) dir: String,
-                         @RequestParam( name = "dirname", required = true ) dirname: String ): ResponseEntity<String> {
+    @PostMapping("/api/dir")
+    fun createDirectory(
+        @RequestParam( name = "dir", required = true ) dir: String,
+        @RequestParam( name = "dirname", required = true ) dirname: String
+    ): ResponseEntity<String> {
 
-        val auth : Authentication = SecurityContextHolder.getContext().authentication
+        val authentication = SecurityContextHolder.getContext().authentication
         lateinit var response: ResponseEntity<String>
 
-        if( auth is AnonymousAuthenticationToken) {
-            response = ResponseEntity( HttpStatus.FORBIDDEN )
-        } else {
+        if( authentication !is AnonymousAuthenticationToken ) {
 
-            val baseUserDirectory = "storage/" + auth.name
-            val currentDirectory = Path( baseUserDirectory, dir )
+            if( !dirname.contains( Regex( """#%&\{}<>*?/\$!'\\":@+`|=""" ) ) ) {
 
-            val directoryGoal = Path( "$currentDirectory/$dirname" )
+                val baseDirectoryString = "storage/" + authentication.name
+                val baseDirectoryPath = Path(baseDirectoryString)
 
-            if( directoryGoal.exists() ) {
-                response = ResponseEntity( "Folder already exists", HttpStatus.BAD_REQUEST )
-            } else {
+                val workingDirectoryString = baseDirectoryString + dir
+                val workingDirectoryPath = Path(workingDirectoryString)
 
-                try {
+                if( verifyPathTraversing(baseDirectoryPath, workingDirectoryPath) ) {
 
-                    Files.createDirectory( directoryGoal )
-                    response = ResponseEntity( HttpStatus.CREATED )
+                    val directoryToCreateString = "$workingDirectoryString/$dirname"
+                    val directoryToCreatePath = Path(directoryToCreateString)
 
-                } catch( exc : IOException ) {
-                    println( exc.message )
-                    response = ResponseEntity( HttpStatus.INTERNAL_SERVER_ERROR )
+                    if( !directoryToCreatePath.exists() ) {
+                        try {
+                            Files.createDirectory(directoryToCreatePath)
+                            response = ResponseEntity(HttpStatus.CREATED)
+                        } catch(exc: IOException) {
+                            println(exc)
+                            response = ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+                        }
+                    } else {
+                        response = ResponseEntity("Folder already exists", HttpStatus.BAD_REQUEST)
+                    }
+
+                } else {
+                    response = ResponseEntity(HttpStatus.FORBIDDEN)
                 }
 
+            } else {
+                response = ResponseEntity("Folder name is invalid.", HttpStatus.BAD_REQUEST)
             }
 
+        } else {
+            response = ResponseEntity(HttpStatus.FORBIDDEN)
         }
 
         return response
@@ -146,253 +156,201 @@ class UserAJAXController {
     }
 
     @OptIn(ExperimentalPathApi::class)
-    @DeleteMapping( "/api/dir" )
-    fun deleteDirectory( @RequestParam( name = "pathtofolder", required = true ) pathtoDir: String,
-                         @RequestParam( name = "recursively", required = false ) deleteRecursively: Boolean? ): ResponseEntity<String> {
+    @DeleteMapping("/api/dir")
+    fun deleteDirectory(
+        @RequestParam( name = "pathtofolder", required = true ) path: String,
+        @RequestParam( name = "recursively", required = false ) deleteRecursively: Boolean?
+    ): ResponseEntity<String> {
 
-        val auth : Authentication = SecurityContextHolder.getContext().authentication
+        val authentication = SecurityContextHolder.getContext().authentication
         lateinit var response: ResponseEntity<String>
 
-        if( auth is AnonymousAuthenticationToken) {
-            response = ResponseEntity( HttpStatus.FORBIDDEN )
-        } else {
+        if( authentication !is AnonymousAuthenticationToken ) {
 
-            val fullPath = Path("storage/${auth.name}/${pathtoDir}" )
+            val baseDirectoryString = "storage/" + authentication.name
+            val baseDirectoryPath = Path(baseDirectoryString)
 
-            if( fullPath.exists() && fullPath.isDirectory() ) {
+            val directoryToDeleteString = baseDirectoryString + path
+            val directoryToDeletePath = Path(directoryToDeleteString)
 
-                if( deleteRecursively == null || ! deleteRecursively ) {
+            if( verifyPathTraversing(baseDirectoryPath, directoryToDeletePath) ) {
 
-                    try {
-                        fullPath.deleteExisting()
-                        response = ResponseEntity( HttpStatus.OK )
-                    } catch( exc: DirectoryNotEmptyException ) {
-                        response = ResponseEntity( "Folder is not empty.", HttpStatus.BAD_REQUEST )
+                if( directoryToDeletePath.exists() && directoryToDeletePath.isDirectory() ) {
+
+                    if( deleteRecursively == null || !deleteRecursively ) {
+                        try {
+                            directoryToDeletePath.deleteExisting()
+                            response = ResponseEntity(HttpStatus.OK)
+                        } catch(exc: DirectoryNotEmptyException) {
+                            response = ResponseEntity("Folder is not empty.", HttpStatus.BAD_REQUEST)
+                        }
+                    } else {
+                        directoryToDeletePath.deleteRecursively()
+                        response = ResponseEntity(HttpStatus.OK)
                     }
 
                 } else {
-
-                    fullPath.deleteRecursively()
-                    response = ResponseEntity(HttpStatus.OK)
-
+                    response = ResponseEntity("Folder not found.", HttpStatus.NOT_FOUND)
                 }
 
             } else {
-                response = ResponseEntity( "Folder not found.", HttpStatus.NOT_FOUND )
+                response = ResponseEntity(HttpStatus.FORBIDDEN)
             }
 
-        }
-
-        return response
-
-    }
-
-    @PostMapping( "/api/file" )
-    fun uploadFile( session: HttpSession,
-                    @RequestParam( name = "dir", required = true ) dir: String,
-                    @RequestParam( name = "file", required = true ) file: MultipartFile ): ResponseEntity<String> {
-
-        val auth : Authentication = SecurityContextHolder.getContext().authentication
-        lateinit var response : ResponseEntity<String>
-
-        if( auth is AnonymousAuthenticationToken ) {
-            response = ResponseEntity( HttpStatus.FORBIDDEN )
         } else {
-
-            val baseUserDirectory = "storage/" + auth.name
-            val currentDirectory = Path( baseUserDirectory, dir )
-
-            val directoryGoal = Path( "$currentDirectory/${file.originalFilename}" ).toFile()
-
-            if( directoryGoal.exists() ) {
-                response = ResponseEntity( "File with same name already exists on server", HttpStatus.BAD_REQUEST )
-            } else {
-
-                val sessionId = session.id
-                val user = userRepository.getUserByUsername( auth.name )!!
-                val encryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )!!
-
-                try {
-
-                    val salt = encryptionDetails.salt
-                    val key = AESCryptUtils.getKeyFromPassword( sessionId, salt )
-
-                    val encryptedToken = sessionEncryptionTokenManager.getSessionEncryptionToken( sessionId )!!
-                    val rawToken = AESCryptUtils.decryptString( encryptedToken, key )
-
-                    val encryptionKey = AESCryptUtils.getKeyFromPassword( rawToken, salt )
-
-                    val inputStream = file.inputStream
-                    val outputStream = directoryGoal.outputStream()
-
-                    AESCryptUtils.encryptFile( encryptionKey, inputStream, outputStream )
-
-                    response = ResponseEntity( HttpStatus.OK )
-
-                } catch( exc: BadPaddingException ) {
-                    response = ResponseEntity( "Couldn't upload file. Encryption error.", HttpStatus.INTERNAL_SERVER_ERROR )
-                } catch( exc: IOException ) {
-                    response = ResponseEntity( "Couldn't upload file. I/O error.", HttpStatus.INTERNAL_SERVER_ERROR )
-                }
-
-            }
-
+            response = ResponseEntity(HttpStatus.FORBIDDEN)
         }
 
         return response
 
     }
 
-    @GetMapping( "/api/file" )
-    fun downloadFile( session: HttpSession,
-                      httpServletResponse: HttpServletResponse,
-                      @RequestParam( name = "pathtofile", required = true ) pathToFile: String ): ResponseEntity<String> {
+    @PostMapping("/api/file")
+    fun uploadFile(
+        session: HttpSession,
+        @RequestParam( name = "dir", required = true ) dir: String,
+        @RequestParam( name = "file", required = true ) file: MultipartFile
+    ): ResponseEntity<String> {
 
-        val auth : Authentication = SecurityContextHolder.getContext().authentication
+        val authentication = SecurityContextHolder.getContext().authentication
         lateinit var response: ResponseEntity<String>
 
-        if( auth is AnonymousAuthenticationToken ) {
-            response = ResponseEntity( HttpStatus.FORBIDDEN )
-        } else {
+        if( authentication !is AnonymousAuthenticationToken ) {
 
-            val baseUserDirectory = "storage/" + auth.name
-            val targetFile = Path(baseUserDirectory, pathToFile).toFile()
+            val baseDirectoryString = "storage/" + authentication.name
+            val baseDirectoryPath = Path(baseDirectoryString)
 
-            if( !targetFile.exists() ) {
-                response = ResponseEntity(HttpStatus.NOT_FOUND)
-            } else {
+            val workingDirectoryString = baseDirectoryString + dir
+            val workingDirectoryPath = Path(workingDirectoryString)
 
-                if( !targetFile.isFile ) {
-                    response = ResponseEntity("Path leads to directory", HttpStatus.BAD_REQUEST)
-                } else {
+            if( verifyPathTraversing(baseDirectoryPath, workingDirectoryPath) ) {
+
+                val fileToUploadString = "$workingDirectoryPath${file.originalFilename}"
+                val fileToUploadPath = Path( fileToUploadString )
+
+                if( !fileToUploadPath.exists() ) {
+
+                    val fileToUpload = fileToUploadPath.toFile()
 
                     val sessionId = session.id
-                    val user = userRepository.getUserByUsername( auth.name )!!
+                    val user = userRepository.getUserByUsername( authentication.name )!!
                     val encryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId( user.id!! )!!
 
                     try {
 
-                        val inputStream = targetFile.inputStream()
-                        val outputStream = httpServletResponse.outputStream
-
                         val salt = encryptionDetails.salt
-                        val key = AESCryptUtils.getKeyFromPassword( sessionId, salt )
+                        val key = AESCryptUtils.getKeyFromPassword(sessionId, salt)
 
                         val encryptedToken = sessionEncryptionTokenManager.getSessionEncryptionToken(sessionId)!!
-                        val rawToken = AESCryptUtils.decryptString( encryptedToken, key )
-                        val encryptionKey = AESCryptUtils.getKeyFromPassword( rawToken, salt )
+                        val rawToken = AESCryptUtils.decryptString(encryptedToken, key)
 
-                        httpServletResponse.setHeader( "Content-Disposition", "attachment; filename=" + targetFile.name )
-                        AESCryptUtils.decryptFile( encryptionKey, inputStream, outputStream )
+                        val encryptionKey = AESCryptUtils.getKeyFromPassword(rawToken, salt)
 
-                        response = ResponseEntity( HttpStatus.OK )
+                        val inputStream = file.inputStream
+                        val outputStream = fileToUpload.outputStream()
+
+                        AESCryptUtils.encryptFile(encryptionKey, inputStream, outputStream)
+
+                        response = ResponseEntity(HttpStatus.OK)
 
                     } catch( exc: BadPaddingException ) {
-                        response = ResponseEntity( "Couldn't download file. Encryption error.", HttpStatus.INTERNAL_SERVER_ERROR )
+                        response = ResponseEntity("Couldn't upload file, encryption error.", HttpStatus.INTERNAL_SERVER_ERROR)
+                    } catch( exc: IOException ) {
+                        response = ResponseEntity("Couldn't upload file, input/output error.", HttpStatus.INTERNAL_SERVER_ERROR)
                     }
 
+                } else {
+                    response = ResponseEntity("File with same name already exists.", HttpStatus.BAD_REQUEST)
                 }
 
+            } else {
+                response = ResponseEntity(HttpStatus.FORBIDDEN)
             }
 
+        } else {
+            response = ResponseEntity(HttpStatus.FORBIDDEN)
         }
 
         return response
 
     }
 
-    @PostMapping( "/api/file/copy" )
-    fun duplicateFile( @RequestParam( name = "pathtofile", required = true ) pathToFile : String ): ResponseEntity<String> {
+    @GetMapping("/api/file")
+    fun downloadFile(
+        session: HttpSession,
+        servletResponse: HttpServletResponse,
+        @RequestParam( name = "pathtofile", required = true ) pathToFile: String
+    ): ResponseEntity<String> {
 
-        val auth : Authentication = SecurityContextHolder.getContext().authentication
+        val authentication = SecurityContextHolder.getContext().authentication
         lateinit var response: ResponseEntity<String>
 
-        if( auth is AnonymousAuthenticationToken) {
-            response = ResponseEntity( HttpStatus.FORBIDDEN )
-        } else {
+        if( authentication !is AnonymousAuthenticationToken ) {
 
-            val path = Path("storage/${auth.name}/${pathToFile}" )
+            val baseDirectoryString = "storage/" + authentication.name
+            val baseDirectoryPath = Path(baseDirectoryString)
 
-            if( path.isDirectory() ) {
-                response = ResponseEntity( "Path provided leads to a folder", HttpStatus.BAD_REQUEST )
-            } else {
+            val filePathString = baseDirectoryString + pathToFile
+            val filePath = Path(filePathString)
 
-                try {
+            if( verifyPathTraversing(baseDirectoryPath, filePath) ) {
 
-                    val filePath = path.toFile()
+                val file = filePath.toFile()
 
-                    val destinationFile = File("${filePath.parent}/Copy of ${filePath.name}")
-                    filePath.copyTo( destinationFile, true )
+                if( !file.exists() ) {
 
-                    response = ResponseEntity(HttpStatus.OK)
+                    if( file.isFile ) {
 
-                } catch(exc : NoSuchFileException) {
-                    response = ResponseEntity("Source file not found", HttpStatus.NOT_FOUND)
+                        val sessionId = session.id
+                        val user = userRepository.getUserByUsername(authentication.name)!!
+                        val encryptionDetails = userEncryptionDetailsRepository.getEncryptionDetailsFromUserId(user.id!!)!!
+
+                        try {
+
+                            val inputStream = file.inputStream()
+                            val outputStream = servletResponse.outputStream
+
+                            val salt = encryptionDetails.salt
+                            val key = AESCryptUtils.getKeyFromPassword(sessionId, salt)
+
+                            val encryptedToken = sessionEncryptionTokenManager.getSessionEncryptionToken(sessionId)!!
+                            val rawToken = AESCryptUtils.decryptString(encryptedToken, key)
+                            val encryptionKey = AESCryptUtils.getKeyFromPassword(rawToken, salt)
+
+                            servletResponse.setHeader("Content-Disposition", "attachment; filename=" + file.name)
+                            AESCryptUtils.decryptFile(encryptionKey, inputStream, outputStream)
+
+                            response = ResponseEntity(HttpStatus.OK)
+
+                        } catch(exc: BadPaddingException) {
+                            response = ResponseEntity("Couldn't download file, encryption error.", HttpStatus.INTERNAL_SERVER_ERROR)
+                        }
+
+                    } else {
+                        response = ResponseEntity("Path points to folder.", HttpStatus.BAD_REQUEST)
+                    }
+
+                } else {
+                    response = ResponseEntity(HttpStatus.NOT_FOUND)
                 }
 
-            }
-
-        }
-
-        return response
-
-    }
-
-    @DeleteMapping( "/api/file" )
-    fun deleteFile( @RequestParam( name = "pathtofile", required = true ) pathToFile : String ): ResponseEntity<String> {
-
-        val auth : Authentication = SecurityContextHolder.getContext().authentication
-        lateinit var response: ResponseEntity<String>
-
-        if( auth is AnonymousAuthenticationToken) {
-            response = ResponseEntity( HttpStatus.FORBIDDEN )
-        } else {
-
-            val fullPath = Path("storage/${auth.name}/${pathToFile}" )
-
-            if( fullPath.deleteIfExists() ) {
-                response = ResponseEntity( HttpStatus.OK )
             } else {
-                response = ResponseEntity( "The file does not exist.", HttpStatus.NOT_FOUND )
+                response = ResponseEntity(HttpStatus.FORBIDDEN)
             }
 
-        }
-
-        return response
-
-    }
-
-    @PatchMapping( "/api/entry" )
-    fun renameEntry( @RequestParam( "pathtoentry", required = true ) pathToEntry: String,
-                     @RequestParam( "newname", required = true ) newName : String ): ResponseEntity<String> {
-
-        val auth : Authentication = SecurityContextHolder.getContext().authentication
-        lateinit var response: ResponseEntity<String>
-
-        if( auth is AnonymousAuthenticationToken) {
-            response = ResponseEntity( HttpStatus.FORBIDDEN )
-        } else
-        if( newName.contains( Regex( """#%&\{}<>*?/\$!'\\":@+`|=""" ) ) ) {
-            response = ResponseEntity( "New name is invalid.", HttpStatus.BAD_REQUEST )
         } else {
-
-            val fullPath = Path("storage/${auth.name}/${pathToEntry}" ).toFile()
-
-            if( fullPath.exists() ) {
-
-                val newPath = Path( "${fullPath.parent}/$newName" ).toFile()
-                fullPath.renameTo( newPath )
-
-                response = ResponseEntity( HttpStatus.OK )
-
-            } else {
-                response = ResponseEntity( "Entry doesn't exist.", HttpStatus.NOT_FOUND )
-            }
-
+            response = ResponseEntity(HttpStatus.FORBIDDEN)
         }
 
         return response
 
     }
+
+    /*@PostMapping("/api/file/copy")
+    fun duplicateFile(
+        @RequestParam( name = "pathtofile", required = true ) pathToFile: String
+    ): ResponseEntity<String> {
+        // TO-DO: Finish this and the rest of the UserAJAXController mappings.
+    }*/
 
 }

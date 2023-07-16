@@ -228,6 +228,10 @@ export class UserManagerAJAXController extends AJAXController {
                     throw new Error( await response.text() );
                 }
 
+                if( user.isConfigurator ) {
+                    location.reload();
+                }
+
             });
 
         }

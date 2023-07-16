@@ -72,12 +72,12 @@ class ConfigAJAXController {
                 if( user != null ) {
 
                     val storageUsed: Long =
-                            if( user.isConfigurator ) {
-                                0
-                            } else {
-                                val dir = File( "storage/${user.username}" )
-                                dir.walkTopDown().filter { it.isFile }.map { it.length() }.sum()
-                            }
+                        if( user.isConfigurator ) {
+                            0
+                        } else {
+                            val dir = File( "storage/${user.username}" )
+                            dir.walkTopDown().filter { it.isFile }.map { it.length() }.sum()
+                        }
 
                     val userInfo = UserInfo( user, storageUsed )
 
@@ -282,6 +282,8 @@ class ConfigAJAXController {
                     user.password = encodedNewPassword
 
                     userRepository.save( user )
+
+                    response = ResponseEntity( HttpStatus.OK )
 
                     if( !user.isConfigurator ) {
 

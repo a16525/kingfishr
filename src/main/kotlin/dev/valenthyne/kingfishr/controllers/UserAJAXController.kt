@@ -18,9 +18,11 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
+import java.io.File
 import java.io.IOException
 import java.nio.file.DirectoryNotEmptyException
 import java.nio.file.Files
@@ -28,7 +30,7 @@ import java.nio.file.Path
 import javax.crypto.BadPaddingException
 import kotlin.io.path.*
 
-//@Controller
+@Controller
 class UserAJAXController {
 
     @Autowired
@@ -59,7 +61,7 @@ class UserAJAXController {
             val baseDirectoryString = "storage/" + authentication.name
             val baseDirectoryPath = Path(baseDirectoryString)
 
-            val workingDirectoryString = baseDirectoryString + path
+            val workingDirectoryString = baseDirectoryString + if(path.startsWith("/")) path else "/$path"
             val workingDirectoryPath = Path(workingDirectoryString)
 
             if( verifyPathTraversing(baseDirectoryPath, workingDirectoryPath) ) {
@@ -119,7 +121,7 @@ class UserAJAXController {
                 val baseDirectoryString = "storage/" + authentication.name
                 val baseDirectoryPath = Path(baseDirectoryString)
 
-                val workingDirectoryString = baseDirectoryString + dir
+                val workingDirectoryString = baseDirectoryString + if(dir.startsWith("/")) dir else "/$dir"
                 val workingDirectoryPath = Path(workingDirectoryString)
 
                 if( verifyPathTraversing(baseDirectoryPath, workingDirectoryPath) ) {
@@ -170,7 +172,7 @@ class UserAJAXController {
             val baseDirectoryString = "storage/" + authentication.name
             val baseDirectoryPath = Path(baseDirectoryString)
 
-            val directoryToDeleteString = baseDirectoryString + path
+            val directoryToDeleteString = baseDirectoryString + if(path.startsWith("/")) path else "/$path"
             val directoryToDeletePath = Path(directoryToDeleteString)
 
             if( verifyPathTraversing(baseDirectoryPath, directoryToDeletePath) ) {
@@ -220,12 +222,12 @@ class UserAJAXController {
             val baseDirectoryString = "storage/" + authentication.name
             val baseDirectoryPath = Path(baseDirectoryString)
 
-            val workingDirectoryString = baseDirectoryString + dir
+            val workingDirectoryString = baseDirectoryString + if(dir.startsWith("/")) dir else "/$dir"
             val workingDirectoryPath = Path(workingDirectoryString)
 
             if( verifyPathTraversing(baseDirectoryPath, workingDirectoryPath) ) {
 
-                val fileToUploadString = "$workingDirectoryPath${file.originalFilename}"
+                val fileToUploadString = "$workingDirectoryPath/${file.originalFilename}"
                 val fileToUploadPath = Path( fileToUploadString )
 
                 if( !fileToUploadPath.exists() ) {
@@ -290,14 +292,14 @@ class UserAJAXController {
             val baseDirectoryString = "storage/" + authentication.name
             val baseDirectoryPath = Path(baseDirectoryString)
 
-            val filePathString = baseDirectoryString + pathToFile
+            val filePathString = baseDirectoryString + if(pathToFile.startsWith("/")) pathToFile else "/$pathToFile"
             val filePath = Path(filePathString)
 
             if( verifyPathTraversing(baseDirectoryPath, filePath) ) {
 
                 val file = filePath.toFile()
 
-                if( !file.exists() ) {
+                if( file.exists() ) {
 
                     if( file.isFile ) {
 
@@ -346,11 +348,141 @@ class UserAJAXController {
 
     }
 
-    /*@PostMapping("/api/file/copy")
+    @PostMapping("/api/file/copy")
     fun duplicateFile(
         @RequestParam( name = "pathtofile", required = true ) pathToFile: String
     ): ResponseEntity<String> {
-        // TO-DO: Finish this and the rest of the UserAJAXController mappings.
-    }*/
+
+        val authentication = SecurityContextHolder.getContext().authentication
+        lateinit var response: ResponseEntity<String>
+
+        if( authentication !is AnonymousAuthenticationToken ) {
+
+            val baseDirectoryString = "storage/" + authentication.name
+            val baseDirectoryPath = Path(baseDirectoryString)
+
+            val filePathString = baseDirectoryString + if(pathToFile.startsWith("/")) pathToFile else "/$pathToFile"
+            val filePath = Path(filePathString)
+
+            if( verifyPathTraversing(baseDirectoryPath, filePath) ) {
+
+                if( !filePath.isDirectory() ) {
+
+                    try {
+
+                        val file = filePath.toFile()
+
+                        val destinationFile = File("${file.parent}/Copy of ${file.name}")
+                        file.copyTo(destinationFile, true)
+
+                        response = ResponseEntity(HttpStatus.OK)
+
+                    } catch(exc: NoSuchFileException) {
+                        response = ResponseEntity("File to be copied not found.", HttpStatus.NOT_FOUND)
+                    }
+
+                } else {
+                    response = ResponseEntity("Path leads to folder.", HttpStatus.BAD_REQUEST)
+                }
+
+            } else {
+                response = ResponseEntity(HttpStatus.FORBIDDEN)
+            }
+
+        } else {
+            response = ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+
+        return response
+
+    }
+
+    @DeleteMapping("/api/file")
+    fun deleteFile(
+        @RequestParam( name = "pathtofile", required = true ) pathToFile: String
+    ): ResponseEntity<String> {
+
+        val authentication = SecurityContextHolder.getContext().authentication
+        lateinit var response: ResponseEntity<String>
+
+        if( authentication !is AnonymousAuthenticationToken ) {
+
+            val baseDirectoryString = "storage/" + authentication.name
+            val baseDirectoryPath = Path(baseDirectoryString)
+
+            val filePathString = baseDirectoryString + if(pathToFile.startsWith("/")) pathToFile else "/$pathToFile"
+            val filePath = Path(filePathString)
+
+            if( verifyPathTraversing(baseDirectoryPath, filePath) ) {
+
+                if( !filePath.isDirectory() ) {
+
+                    if( filePath.deleteIfExists() ) {
+                        response = ResponseEntity(HttpStatus.OK)
+                    } else {
+                        response = ResponseEntity("File does not exist.", HttpStatus.NOT_FOUND)
+                    }
+
+                } else {
+                    response = ResponseEntity("Path leads to directory.", HttpStatus.BAD_REQUEST)
+                }
+
+            } else {
+                response = ResponseEntity(HttpStatus.FORBIDDEN)
+            }
+
+        } else {
+            response = ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+
+        return response
+
+    }
+
+    @PatchMapping("/api/entry")
+    fun renameEntry(
+        @RequestParam( "pathtoentry", required = true ) path: String,
+        @RequestParam( "newname", required = true ) newName: String
+    ): ResponseEntity<String> {
+
+        val authentication = SecurityContextHolder.getContext().authentication
+        lateinit var response: ResponseEntity<String>
+
+        if( authentication !is AnonymousAuthenticationToken ) {
+
+            if( !newName.contains( Regex("""#%&\{}<>*?/\$!'\\":@+`|=""") ) ) {
+
+                val baseDirectoryString = "storage/" + authentication.name
+                val baseDirectoryPath = Path(baseDirectoryString)
+
+                val filePathString = baseDirectoryString + if(path.startsWith("/")) path else "/$path"
+                val filePath = Path(filePathString)
+
+                if( verifyPathTraversing(baseDirectoryPath, filePath) ) {
+
+                    val newPathnameString = "${filePath.parent}/$newName"
+                    val newNamePath = Path(newPathnameString)
+
+                    if( filePath.toFile().renameTo( newNamePath.toFile() ) ) {
+                        response = ResponseEntity(HttpStatus.OK)
+                    } else {
+                        response = ResponseEntity("Couldn't rename entry.", HttpStatus.INTERNAL_SERVER_ERROR)
+                    }
+
+                } else {
+                    response = ResponseEntity(HttpStatus.FORBIDDEN)
+                }
+
+            } else {
+                response = ResponseEntity("New name is invalid.", HttpStatus.BAD_REQUEST)
+            }
+
+        } else {
+            response = ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+
+        return response
+
+    }
 
 }
